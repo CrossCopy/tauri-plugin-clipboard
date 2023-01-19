@@ -12,13 +12,14 @@
 Add the following to your `Cargo.toml`:
 
 ```toml
-tauri-plugin-clipboard = { git = "https://github.com/HuakunShen/tauri-plugin-clipboard", branch = "dev" }
+tauri-plugin-clipboard = { git = "https://github.com/CrossCopy/tauri-plugin-clipboard-api", branch = "dev" }
 ```
 
 Run the following to install JavaScript/TypeScript API package.
 
 ```bash
-npm add https://github.com/HuakunShen/tauri-plugin-clipboard
+npm i tauri-plugin-clipboard-api
+# npm add https://github.com/CrossCopy/tauri-plugin-clipboard-api # or this for latest unpublished version (not recommended)
 ```
 
 In `main.rs`, add the following to your `tauri::Builder`:
@@ -66,4 +67,10 @@ readImage()
 writeImage(sample_base64_image).then(() => {
     // TODO
 });
+```
+
+The base64 image string can be converted to `Uint8Array` and written to file system using tauri's fs API. 
+
+```ts
+writeBinaryFile('tmp/avatar.png', new Uint8Array(atob(base64Img).split('').map(char => char.charCodeAt(0))), { dir: BaseDirectory.Cache })
 ```
