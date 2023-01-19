@@ -4,7 +4,6 @@ description = "A clipboard plugin for Tauri that supports both text and image"
 license = "MIT"
 version = "0.0.1"
 authors = [ "You" ]
-description = ""
 edition = "2021"
 rust-version = "1.59"
 exclude = ["/examples", "/webview-dist", "/webview-src", "node_modules"]
