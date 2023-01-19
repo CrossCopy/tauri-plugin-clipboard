@@ -1,8 +1,8 @@
-export declare function write_text(text: string): Promise<void>;
-export declare function read_text(): Promise<string>;
+export declare function writeText(text: string): Promise<void>;
+export declare function readText(): Promise<string>;
 /**
  * read clipboard image
  * @returns image in base64 string
  */
-export declare function read_image(): Promise<string>;
-export declare function write_image(data: string): Promise<void>;
+export declare function readImage(): Promise<string>;
+export declare function writeImage(data: string): Promise<void>;

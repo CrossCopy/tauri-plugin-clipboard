@@ -1,9 +1,9 @@
 <script lang="ts">
   import {
-    write_text,
-    read_text,
-    read_image,
-    write_image,
+    writeText,
+    readText,
+    readImage,
+    writeImage,
   } from "tauri-plugin-clipboard-api";
 
   const sample_base64_image =
@@ -21,22 +21,22 @@
       "<br>";
   }
 
-  async function readText() {
-    read_text().then((text) => {
+  async function onReadText() {
+    readText().then((text) => {
       message = text;
     });
   }
 
-  async function writeText() {
-    write_text("huakun zui shuai").then(() => {
+  async function onWriteText() {
+    writeText("huakun zui shuai").then(() => {
       message = `"huakun zui shuai" should be written to your clipboard`;
     });
   }
 
-  function readImage() {
-    read_image()
-      .then((bytes) => {
-        curBase64Image = bytes;
+  function onReadImage() {
+    readImage()
+      .then((base64Img) => {
+        curBase64Image = base64Img;
       })
       .catch((err) => {
         alert(err);
@@ -44,8 +44,8 @@
       });
   }
 
-  async function writeImage() {
-    write_image(sample_base64_image).then(() => {
+  async function onWriteImage() {
+    writeImage(sample_base64_image).then(() => {
       message =
         'Image should be written to your clipboard, try paste it somewhere, or click "Read Image"';
     });
@@ -55,10 +55,10 @@
 <div>
   <h1>Sample App</h1>
   <h2>Click on each button to see the result</h2>
-  <button on:click={readText}>Read Text</button>
-  <button on:click={writeText}>Write Text</button>
-  <button on:click={readImage}>Read Image</button>
-  <button on:click={writeImage}>Write Image</button>
+  <button on:click={onReadText}>Read Text</button>
+  <button on:click={onWriteText}>Write Text</button>
+  <button on:click={onReadImage}>Read Image</button>
+  <button on:click={onWriteImage}>Write Image</button>
   <br />
   {#if message.length > 0}
     <h3>{message}</h3>
