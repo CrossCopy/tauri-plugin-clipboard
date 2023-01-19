@@ -32,7 +32,21 @@
       }
     },
     "allowlist": {
-      "all": false
+      "all": true,
+      "fs": {
+        "all": true,
+        "scope": [
+          "$APPDATA/*",
+          "$APPLOCALDATA/*",
+          "$APPLOG/*",
+          "$APPCONFIG/*",
+          "$DESKTOP/*",
+          "$DOWNLOAD/*",
+          "$TEMP/*",
+          "$CONFIG/*",
+          "$CACHE/**"
+        ]
+      }
     },
     "windows": [
       {
