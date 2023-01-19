@@ -11,4 +11,4 @@ export declare function read_text(): Promise<string>;
  * @returns image in base64 string
  */
 export declare function read_image(): Promise<string>;
-export declare function write_image(data: any): Promise<void>;
+export declare function write_image(data: string): Promise<void>;
