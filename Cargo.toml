@@ -1,0 +1,13 @@
+[package]
+name = "tauri-plugin-clipboard"
+version = "0.0.0"
+authors = [ "You" ]
+description = ""
+edition = "2021"
+rust-version = "1.59"
+exclude = ["/examples", "/webview-dist", "/webview-src", "node_modules"]
+
+[dependencies]
+tauri = { version = "1.2.2" }
+serde = "1.0"
+thiserror = "1.0"
