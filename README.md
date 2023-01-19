@@ -9,7 +9,11 @@
 
 ## Installation
 
-Add the following to your `Cargo.toml`:
+Crate: https://crates.io/crates/tauri-plugin-clipboard
+
+`cargo add tauri-plugin-clipboard` to add the package.
+
+Or add the following to your `Cargo.toml` for the latest unpublished version (not recommanded).
 
 ```toml
 tauri-plugin-clipboard = { git = "https://github.com/CrossCopy/tauri-plugin-clipboard-api", branch = "dev" }
