@@ -1,5 +1,7 @@
 [package]
 name = "tauri-plugin-clipboard"
+description = "A clipboard plugin for Tauri that supports both text and image"
+license = "MIT"
 version = "0.0.1"
 authors = [ "You" ]
 description = ""
