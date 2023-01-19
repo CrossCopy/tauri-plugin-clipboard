@@ -9,6 +9,8 @@
 
 ## Installation
 
+> If you are installing from npm and crate.io package registry, make sure the versions for both packages are the same, otherwise, the API may not match.
+
 Crate: https://crates.io/crates/tauri-plugin-clipboard
 
 `cargo add tauri-plugin-clipboard` to add the package.
