@@ -1,7 +1,9 @@
 use arboard::{Clipboard, Error as ArboardError, ImageData};
-use image::{DynamicImage, ImageBuffer, Rgba, RgbaImage};
+use base64::{engine::general_purpose, Engine as _};
+use image::{DynamicImage, EncodableLayout, ImageBuffer, Rgba, RgbaImage};
 use serde::{ser::Serializer, Serialize};
 use std::borrow::Cow;
+use std::fs::File;
 use std::io::Read;
 use std::{collections::HashMap, sync::Mutex};
 use tauri;
@@ -11,7 +13,6 @@ use tauri::{
     AppHandle, Manager, Runtime, State, Window,
 };
 use tempfile;
-use std::fs::File;
 
 // type Result<T> = std::result::Result<T, Error>;
 
@@ -83,12 +84,16 @@ struct MyImage {
 // struct MyImageBuffer {
 //     buf: std::io::Bytes<'static, &[u8]>
 // }
-use std::fs;
+
+
 #[tauri::command]
-fn read_image() -> Result<Vec<u8>, String> {
+fn read_image() -> Result<String, String> {
     let mut clipboard = Clipboard::new().unwrap();
     let image = clipboard.get_image().map_err(|err| err.to_string())?;
-    let tmp_dir = tempfile::Builder::new().prefix("example").tempdir().map_err(|err| err.to_string())?;
+    let tmp_dir = tempfile::Builder::new()
+        .prefix("clipboard-img")
+        .tempdir()
+        .map_err(|err| err.to_string())?;
     let fname = tmp_dir.path().join("clipboard-img.png");
 
     let image2: RgbaImage = ImageBuffer::from_raw(
@@ -97,13 +102,23 @@ fn read_image() -> Result<Vec<u8>, String> {
         image.bytes.into_owned(),
     )
     .unwrap();
-    let image = DynamicImage::ImageRgba8(image2);
-    image.save(fname.clone()).map_err(|err| err.to_string())?;
-    let mut f = File::open(&fname).expect("Error Reading File");
-    let metadata = fs::metadata(&fname).expect("unable to read metadata");
-    let mut buffer = vec![0; metadata.len() as usize];
-    f.read(&mut buffer).expect("buffer overflow");
-    Ok(buffer)
+    image2.save(fname.clone()).map_err(|err| err.to_string())?;
+    let mut file = File::open(fname.clone()).unwrap();
+    let mut buffer = vec![];
+    file.read_to_end(&mut buffer).unwrap();
+    let base64_str = general_purpose::STANDARD_NO_PAD.encode(buffer);
+    Ok(base64_str)
+    // image2 to base64 string
+    // let bytes = image2.to_vec();
+    // let base64_str = general_purpose::STANDARD_NO_PAD.encode(bytes);
+    // Ok(base64_str)
+    // let image = DynamicImage::ImageRgba8(image2);
+    // image.save(fname.clone()).map_err(|err| err.to_string())?;
+    // let mut f = File::open(&fname).expect("Error Reading File");
+    // let metadata = fs::metadata(&fname).expect("unable to read metadata");
+    // let mut buffer = vec![0; metadata.len() as usize];
+    // f.read(&mut buffer).expect("buffer overflow");
+    // Ok(buffer)
 }
 
 /// Initializes the plugin.

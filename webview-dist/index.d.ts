@@ -6,5 +6,9 @@ export declare type Image = {
 export declare function execute(): Promise<unknown>;
 export declare function write_text(text: string): Promise<void>;
 export declare function read_text(): Promise<string>;
-export declare function read_image(): Promise<any>;
+/**
+ * read clipboard image
+ * @returns image in base64 string
+ */
+export declare function read_image(): Promise<string>;
 export declare function write_image(data: any): Promise<void>;

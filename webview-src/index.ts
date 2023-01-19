@@ -23,7 +23,11 @@ export function read_text(): Promise<string> {
   return invoke("plugin:clipboard|read_text");
 }
 
-export function read_image(): Promise<any> {
+/**
+ * read clipboard image
+ * @returns image in base64 string
+ */
+export function read_image(): Promise<string> {
   return invoke("plugin:clipboard|read_image");
 }
 
