@@ -1,6 +1,6 @@
 [package]
 name = "tauri-plugin-clipboard"
-version = "0.0.0"
+version = "0.0.1"
 authors = [ "You" ]
 description = ""
 edition = "2021"

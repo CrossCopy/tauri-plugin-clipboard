@@ -1,4 +1,4 @@
-use arboard::{Clipboard, Error as ArboardError, ImageData};
+use arboard::{Clipboard, ImageData};
 use base64::{engine::general_purpose, Engine as _};
 use image::GenericImageView;
 use image::{ImageBuffer, RgbaImage};
