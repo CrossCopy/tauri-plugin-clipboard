@@ -61,25 +61,37 @@
 
   let listenTextContent = "";
   let listenImageContent = "";
-  let textUnlisten: UnlistenFn;
-  let imageUnlisten: UnlistenFn;
+  let tauriTextUnlisten: UnlistenFn;
+  let tauriImageUnlisten: UnlistenFn;
+  let textUnlisten: () => void;
+  let imageUnlisten: () => void;
 
-  onMount(async () => {
-    textUnlisten = await listen(TEXT_CHANGED, (event) => {
+  export async function startListening() {
+    tauriTextUnlisten = await listen(TEXT_CHANGED, (event) => {
       console.log(event);
       listenTextContent = (event.payload as any).value;
     });
-    imageUnlisten = await listen(IMAGE_CHANGED, (event) => {
+    tauriImageUnlisten = await listen(IMAGE_CHANGED, (event) => {
       console.log(event);
       listenImageContent = (event.payload as any).value;
     });
-    listenImage();
-    listenText();
+    imageUnlisten = listenImage();
+    textUnlisten = listenText();
+  }
+
+  function stopListening() {
+    imageUnlisten();
+    textUnlisten();
+    tauriTextUnlisten();
+    tauriImageUnlisten();
+  }
+
+  onMount(() => {
+    startListening();
   });
 
   onDestroy(() => {
-    textUnlisten();
-    imageUnlisten();
+    stopListening();
   });
 </script>
 
@@ -100,6 +112,7 @@
   {/if}
 
   <h1>Listen to Update</h1>
+  <button on:click={stopListening}>Stop Listening</button><br />
   <small>This section contains content from clipboard listening</small>
   <p>
     <strong>Clipboard Listening Text Content: </strong><span

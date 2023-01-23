@@ -85,6 +85,8 @@ writeImage(sample_base64_image).then(() => {
 
 We use Tauri's event system. Start a listener with Tauri's `listen()` function to start listening for event, and call `listenImage()` and `listenText()` to listen for clipboard update. When clipboard is updated, event will be emitted.
 
+The following example is in svelte.
+
 ```ts
 import { emit, listen, type UnlistenFn } from "@tauri-apps/api/event";
 import {
@@ -96,30 +98,44 @@ import {
 
 let listenTextContent = "";
 let listenImageContent = "";
-let textUnlisten: UnlistenFn;
-let imageUnlisten: UnlistenFn;
+let tauriTextUnlisten: UnlistenFn;
+let tauriImageUnlisten: UnlistenFn;
+let textUnlisten: () => void;
+let imageUnlisten: () => void;
 
-onMount(async () => {
-    textUnlisten = await listen(TEXT_CHANGED, (event) => {
+export async function startListening() {
+    tauriTextUnlisten = await listen(TEXT_CHANGED, (event) => {
         console.log(event);
         listenTextContent = (event.payload as any).value;
     });
-    imageUnlisten = await listen(IMAGE_CHANGED, (event) => {
+    tauriImageUnlisten = await listen(IMAGE_CHANGED, (event) => {
         console.log(event);
         listenImageContent = (event.payload as any).value;
     });
-    listenImage();
-    listenText();
+    imageUnlisten = listenImage();
+    textUnlisten = listenText();
+}
+
+function stopListening() {
+    imageUnlisten();
+    textUnlisten();
+    tauriTextUnlisten();
+    tauriImageUnlisten();
+}
+
+onMount(() => {
+    startListening();
 });
 
 onDestroy(() => {
-    textUnlisten();
-    imageUnlisten();
+    stopListening();
 });
 ```
 
 The base64 image string can be converted to `Uint8Array` and written to file system using tauri's fs API. 
 
 ```ts
+import { writeBinaryFile, BaseDirectory } from "@tauri-apps/api/fs";
+
 writeBinaryFile('tmp/avatar.png', new Uint8Array(atob(base64Img).split('').map(char => char.charCodeAt(0))), { dir: BaseDirectory.Cache })
 ```

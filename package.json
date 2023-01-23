@@ -1,6 +1,6 @@
 {
   "name": "tauri-plugin-clipboard-api",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "author": "You",
   "description": "",
   "browser": "webview-dist/index.js",

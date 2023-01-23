@@ -29,8 +29,9 @@ export function writeImage(data: string): Promise<void> {
   return invoke("plugin:clipboard|write_image", { base64Image: data });
 }
 
-export async function listenText(delay: number = 500) {
-  let prevText = await readText();
+export function listenText(delay: number = 500) {
+  let prevText: string = "";
+  let active: boolean = true; // whether the listener should be running
   setTimeout(async function x() {
     try {
       const text = await readText();
@@ -39,13 +40,16 @@ export async function listenText(delay: number = 500) {
       }
       prevText = text;
     } catch (error) {}
-    setTimeout(x, delay);
+    if (active) setTimeout(x, delay);
   }, delay);
+  return function () {
+    active = false;
+  };
 }
 
-export async function listenImage(delay: number = 1000) {
+export function listenImage(delay: number = 1000) {
   let prevImg: string = "";
-
+  let active: boolean = true; // whether the listener should be running
   setTimeout(async function x() {
     try {
       const img = await readImage();
@@ -56,6 +60,9 @@ export async function listenImage(delay: number = 1000) {
     } catch (error) {
       // ! when there is no image in clipboard, there may be error thrown, we ignore the error
     }
-    setTimeout(x, delay);
+    if (active) setTimeout(x, delay);
   }, delay);
+  return function () {
+    active = false;
+  };
 }

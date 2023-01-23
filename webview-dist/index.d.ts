@@ -13,5 +13,5 @@ export declare function readImage(): Promise<string>;
  * @returns Promise<void>
  */
 export declare function writeImage(data: string): Promise<void>;
-export declare function listenText(delay?: number): Promise<void>;
-export declare function listenImage(delay?: number): Promise<void>;
+export declare function listenText(delay?: number): () => void;
+export declare function listenImage(delay?: number): () => void;
