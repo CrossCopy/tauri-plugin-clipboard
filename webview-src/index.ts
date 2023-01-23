@@ -32,11 +32,13 @@ export function writeImage(data: string): Promise<void> {
 export async function listenText(delay: number = 500) {
   let prevText = await readText();
   setTimeout(async function x() {
-    const text = await readText();
-    if (prevText !== text) {
-      await emit(TEXT_CHANGED, { value: text });
-    }
-    prevText = text;
+    try {
+      const text = await readText();
+      if (prevText !== text) {
+        await emit(TEXT_CHANGED, { value: text });
+      }
+      prevText = text;
+    } catch (error) {}
     setTimeout(x, delay);
   }, delay);
 }
