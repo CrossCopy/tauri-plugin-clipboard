@@ -75,6 +75,33 @@ writeImage(sample_base64_image).then(() => {
 });
 ```
 
+### Sample Listener Usage
+
+```ts
+let listenTextContent = "";
+let listenImageContent = "";
+let textUnlisten: UnlistenFn;
+let imageUnlisten: UnlistenFn;
+
+onMount(async () => {
+    textUnlisten = await listen(TEXT_CHANGED, (event) => {
+        console.log(event);
+        listenTextContent = (event.payload as any).value;
+    });
+    imageUnlisten = await listen(IMAGE_CHANGED, (event) => {
+        console.log(event);
+        listenImageContent = (event.payload as any).value;
+    });
+    listenImage();
+    listenText();
+});
+
+onDestroy(() => {
+    textUnlisten();
+    imageUnlisten();
+});
+```
+
 The base64 image string can be converted to `Uint8Array` and written to file system using tauri's fs API. 
 
 ```ts
