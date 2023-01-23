@@ -56,6 +56,12 @@ It works the same with other frontend frameworks like Vue, React, etc.
 ## Sample Usage (TypeScript API)
 
 ```ts
+import {
+    writeText,
+    readText,
+    readImage,
+    writeImage,
+} from "tauri-plugin-clipboard-api";
 readText().then((text) => {
     // TODO
 });
@@ -77,7 +83,17 @@ writeImage(sample_base64_image).then(() => {
 
 ### Sample Listener Usage
 
+We use Tauri's event system. Start a listener with Tauri's `listen()` function to start listening for event, and call `listenImage()` and `listenText()` to listen for clipboard update. When clipboard is updated, event will be emitted.
+
 ```ts
+import { emit, listen, type UnlistenFn } from "@tauri-apps/api/event";
+import {
+    TEXT_CHANGED,
+    IMAGE_CHANGED,
+    listenText,
+    listenImage,
+} from "tauri-plugin-clipboard-api";
+
 let listenTextContent = "";
 let listenImageContent = "";
 let textUnlisten: UnlistenFn;
