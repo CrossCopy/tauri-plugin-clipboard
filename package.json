@@ -9,8 +9,8 @@
   "types": "webview-dist/index.d.ts",
   "scripts": {
     "build": "rollup -c ./webview-src/rollup.config.js",
-    "prepublishOnly": "yarn build",
-    "pretest": "yarn build"
+    "prepublishOnly": "npm run build",
+    "pretest": "npm run build"
   },
   "repository": {
     "type": "git",
