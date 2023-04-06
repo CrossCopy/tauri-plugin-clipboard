@@ -32,20 +32,14 @@
       }
     },
     "allowlist": {
-      "all": true,
-      "fs": {
-        "all": true,
-        "scope": [
-          "$APPDATA/*",
-          "$APPLOCALDATA/*",
-          "$APPLOG/*",
-          "$APPCONFIG/*",
-          "$DESKTOP/*",
-          "$DOWNLOAD/*",
-          "$TEMP/*",
-          "$CONFIG/*",
-          "$CACHE/**"
-        ]
+      "all": false,
+      "dialog": {
+        "all": false,
+        "ask": false,
+        "confirm": false,
+        "message": true,
+        "open": false,
+        "save": false
       }
     },
     "windows": [

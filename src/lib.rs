@@ -6,23 +6,21 @@ use serde::Serialize;
 use std::borrow::Cow;
 use std::fs::File;
 use std::io::Read;
-use std::{collections::HashMap, sync::Mutex};
 use tauri;
 use tauri::{
     plugin::{Builder, TauriPlugin},
-    Manager, Runtime,
+    Runtime,
 };
 use tempfile;
 
-#[derive(Default)]
-struct MyState(Mutex<HashMap<String, String>>);
-
+/// read text from clipboard
 #[tauri::command]
 fn read_text() -> Result<String, String> {
     let mut clipboard = arboard::Clipboard::new().unwrap();
     clipboard.get_text().map_err(|err| err.to_string())
 }
 
+/// write text to clipboard
 #[tauri::command]
 fn write_text(text: String) -> Result<(), String> {
     let mut clipboard = Clipboard::new().unwrap();
@@ -36,6 +34,7 @@ struct MyImage {
     bytes: Cow<'static, [u8]>,
 }
 
+/// read image from clipboard and return a base64 string
 #[tauri::command]
 fn read_image() -> Result<String, String> {
     let mut clipboard = Clipboard::new().unwrap();
@@ -60,6 +59,8 @@ fn read_image() -> Result<String, String> {
     Ok(base64_str)
 }
 
+
+/// write base64 image to clipboard
 #[tauri::command]
 fn write_image(base64_image: String) -> Result<(), String> {
     let mut clipboard = Clipboard::new().unwrap();
@@ -94,9 +95,5 @@ pub fn init<R: Runtime>() -> TauriPlugin<R> {
             read_image,
             write_image
         ])
-        .setup(|app| {
-            app.manage(MyState::default());
-            Ok(())
-        })
         .build()
 }
