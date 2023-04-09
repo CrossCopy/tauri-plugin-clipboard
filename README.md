@@ -81,6 +81,30 @@ writeImage(sample_base64_image).then(() => {
 });
 ```
 
+### Sample Usage (Rust API)
+
+```rust
+use tauri::Manager;
+use tauri_plugin_clipboard::ManagerExt;
+
+fn main() {
+  tauri::Builder::default()
+    .plugin(tauri_plugin_clipboard::init())
+    .setup(|app| {
+        let app_handle = app.app_handle();
+        match app_handle.clipboard().read_text() {
+            Ok(result) => {
+                println!("content: {}", result);
+            },
+            Err(e) => print!("err is \"{}\"\n", e), // TODO: log
+        };
+        Ok(())
+    })
+    .build(tauri::generate_context!())
+    .expect("failed to run app");
+}
+```
+
 ### Sample Listener Usage
 
 We use Tauri's event system. Start a listener with Tauri's `listen()` function to start listening for event, and call `listenImage()` and `listenText()` to listen for clipboard update. When clipboard is updated, event will be emitted.
