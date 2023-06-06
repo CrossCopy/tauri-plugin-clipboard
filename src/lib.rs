@@ -49,6 +49,28 @@ impl ClipboardManager {
         Ok(base64_str)
     }
 
+    pub fn read_image_binary(&self) -> Result<Vec<u8>, String> {
+        let mut clipboard = Clipboard::new().unwrap();
+        let image = clipboard.get_image().map_err(|err| err.to_string())?;
+        let tmp_dir = tempfile::Builder::new()
+            .prefix("clipboard-img")
+            .tempdir()
+            .map_err(|err| err.to_string())?;
+        let fname = tmp_dir.path().join("clipboard-img.png");
+
+        let image2: RgbaImage = ImageBuffer::from_raw(
+            image.width.try_into().unwrap(),
+            image.height.try_into().unwrap(),
+            image.bytes.into_owned(),
+        )
+        .unwrap();
+        image2.save(fname.clone()).map_err(|err| err.to_string())?;
+        let mut file = File::open(fname.clone()).unwrap();
+        let mut buffer = vec![];
+        file.read_to_end(&mut buffer).unwrap();
+        Ok(buffer)
+    }
+
     pub fn write_image(&self, base64_image: String) -> Result<(), String> {
         let mut clipboard = Clipboard::new().unwrap();
         let decoded = general_purpose::STANDARD_NO_PAD
@@ -101,6 +123,11 @@ fn read_image(manager: State<'_, ClipboardManager>) -> Result<String, String> {
     manager.read_image()
 }
 
+#[tauri::command]
+fn read_image_binary(manager: State<'_, ClipboardManager>) -> Result<Vec<u8>, String> {
+    manager.read_image_binary()
+}
+
 
 /// write base64 image to clipboard
 #[tauri::command]
@@ -115,7 +142,8 @@ pub fn init<R: Runtime>() -> TauriPlugin<R> {
             read_text,
             write_text,
             read_image,
-            write_image
+            write_image,
+            read_image_binary
         ])
         .setup(|app| {
             app.manage(ClipboardManager::default());

@@ -20,6 +20,10 @@ export function readImage(): Promise<string> {
   return invoke("plugin:clipboard|read_image");
 }
 
+export function readImageBinary() {
+  return invoke("plugin:clipboard|read_image_binary");
+}
+
 /**
  * write image to clipboard
  * @param data image data in base64 encoded string
