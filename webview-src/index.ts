@@ -20,8 +20,29 @@ export function readImage(): Promise<string> {
   return invoke("plugin:clipboard|read_image");
 }
 
-export function readImageBinary() {
-  return invoke("plugin:clipboard|read_image_binary");
+export function readImageBinary(
+  format: "int_array" | "Uint8Array" | "Blob"
+): Promise<number[] | Uint8Array | Blob> {
+  return (
+    invoke("plugin:clipboard|read_image_binary") as Promise<number[]>
+  ).then((img_arr: number[]) => {
+    switch (format) {
+      case "int_array":
+        return img_arr;
+      case "Uint8Array":
+        return new Uint8Array(img_arr);
+      case "Blob":
+        return new Blob([new Uint8Array(img_arr)]);
+      default:
+        return img_arr;
+    }
+  });
+}
+
+export function readImageObjectURL(): Promise<string> {
+  return readImageBinary("Blob").then((blob) => {
+    return URL.createObjectURL(blob as Blob);
+  });
 }
 
 /**

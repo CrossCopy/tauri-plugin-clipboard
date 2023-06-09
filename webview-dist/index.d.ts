@@ -7,6 +7,8 @@ export declare function readText(): Promise<string>;
  * @returns image in base64 string
  */
 export declare function readImage(): Promise<string>;
+export declare function readImageBinary(format: "int_array" | "Uint8Array" | "Blob"): Promise<number[] | Uint8Array | Blob>;
+export declare function readImageObjectURL(): Promise<string>;
 /**
  * write image to clipboard
  * @param data image data in base64 encoded string

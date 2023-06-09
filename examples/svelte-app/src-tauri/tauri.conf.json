@@ -33,6 +33,9 @@
     },
     "allowlist": {
       "all": false,
+      "path": {
+        "all": true
+      },
       "dialog": {
         "all": false,
         "ask": false,
