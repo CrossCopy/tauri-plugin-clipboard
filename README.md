@@ -118,12 +118,14 @@ import {
     IMAGE_CHANGED,
     listenText,
     listenImage,
+    listenToClipboard,
 } from "tauri-plugin-clipboard-api";
 
 let listenTextContent = "";
 let listenImageContent = "";
 let tauriTextUnlisten: UnlistenFn;
 let tauriImageUnlisten: UnlistenFn;
+let listenToClipboardUnlisten: UnlistenFn;
 let textUnlisten: () => void;
 let imageUnlisten: () => void;
 
@@ -136,8 +138,14 @@ export async function startListening() {
         console.log(event);
         listenImageContent = (event.payload as any).value;
     });
+    // ==================== Choose from one of the two options below ====================
+    // listen separately with JavaScript by comparing previous value and current value
     imageUnlisten = listenImage();
     textUnlisten = listenText();
+    // or
+    // listen on both text and image using clipboard-master crate (recommended, should be more efficient)
+    listenToClipboardUnlisten = await listenToClipboard(); // start listener for both text and image
+    // ==================================================================================
 }
 
 function stopListening() {
@@ -145,6 +153,7 @@ function stopListening() {
     textUnlisten();
     tauriTextUnlisten();
     tauriImageUnlisten();
+    listenToClipboardUnlisten();
 }
 
 onMount(() => {

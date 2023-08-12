@@ -105,12 +105,6 @@
       console.log(event);
       listenImageContent = (event.payload as any).value;
     });
-    // startListenerUnlisten = await listen(
-    //   "plugin:clipboard://clipboard-monitor/update",
-    //   (event) => {
-    //     console.log(event);
-    //   }
-    // );
     // imageUnlisten = listenImage();
     // textUnlisten = listenText();
     listenToClipboardUnlisten = await listenToClipboard(); // start listener
