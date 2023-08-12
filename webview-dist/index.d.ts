@@ -1,3 +1,4 @@
+import { UnlistenFn } from "@tauri-apps/api/event";
 export declare const TEXT_CHANGED = "text_changed";
 export declare const IMAGE_CHANGED = "image_changed";
 export declare function writeText(text: string): Promise<void>;
@@ -17,4 +18,5 @@ export declare function readImageObjectURL(): Promise<string>;
 export declare function writeImage(data: string): Promise<void>;
 export declare function listenText(delay?: number): () => void;
 export declare function listenImage(delay?: number): () => void;
+export declare function listenToClipboard(): Promise<UnlistenFn>;
 export declare function startListener(): Promise<void>;

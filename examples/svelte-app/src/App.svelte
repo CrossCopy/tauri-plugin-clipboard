@@ -11,6 +11,7 @@
     IMAGE_CHANGED,
     listenImage,
     startListener,
+    listenToClipboard,
   } from "tauri-plugin-clipboard-api";
   import { writeBinaryFile, BaseDirectory } from "@tauri-apps/api/fs";
   import { emit, listen, type UnlistenFn } from "@tauri-apps/api/event";
@@ -91,6 +92,7 @@
   let tauriTextUnlisten: UnlistenFn;
   let tauriImageUnlisten: UnlistenFn;
   let startListenerUnlisten: UnlistenFn;
+  let listenToClipboardUnlisten: UnlistenFn;
   let textUnlisten: () => void;
   let imageUnlisten: () => void;
 
@@ -103,22 +105,24 @@
       console.log(event);
       listenImageContent = (event.payload as any).value;
     });
-    startListenerUnlisten = await listen(
-      "crosscopy://clipboard-monitor/update",
-      (event) => {
-        console.log(event);
-      }
-    );
+    // startListenerUnlisten = await listen(
+    //   "plugin:clipboard://clipboard-monitor/update",
+    //   (event) => {
+    //     console.log(event);
+    //   }
+    // );
     // imageUnlisten = listenImage();
-    textUnlisten = listenText();
+    // textUnlisten = listenText();
+    listenToClipboardUnlisten = await listenToClipboard(); // start listener
   }
 
   function stopListening() {
-    imageUnlisten();
-    textUnlisten();
+    // imageUnlisten();
+    // textUnlisten();
     tauriTextUnlisten();
     tauriImageUnlisten();
     startListenerUnlisten();
+    listenToClipboardUnlisten();
   }
 
   onMount(() => {

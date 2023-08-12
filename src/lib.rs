@@ -44,9 +44,9 @@ where
     R: Runtime,
 {
     fn on_clipboard_change(&mut self) -> CallbackResult {
-        println!("Clipboard change happened!");
+        // println!("Clipboard change happened!");
         let _ = self.app_handle.emit_all(
-            "crosscopy://clipboard-monitor/update",
+            "plugin:clipboard://clipboard-monitor/update",
             format!("clipboard update"),
         );
         CallbackResult::Next
@@ -55,7 +55,7 @@ where
     fn on_clipboard_error(&mut self, error: std::io::Error) -> CallbackResult {
         let _ = self
             .app_handle
-            .emit_all("crosscopy://clipboard-monitor/error", error.to_string());
+            .emit_all("plugin:clipboard://clipboard-monitor/error", error.to_string());
         eprintln!("Error: {}", error);
         CallbackResult::Next
     }
@@ -176,25 +176,25 @@ fn write_image(manager: State<'_, ClipboardManager>, base64_image: String) -> Re
     manager.write_image(base64_image)
 }
 
-#[tauri::command]
-async fn start_listener<R: Runtime>(
-    app: tauri::AppHandle<R>,
-    manager: State<'_, ClipboardManager>,
-) -> Result<(), String> {
-    let mut running = manager.running.lock().unwrap();
-    let running_shared = Arc::clone(&manager.running);
-    if *running {
-        eprintln!("Listener Already Running");
-        Err("Listener Already Running").map_err(|err| err.to_string())
-    } else {
-        *running = true;
-        tauri::async_runtime::spawn(async move {
-            eprintln!("Start Clipboard Listener");
-            let _ = Master::new(ClipboardMonitor::new(app.app_handle(), running_shared)).run();
-        });
-        Ok(())
-    }
-}
+// #[tauri::command]
+// async fn start_listener<R: Runtime>(
+//     app: tauri::AppHandle<R>,
+//     manager: State<'_, ClipboardManager>,
+// ) -> Result<(), String> {
+//     let mut running = manager.running.lock().unwrap();
+//     let running_shared = Arc::clone(&manager.running);
+//     if *running {
+//         eprintln!("Listener Already Running");
+//         Err("Listener Already Running").map_err(|err| err.to_string())
+//     } else {
+//         *running = true;
+//         tauri::async_runtime::spawn(async move {
+//             eprintln!("Start Clipboard Listener");
+//             let _ = Master::new(ClipboardMonitor::new(app.app_handle(), running_shared)).run();
+//         });
+//         Ok(())
+//     }
+// }
 
 /// Initializes the plugin.
 pub fn init<R: Runtime>() -> TauriPlugin<R> {
@@ -205,11 +205,16 @@ pub fn init<R: Runtime>() -> TauriPlugin<R> {
             read_image,
             write_image,
             read_image_binary,
-            start_listener
+            // start_listener
         ])
         .setup(|app| {
             app.manage(ClipboardManager::default());
-            
+            let app_handle = app.app_handle();
+            let running = Arc::new(Mutex::new(false));
+            tauri::async_runtime::spawn(async move {
+                // eprintln!("Start Clipboard Listener");
+                let _ = Master::new(ClipboardMonitor::new(app_handle, running)).run();
+            });
             Ok(())
         })
         .build()
