@@ -111,9 +111,3 @@ export function listenToClipboard(): Promise<UnlistenFn> {
     }
   });
 }
-
-export function startListener() {
-  return (invoke("plugin:clipboard|start_listener") as Promise<void>)
-    .then(console.log)
-    .catch(console.error);
-}
