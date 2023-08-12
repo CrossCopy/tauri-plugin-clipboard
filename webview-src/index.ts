@@ -91,3 +91,9 @@ export function listenImage(delay: number = 1000) {
     active = false;
   };
 }
+
+export function startListener() {
+  return (invoke("plugin:clipboard|start_listener") as Promise<void>)
+    .then(console.log)
+    .catch(console.error);
+}

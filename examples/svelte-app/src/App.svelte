@@ -10,6 +10,7 @@
     TEXT_CHANGED,
     IMAGE_CHANGED,
     listenImage,
+    startListener,
   } from "tauri-plugin-clipboard-api";
   import { writeBinaryFile, BaseDirectory } from "@tauri-apps/api/fs";
   import { emit, listen, type UnlistenFn } from "@tauri-apps/api/event";
@@ -89,6 +90,7 @@
   let listenImageContent = "";
   let tauriTextUnlisten: UnlistenFn;
   let tauriImageUnlisten: UnlistenFn;
+  let startListenerUnlisten: UnlistenFn;
   let textUnlisten: () => void;
   let imageUnlisten: () => void;
 
@@ -101,6 +103,12 @@
       console.log(event);
       listenImageContent = (event.payload as any).value;
     });
+    startListenerUnlisten = await listen(
+      "crosscopy://clipboard-monitor/update",
+      (event) => {
+        console.log(event);
+      }
+    );
     // imageUnlisten = listenImage();
     textUnlisten = listenText();
   }
@@ -110,6 +118,7 @@
     textUnlisten();
     tauriTextUnlisten();
     tauriImageUnlisten();
+    startListenerUnlisten();
   }
 
   onMount(() => {
@@ -130,6 +139,11 @@
   <button on:click={onDev}>Dev</button>
   <button on:click={onReadImageBinary}>Read Image (Binary)</button>
   <button on:click={onWriteImage}>Write Image</button>
+  <button
+    on:click={() => {
+      startListener().then(console.log).catch(console.error);
+    }}>Start Listener</button
+  >
 
   <br />
   {#if message.length > 0}

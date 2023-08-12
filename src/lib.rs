@@ -1,19 +1,71 @@
 use arboard::{Clipboard, ImageData};
 use base64::{engine::general_purpose, Engine as _};
+use clipboard_master::{CallbackResult, ClipboardHandler, Master};
 use image::GenericImageView;
 use image::{ImageBuffer, RgbaImage};
 use std::borrow::Cow;
 use std::fs::File;
 use std::io::Read;
-use std::{collections::HashMap, sync::Mutex};
-use tauri;
+use std::marker::PhantomData;
+use std::thread;
+use std::{
+    collections::HashMap,
+    sync::{Arc, Mutex},
+};
+use tauri::{self, AppHandle};
 use tauri::{
     plugin::{Builder, TauriPlugin},
-    Manager, Runtime, State
+    Manager, Runtime, State,
 };
 
+struct ClipboardMonitor<R>
+where
+    R: Runtime,
+{
+    // window: tauri::Window,
+    app_handle: tauri::AppHandle<R>,
+    running: Arc<Mutex<bool>>,
+}
+
+impl<R> ClipboardMonitor<R>
+where
+    R: Runtime,
+{
+    fn new(app_handle: tauri::AppHandle<R>, running: Arc<Mutex<bool>>) -> Self {
+        Self {
+            app_handle: app_handle,
+            running,
+        }
+    }
+}
+
+impl<R> ClipboardHandler for ClipboardMonitor<R>
+where
+    R: Runtime,
+{
+    fn on_clipboard_change(&mut self) -> CallbackResult {
+        println!("Clipboard change happened!");
+        let _ = self.app_handle.emit_all(
+            "crosscopy://clipboard-monitor/update",
+            format!("clipboard update"),
+        );
+        CallbackResult::Next
+    }
+
+    fn on_clipboard_error(&mut self, error: std::io::Error) -> CallbackResult {
+        let _ = self
+            .app_handle
+            .emit_all("crosscopy://clipboard-monitor/error", error.to_string());
+        eprintln!("Error: {}", error);
+        CallbackResult::Next
+    }
+}
+
 #[derive(Default)]
-pub struct ClipboardManager(Mutex<HashMap<String, String>>);
+pub struct ClipboardManager {
+    terminate_flag: Arc<Mutex<bool>>,
+    running: Arc<Mutex<bool>>,
+}
 
 impl ClipboardManager {
     pub fn read_text(&self) -> Result<String, String> {
@@ -96,16 +148,6 @@ impl ClipboardManager {
     }
 }
 
-pub trait ManagerExt<R: Runtime> {
-  fn clipboard(&self) -> State<'_, ClipboardManager>;
-}
-
-impl<R: Runtime, T: Manager<R>> ManagerExt<R> for T {
-  fn clipboard(&self) -> State<'_, ClipboardManager> {
-    self.state::<ClipboardManager>()
-  }
-}
-
 /// write text to clipboard
 #[tauri::command]
 fn read_text(manager: State<'_, ClipboardManager>) -> Result<String, String> {
@@ -128,11 +170,30 @@ fn read_image_binary(manager: State<'_, ClipboardManager>) -> Result<Vec<u8>, St
     manager.read_image_binary()
 }
 
-
 /// write base64 image to clipboard
 #[tauri::command]
 fn write_image(manager: State<'_, ClipboardManager>, base64_image: String) -> Result<(), String> {
     manager.write_image(base64_image)
+}
+
+#[tauri::command]
+async fn start_listener<R: Runtime>(
+    app: tauri::AppHandle<R>,
+    manager: State<'_, ClipboardManager>,
+) -> Result<(), String> {
+    let mut running = manager.running.lock().unwrap();
+    let running_shared = Arc::clone(&manager.running);
+    if *running {
+        eprintln!("Listener Already Running");
+        Err("Listener Already Running").map_err(|err| err.to_string())
+    } else {
+        *running = true;
+        tauri::async_runtime::spawn(async move {
+            eprintln!("Start Clipboard Listener");
+            let _ = Master::new(ClipboardMonitor::new(app.app_handle(), running_shared)).run();
+        });
+        Ok(())
+    }
 }
 
 /// Initializes the plugin.
@@ -143,10 +204,12 @@ pub fn init<R: Runtime>() -> TauriPlugin<R> {
             write_text,
             read_image,
             write_image,
-            read_image_binary
+            read_image_binary,
+            start_listener
         ])
         .setup(|app| {
             app.manage(ClipboardManager::default());
+            
             Ok(())
         })
         .build()
