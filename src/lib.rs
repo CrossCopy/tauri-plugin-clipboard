@@ -6,13 +6,8 @@ use image::{ImageBuffer, RgbaImage};
 use std::borrow::Cow;
 use std::fs::File;
 use std::io::Read;
-use std::marker::PhantomData;
-use std::thread;
-use std::{
-    collections::HashMap,
-    sync::{Arc, Mutex},
-};
-use tauri::{self, AppHandle};
+use std::sync::{Arc, Mutex};
+use tauri::{self};
 use tauri::{
     plugin::{Builder, TauriPlugin},
     Manager, Runtime, State,
@@ -53,9 +48,10 @@ where
     }
 
     fn on_clipboard_error(&mut self, error: std::io::Error) -> CallbackResult {
-        let _ = self
-            .app_handle
-            .emit_all("plugin:clipboard://clipboard-monitor/error", error.to_string());
+        let _ = self.app_handle.emit_all(
+            "plugin:clipboard://clipboard-monitor/error",
+            error.to_string(),
+        );
         eprintln!("Error: {}", error);
         CallbackResult::Next
     }

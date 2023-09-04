@@ -19,4 +19,3 @@ export declare function writeImage(data: string): Promise<void>;
 export declare function listenText(delay?: number): () => void;
 export declare function listenImage(delay?: number): () => void;
 export declare function listenToClipboard(): Promise<UnlistenFn>;
-export declare function startListener(): Promise<void>;
