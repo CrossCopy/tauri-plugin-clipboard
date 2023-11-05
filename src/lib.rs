@@ -3,9 +3,11 @@ use base64::{engine::general_purpose, Engine as _};
 use clipboard_master::{CallbackResult, ClipboardHandler, Master};
 use image::GenericImageView;
 use image::{ImageBuffer, RgbaImage};
-use std::borrow::Cow;
+use std::borrow::{BorrowMut, Cow};
+use std::cell::RefCell;
 use std::fs::File;
 use std::io::Read;
+use std::ops::Deref;
 use std::sync::{Arc, Mutex};
 use tauri::{self};
 use tauri::{
@@ -57,26 +59,44 @@ where
     }
 }
 
-#[derive(Default)]
 pub struct ClipboardManager {
     terminate_flag: Arc<Mutex<bool>>,
     running: Arc<Mutex<bool>>,
+    clipboard: Arc<Mutex<Clipboard>>,
 }
 
 impl ClipboardManager {
+    pub fn default() -> Self {
+        return ClipboardManager {
+            terminate_flag: Arc::from(Mutex::default()),
+            running: Arc::from(Mutex::default()),
+            clipboard: Arc::from(Mutex::from(Clipboard::new().unwrap())),
+        };
+    }
+
     pub fn read_text(&self) -> Result<String, String> {
-        let mut clipboard = Clipboard::new().unwrap();
-        clipboard.get_text().map_err(|err| err.to_string())
+        self.clipboard
+            .lock()
+            .unwrap()
+            .get_text()
+            .map_err(|err| err.to_string())
     }
 
     pub fn write_text(&self, text: String) -> Result<(), String> {
-        let mut clipboard = Clipboard::new().unwrap();
-        clipboard.set_text(text).map_err(|err| err.to_string())
+        self.clipboard
+            .lock()
+            .unwrap()
+            .set_text(text)
+            .map_err(|err| err.to_string())
     }
 
     pub fn read_image(&self) -> Result<String, String> {
-        let mut clipboard = Clipboard::new().unwrap();
-        let image = clipboard.get_image().map_err(|err| err.to_string())?;
+        let image = self
+            .clipboard
+            .lock()
+            .unwrap()
+            .get_image()
+            .map_err(|err| err.to_string())?;
         let tmp_dir = tempfile::Builder::new()
             .prefix("clipboard-img")
             .tempdir()
@@ -98,8 +118,12 @@ impl ClipboardManager {
     }
 
     pub fn read_image_binary(&self) -> Result<Vec<u8>, String> {
-        let mut clipboard = Clipboard::new().unwrap();
-        let image = clipboard.get_image().map_err(|err| err.to_string())?;
+        let image = self
+            .clipboard
+            .lock()
+            .unwrap()
+            .get_image()
+            .map_err(|err| err.to_string())?;
         let tmp_dir = tempfile::Builder::new()
             .prefix("clipboard-img")
             .tempdir()
@@ -120,7 +144,6 @@ impl ClipboardManager {
     }
 
     pub fn write_image(&self, base64_image: String) -> Result<(), String> {
-        let mut clipboard = Clipboard::new().unwrap();
         let decoded = general_purpose::STANDARD_NO_PAD
             .decode(base64_image)
             .map_err(|err| err.to_string())?;
@@ -137,7 +160,9 @@ impl ClipboardManager {
             width: img.width() as usize,
             bytes: Cow::Owned(pixels),
         };
-        clipboard
+        self.clipboard
+            .lock()
+            .unwrap()
             .set_image(img_data)
             .map_err(|err| err.to_string())?;
         Ok(())
