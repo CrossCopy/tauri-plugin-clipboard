@@ -2,7 +2,7 @@
 name = "tauri-plugin-clipboard"
 description = "A clipboard plugin for Tauri that supports both text and image"
 license = "MIT"
-version = "0.3.1"
+version = "0.3.2"
 authors = [ "Huakun" ]
 edition = "2021"
 rust-version = "1.59"
@@ -10,11 +10,11 @@ exclude = ["/examples", "/webview-dist", "/webview-src", "node_modules"]
 repository = "https://github.com/CrossCopy/tauri-plugin-clipboard"
 
 [dependencies]
-tauri = { version = "1.2.2" }
+tauri = { version = "1.5.2" }
 serde = "1.0"
 thiserror = "1.0"
-arboard = "3.2.1"
-image = "0.24.7"
-tempfile = "3"
-base64 = "0.21.0"
 clipboard-master = "3.1.3"
+base64 = "0.21.5"
+tempfile = "3.8.1"
+image = "0.24.7"
+arboard = "3.2.1"

@@ -18,7 +18,7 @@ Crate: https://crates.io/crates/tauri-plugin-clipboard
 Or add the following to your `Cargo.toml` for the latest unpublished version (not recommanded).
 
 ```toml
-tauri-plugin-clipboard = { git = "https://github.com/CrossCopy/tauri-plugin-clipboard", tag = "v0.3.1" }
+tauri-plugin-clipboard = { git = "https://github.com/CrossCopy/tauri-plugin-clipboard", tag = "v0.3.2" }
 ```
 
 Run the following to install JavaScript/TypeScript API package.
