@@ -10,7 +10,7 @@
     TEXT_CHANGED,
     IMAGE_CHANGED,
     listenImage,
-    startListener,
+    // startListener,
     listenToClipboard,
   } from "tauri-plugin-clipboard-api";
   import { writeBinaryFile, BaseDirectory } from "@tauri-apps/api/fs";
@@ -60,6 +60,8 @@
 
   function onReadImageBinary() {
     readImageObjectURL().then((object_url) => {
+      console.log(object_url);
+      
       imageUrl = object_url;
     });
     // readImageBinary()
@@ -134,14 +136,14 @@
   <button on:click={onReadText}>Read Text</button>
   <button on:click={onWriteText}>Write Text</button>
   <button on:click={onReadImage}>Read Image (Base64)</button>
-  <button on:click={onDev}>Dev</button>
+  <!-- <button on:click={onDev}>Dev</button> -->
   <button on:click={onReadImageBinary}>Read Image (Binary)</button>
   <button on:click={onWriteImage}>Write Image</button>
-  <button
+  <!-- <button
     on:click={() => {
       startListener().then(console.log).catch(console.error);
     }}>Start Listener</button
-  >
+  > -->
 
   <br />
   {#if message.length > 0}
