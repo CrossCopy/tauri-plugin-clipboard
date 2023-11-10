@@ -1,11 +1,8 @@
 # Tauri Plugin clipboard
 
-> A Tauri plugin for clipboard IO. Support both text and image.
+> A Tauri plugin for clipboard read/write/monitor. Support both text and image.
 >
 > The reason I built this plugin is becasue official Tauri API only supports clipboard with text, not image. So you can still use the official API for text.
-
-
-> One thing about clipboard image io is that the input and output is always base64 png string.
 
 ## Installation
 
@@ -18,8 +15,16 @@ Crate: https://crates.io/crates/tauri-plugin-clipboard
 Or add the following to your `Cargo.toml` for the latest unpublished version (not recommanded).
 
 ```toml
-tauri-plugin-clipboard = { git = "https://github.com/CrossCopy/tauri-plugin-clipboard", tag = "v0.3.2" }
+tauri-plugin-clipboard = { git = "https://github.com/CrossCopy/tauri-plugin-clipboard" }
 ```
+
+You can also add a tag to github url.
+
+```toml
+tauri-plugin-clipboard = { git = "https://github.com/CrossCopy/tauri-plugin-clipboard", tag = "v0.4.0" }
+```
+
+NPM Package: https://www.npmjs.com/package/tauri-plugin-clipboard-api
 
 Run the following to install JavaScript/TypeScript API package.
 

@@ -4,7 +4,6 @@ use base64::{engine::general_purpose, Engine as _};
 use clipboard_master::{CallbackResult, ClipboardHandler, Master};
 use image::GenericImageView;
 use image::{ImageBuffer, RgbaImage};
-use std::borrow::Cow;
 use std::fs::File;
 use std::io::Read;
 use std::sync::{Arc, Mutex};
@@ -14,9 +13,6 @@ use tauri::{
   plugin::{Builder, TauriPlugin},
   Manager, Runtime, State,
 };
-use std::fs::File;
-use std::io::Read;
-use std::sync::{Arc, Mutex};
 use std::borrow::Cow;
 
 // type Result<T> = std::result::Result<T, Error>;
