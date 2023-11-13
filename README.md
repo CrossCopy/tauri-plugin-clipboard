@@ -46,6 +46,8 @@ Read more in the [official doc](https://tauri.app/v1/guides/features/plugin/#usi
 
 ## Example
 
+![](./README.assets/tauri-plugin-clipboard-dmeo.png)
+
 ```bash
 npm run build
 cd examples/svelte-app
@@ -57,32 +59,31 @@ See [App.svelte](examples/svelte-app/src/App.svelte) for an example of how to us
 
 It works the same with other frontend frameworks like Vue, React, etc.
 
-
 ## Sample Usage (TypeScript API)
 
 ```ts
 import {
-    writeText,
-    readText,
-    readImage,
-    writeImage,
+  writeText,
+  readText,
+  readImage,
+  writeImage,
 } from "tauri-plugin-clipboard-api";
 readText().then((text) => {
-    // TODO
+  // TODO
 });
 
 writeText("huakun zui shuai").then(() => {});
 
 readImage()
-.then((base64Img) => {
-    imageStr = `data:image/png;base64, ${base64Img}`
-})
-.catch((err) => {
+  .then((base64Img) => {
+    imageStr = `data:image/png;base64, ${base64Img}`;
+  })
+  .catch((err) => {
     alert(err);
-});
+  });
 
 writeImage(sample_base64_image).then(() => {
-    // TODO
+  // TODO
 });
 ```
 
@@ -119,11 +120,11 @@ The following example is in svelte.
 ```ts
 import { emit, listen, type UnlistenFn } from "@tauri-apps/api/event";
 import {
-    TEXT_CHANGED,
-    IMAGE_CHANGED,
-    listenText,
-    listenImage,
-    listenToClipboard,
+  TEXT_CHANGED,
+  IMAGE_CHANGED,
+  listenText,
+  listenImage,
+  listenToClipboard,
 } from "tauri-plugin-clipboard-api";
 
 let listenTextContent = "";
@@ -135,45 +136,53 @@ let textUnlisten: () => void;
 let imageUnlisten: () => void;
 
 export async function startListening() {
-    tauriTextUnlisten = await listen(TEXT_CHANGED, (event) => {
-        console.log(event);
-        listenTextContent = (event.payload as any).value;
-    });
-    tauriImageUnlisten = await listen(IMAGE_CHANGED, (event) => {
-        console.log(event);
-        listenImageContent = (event.payload as any).value;
-    });
-    // ==================== Choose from one of the two options below ====================
-    // listen separately with JavaScript by comparing previous value and current value
-    imageUnlisten = listenImage();
-    textUnlisten = listenText();
-    // or
-    // listen on both text and image using clipboard-master crate (recommended, should be more efficient)
-    listenToClipboardUnlisten = await listenToClipboard(); // start listener for both text and image
-    // ==================================================================================
+  tauriTextUnlisten = await listen(TEXT_CHANGED, (event) => {
+    console.log(event);
+    listenTextContent = (event.payload as any).value;
+  });
+  tauriImageUnlisten = await listen(IMAGE_CHANGED, (event) => {
+    console.log(event);
+    listenImageContent = (event.payload as any).value;
+  });
+  // ==================== Choose from one of the two options below ====================
+  // listen separately with JavaScript by comparing previous value and current value
+  imageUnlisten = listenImage();
+  textUnlisten = listenText();
+  // or
+  // listen on both text and image using clipboard-master crate (recommended, should be more efficient)
+  listenToClipboardUnlisten = await listenToClipboard(); // start listener for both text and image
+  // ==================================================================================
 }
 
 function stopListening() {
-    imageUnlisten();
-    textUnlisten();
-    tauriTextUnlisten();
-    tauriImageUnlisten();
-    listenToClipboardUnlisten();
+  imageUnlisten();
+  textUnlisten();
+  tauriTextUnlisten();
+  tauriImageUnlisten();
+  listenToClipboardUnlisten();
 }
 
 onMount(() => {
-    startListening();
+  startListening();
 });
 
 onDestroy(() => {
-    stopListening();
+  stopListening();
 });
 ```
 
-The base64 image string can be converted to `Uint8Array` and written to file system using tauri's fs API. 
+The base64 image string can be converted to `Uint8Array` and written to file system using tauri's fs API.
 
 ```ts
 import { writeBinaryFile, BaseDirectory } from "@tauri-apps/api/fs";
 
-writeBinaryFile('tmp/avatar.png', new Uint8Array(atob(base64Img).split('').map(char => char.charCodeAt(0))), { dir: BaseDirectory.Cache })
+writeBinaryFile(
+  "tmp/avatar.png",
+  new Uint8Array(
+    atob(base64Img)
+      .split("")
+      .map((char) => char.charCodeAt(0))
+  ),
+  { dir: BaseDirectory.Cache }
+);
 ```
