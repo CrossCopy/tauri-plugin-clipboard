@@ -1,29 +1,21 @@
-
 use arboard::{Clipboard, ImageData};
 use base64::{engine::general_purpose, Engine as _};
 use clipboard_master::{CallbackResult, ClipboardHandler, Master};
 use image::GenericImageView;
-use image::{ImageBuffer, RgbaImage};
-use std::fs::File;
-use std::io::Read;
-use std::sync::{Arc, Mutex};
-use tauri::{self};
-use tauri::{
-  command,
-  plugin::{Builder, TauriPlugin},
-  Manager, Runtime, State,
-};
 use std::borrow::Cow;
-
+use std::sync::Mutex;
+use tauri::{
+    plugin::{Builder, TauriPlugin},
+    Manager, Runtime, State,
+};
+mod util;
 // type Result<T> = std::result::Result<T, Error>;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
-  #[error(transparent)]
-  Io(#[from] std::io::Error),
+    #[error(transparent)]
+    Io(#[from] std::io::Error),
 }
-
-
 
 struct ClipboardMonitor<R>
 where
@@ -31,14 +23,14 @@ where
 {
     // window: tauri::Window,
     app_handle: tauri::AppHandle<R>,
-    running: Arc<Mutex<bool>>,
+    running: Mutex<bool>,
 }
 
 impl<R> ClipboardMonitor<R>
 where
     R: Runtime,
 {
-    fn new(app_handle: tauri::AppHandle<R>, running: Arc<Mutex<bool>>) -> Self {
+    fn new(app_handle: tauri::AppHandle<R>, running: Mutex<bool>) -> Self {
         Self {
             app_handle: app_handle,
             running,
@@ -70,24 +62,24 @@ where
 }
 
 pub struct ClipboardManager {
-    terminate_flag: Arc<Mutex<bool>>,
-    running: Arc<Mutex<bool>>,
-    clipboard: Arc<Mutex<Clipboard>>,
+    terminate_flag: Mutex<bool>,
+    running: Mutex<bool>,
+    clipboard: Mutex<Clipboard>,
 }
 
 impl ClipboardManager {
     pub fn default() -> Self {
         return ClipboardManager {
-            terminate_flag: Arc::from(Mutex::default()),
-            running: Arc::from(Mutex::default()),
-            clipboard: Arc::from(Mutex::from(Clipboard::new().unwrap())),
+            terminate_flag: Mutex::default(),
+            running: Mutex::default(),
+            clipboard: Mutex::from(Clipboard::new().unwrap()),
         };
     }
 
     pub fn read_text(&self) -> Result<String, String> {
         self.clipboard
             .lock()
-            .unwrap()
+            .map_err(|err| err.to_string())?
             .get_text()
             .map_err(|err| err.to_string())
     }
@@ -95,35 +87,19 @@ impl ClipboardManager {
     pub fn write_text(&self, text: String) -> Result<(), String> {
         self.clipboard
             .lock()
-            .unwrap()
+            .map_err(|err| err.to_string())?
             .set_text(text)
             .map_err(|err| err.to_string())
     }
 
     pub fn read_image(&self) -> Result<String, String> {
-        let image = self
+        let img = self
             .clipboard
             .lock()
-            .unwrap()
+            .map_err(|err| err.to_string())?
             .get_image()
             .map_err(|err| err.to_string())?;
-        let tmp_dir = tempfile::Builder::new()
-            .prefix("clipboard-img")
-            .tempdir()
-            .map_err(|err| err.to_string())?;
-        let fname = tmp_dir.path().join("clipboard-img.png");
-
-        let image2: RgbaImage = ImageBuffer::from_raw(
-            image.width.try_into().unwrap(),
-            image.height.try_into().unwrap(),
-            image.bytes.into_owned(),
-        )
-        .unwrap();
-        image2.save(fname.clone()).map_err(|err| err.to_string())?;
-        let mut file = File::open(fname.clone()).unwrap();
-        let mut buffer = vec![];
-        file.read_to_end(&mut buffer).unwrap();
-        let base64_str = general_purpose::STANDARD_NO_PAD.encode(buffer);
+        let base64_str = util::image_data_to_base64(&img);
         Ok(base64_str)
     }
 
@@ -131,26 +107,11 @@ impl ClipboardManager {
         let image = self
             .clipboard
             .lock()
-            .unwrap()
+            .map_err(|err| err.to_string())?
             .get_image()
             .map_err(|err| err.to_string())?;
-        let tmp_dir = tempfile::Builder::new()
-            .prefix("clipboard-img")
-            .tempdir()
-            .map_err(|err| err.to_string())?;
-        let fname = tmp_dir.path().join("clipboard-img.png");
-
-        let image2: RgbaImage = ImageBuffer::from_raw(
-            image.width.try_into().unwrap(),
-            image.height.try_into().unwrap(),
-            image.bytes.into_owned(),
-        )
-        .unwrap();
-        image2.save(fname.clone()).map_err(|err| err.to_string())?;
-        let mut file = File::open(fname.clone()).unwrap();
-        let mut buffer = vec![];
-        file.read_to_end(&mut buffer).unwrap();
-        Ok(buffer)
+        let bytes = util::image_data_to_bytes(&image);
+        Ok(bytes)
     }
 
     pub fn write_image(&self, base64_image: String) -> Result<(), String> {
@@ -172,7 +133,7 @@ impl ClipboardManager {
         };
         self.clipboard
             .lock()
-            .unwrap()
+            .map_err(|err| err.to_string())?
             .set_image(img_data)
             .map_err(|err| err.to_string())?;
         Ok(())
@@ -209,23 +170,22 @@ fn write_image(manager: State<'_, ClipboardManager>, base64_image: String) -> Re
 
 /// Initializes the plugin.
 pub fn init<R: Runtime>() -> TauriPlugin<R> {
-  Builder::new("clipboard")
-    .invoke_handler(tauri::generate_handler![
-      read_text,
-      write_text,
-      read_image,
-      write_image,
-      read_image_binary,
-    ])
-    .setup(|app| {
-      app.manage(ClipboardManager::default());
-      let app_handle = app.app_handle();
-      let running = Arc::new(Mutex::new(false));
-      tauri::async_runtime::spawn(async move {
-          // eprintln!("Start Clipboard Listener");
-          let _ = Master::new(ClipboardMonitor::new(app_handle, running)).run();
-      });
-      Ok(())
-    })
-    .build()
+    Builder::new("clipboard")
+        .invoke_handler(tauri::generate_handler![
+            read_text,
+            write_text,
+            read_image,
+            write_image,
+            read_image_binary,
+        ])
+        .setup(|app| {
+            app.manage(ClipboardManager::default());
+            let app_handle = app.app_handle();
+            let running = Mutex::new(true);
+            tauri::async_runtime::spawn(async move {
+                let _ = Master::new(ClipboardMonitor::new(app_handle, running)).run();
+            });
+            Ok(())
+        })
+        .build()
 }
