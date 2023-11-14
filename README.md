@@ -21,7 +21,7 @@ tauri-plugin-clipboard = { git = "https://github.com/CrossCopy/tauri-plugin-clip
 You can also add a tag to github url.
 
 ```toml
-tauri-plugin-clipboard = { git = "https://github.com/CrossCopy/tauri-plugin-clipboard", tag = "v0.4.0" }
+tauri-plugin-clipboard = { git = "https://github.com/CrossCopy/tauri-plugin-clipboard", tag = "v0.4.1" }
 ```
 
 NPM Package: https://www.npmjs.com/package/tauri-plugin-clipboard-api
