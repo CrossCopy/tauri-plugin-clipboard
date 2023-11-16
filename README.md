@@ -1,8 +1,8 @@
 # Tauri Plugin clipboard
 
-> A Tauri plugin for clipboard read/write/monitor. Support both text and image.
+> A Tauri plugin for clipboard read/write/monitor. Support text, files and image.
 >
-> The reason I built this plugin is becasue official Tauri API only supports clipboard with text, not image. So you can still use the official API for text.
+> The reason I built this plugin is becasue official Tauri API only supports clipboard with text, not image or files. So you can still use the official API for text.
 
 ## Installation
 
@@ -21,7 +21,7 @@ tauri-plugin-clipboard = { git = "https://github.com/CrossCopy/tauri-plugin-clip
 You can also add a tag to github url.
 
 ```toml
-tauri-plugin-clipboard = { git = "https://github.com/CrossCopy/tauri-plugin-clipboard", tag = "v0.4.1" }
+tauri-plugin-clipboard = { git = "https://github.com/CrossCopy/tauri-plugin-clipboard", tag = "v0.5.0" }
 ```
 
 NPM Package: https://www.npmjs.com/package/tauri-plugin-clipboard-api
@@ -46,11 +46,16 @@ Read more in the [official doc](https://tauri.app/v1/guides/features/plugin/#usi
 
 ## Example
 
+> The best way to learn this plugin is to read the source code of the example.
+>
+> The example is very detailed.
+
 ![](./README.assets/tauri-plugin-clipboard-dmeo.png)
 
 ```bash
 npm run build
-cd examples/svelte-app
+cd examples/demo
+npm i
 npm run tauri dev
 # there are a few buttons you can click to test the clipboard plugin
 ```
@@ -68,11 +73,9 @@ import {
   readImage,
   writeImage,
 } from "tauri-plugin-clipboard-api";
-readText().then((text) => {
-  // TODO
-});
 
-writeText("huakun zui shuai").then(() => {});
+await readText();
+await writeText("huakun zui shuai");
 
 readImage()
   .then((base64Img) => {
@@ -82,9 +85,7 @@ readImage()
     alert(err);
   });
 
-writeImage(sample_base64_image).then(() => {
-  // TODO
-});
+await writeImage(sample_base64_image);
 ```
 
 ### Sample Usage (Rust API)
@@ -118,58 +119,79 @@ We use Tauri's event system. Start a listener with Tauri's `listen()` function t
 The following example is in svelte.
 
 ```ts
-import { emit, listen, type UnlistenFn } from "@tauri-apps/api/event";
+import type { UnlistenFn } from "@tauri-apps/api/event";
+import { onDestroy, onMount } from "svelte";
 import {
-  TEXT_CHANGED,
-  IMAGE_CHANGED,
-  listenText,
-  listenImage,
-  listenToClipboard,
+  onClipboardUpdate,
+  onImageUpdate,
+  onTextUpdate,
+  onFilesUpdate,
+  startListening,
 } from "tauri-plugin-clipboard-api";
 
-let listenTextContent = "";
-let listenImageContent = "";
-let tauriTextUnlisten: UnlistenFn;
-let tauriImageUnlisten: UnlistenFn;
-let listenToClipboardUnlisten: UnlistenFn;
-let textUnlisten: () => void;
-let imageUnlisten: () => void;
-
-export async function startListening() {
-  tauriTextUnlisten = await listen(TEXT_CHANGED, (event) => {
-    console.log(event);
-    listenTextContent = (event.payload as any).value;
+let text = "";
+let files: string[] = [];
+let base64Image = "";
+let unlistenTextUpdate: UnlistenFn;
+let unlistenImageUpdate: UnlistenFn;
+let unlistenClipboard: UnlistenFn;
+let unlistenFiles: UnlistenFn;
+onMount(async () => {
+  unlistenTextUpdate = await onTextUpdate((newText) => {
+    text = newText;
   });
-  tauriImageUnlisten = await listen(IMAGE_CHANGED, (event) => {
-    console.log(event);
-    listenImageContent = (event.payload as any).value;
+  unlistenImageUpdate = await onImageUpdate((b64Str) => {
+    base64Image = b64Str;
   });
-  // ==================== Choose from one of the two options below ====================
-  // listen separately with JavaScript by comparing previous value and current value
-  imageUnlisten = listenImage();
-  textUnlisten = listenText();
-  // or
-  // listen on both text and image using clipboard-master crate (recommended, should be more efficient)
-  listenToClipboardUnlisten = await listenToClipboard(); // start listener for both text and image
-  // ==================================================================================
-}
-
-function stopListening() {
-  imageUnlisten();
-  textUnlisten();
-  tauriTextUnlisten();
-  tauriImageUnlisten();
-  listenToClipboardUnlisten();
-}
-
-onMount(() => {
-  startListening();
+  unlistenFiles = await onFilesUpdate((newFiles) => {
+    files = newFiles;
+  });
+  unlistenClipboard = await startListening();
+  onClipboardUpdate(() => {
+    console.log("plugin:clipboard://clipboard-monitor/update event received");
+  });
 });
 
 onDestroy(() => {
-  stopListening();
+  unlistenTextUpdate();
+  unlistenClipboard();
 });
 ```
+
+## Notes
+
+> You don't really need to read this section if you are just using the plugin.
+
+The logic of tauri's listen API is encapsulated in `onTextUpdate`, `onFilesUpdate`, `startListening`.
+
+You can also listen to the events directly using Tauri's `listen()` function.
+
+```ts
+import {
+  TEXT_CHANGED,
+  FILES_CHANGED,
+  IMAGE_CHANGED,
+} from "tauri-plugin-clipboard-api";
+
+await listen(TEXT_CHANGED, (event) => {
+  const text = event.payload.value;
+});
+```
+
+The listener `startListening` function contains two parts:
+
+1. Start monitor thread in Tauri core (rust). (Invoke `start_monitor` command)
+2. Run `listenToClipboard` function.
+   1. The rust code only emit event (`plugin:clipboard://clipboard-monitor/update`) when clipboard is updated without the clipboard content because we don't always need the content.
+   2. In order to distinguish content type, `listenToClipboard` detects the data type and emit new events.`onTextUpdate`, `onFilesUpdate`, `startListening` listen to these events.
+      1. `plugin:clipboard://text-changed`
+      2. `plugin:clipboard://files-changed`
+      3. `plugin:clipboard://image-changed`
+
+The returned unlisten function from `startListening` also does two things:
+
+1. Stop monitor thread by invoking `start_monitor` command.
+2. Stop listener started in `listenToClipboard`.
 
 The base64 image string can be converted to `Uint8Array` and written to file system using tauri's fs API.
 

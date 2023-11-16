@@ -2,7 +2,7 @@
 name = "tauri-plugin-clipboard"
 description = "A clipboard plugin for Tauri that supports both text and image"
 license = "MIT"
-version = "0.4.1"
+version = "0.5.0"
 authors = [ "Huakun" ]
 edition = "2021"
 rust-version = "1.59"
@@ -18,3 +18,4 @@ base64 = "0.21.5"
 tempfile = "3.8.1"
 image = "0.24.7"
 arboard = "3.2.1"
+clipboard-files = "0.1.1"
