@@ -5,11 +5,13 @@ import { emit, listen, UnlistenFn } from "@tauri-apps/api/event";
 export const START_MONITOR_COMMAND = "plugin:clipboard|start_monitor";
 export const STOP_MONITOR_COMMAND = "plugin:clipboard|stop_monitor";
 export const TEXT_CHANGED = "plugin:clipboard://text-changed";
+export const FILES_CHANGED = "plugin:clipboard://files-changed";
 export const IMAGE_CHANGED = "plugin:clipboard://image-changed";
 export const IS_MONITOR_RUNNING_COMMAND = "plugin:clipboard|is_monitor_running";
 export const READ_IMAGE_BINARY_COMMAND = "plugin:clipboard|read_image_binary";
 export const WRITE_TEXT_COMMAND = "plugin:clipboard|write_text";
 export const READ_TEXT_COMMAND = "plugin:clipboard|read_text";
+export const READ_FILES_COMMAND = "plugin:clipboard|read_files";
 export const READ_IMAGE_COMMAND = "plugin:clipboard|read_image";
 export const WRITE_IMAGE_COMMAND = "plugin:clipboard|write_image";
 export const CLIPBOARD_MONITOR_STATUS_UPDATE_EVENT =
@@ -17,6 +19,9 @@ export const CLIPBOARD_MONITOR_STATUS_UPDATE_EVENT =
 export const MONITOR_UPDATE_EVENT =
   "plugin:clipboard://clipboard-monitor/update";
 export const ClipboardChangedPayloadSchema = z.object({ value: z.string() });
+export const ClipboardChangedFilesPayloadSchema = z.object({
+  value: z.string().array(),
+});
 export type ClipboardChangedPayload = z.infer<
   typeof ClipboardChangedPayloadSchema
 >;
@@ -27,6 +32,10 @@ export function writeText(text: string): Promise<void> {
 
 export function readText(): Promise<string> {
   return invoke(READ_TEXT_COMMAND);
+}
+
+export function readFiles(): Promise<string[]> {
+  return invoke(READ_FILES_COMMAND);
 }
 
 /**
@@ -141,16 +150,21 @@ export function listenToClipboard(): Promise<UnlistenFn> {
   return listen(MONITOR_UPDATE_EVENT, async (e) => {
     if (e.payload === "clipboard update") {
       try {
-        const text = await readText();
-        if (text) {
-          await emit(TEXT_CHANGED, { value: text });
-        }
+        const files = await readFiles();
+        await emit(FILES_CHANGED, { value: files });
       } catch (error) {
         try {
-          const img = await readImage();
-          if (img) await emit(IMAGE_CHANGED, { value: img });
+          const text = await readText();
+          if (text) {
+            await emit(TEXT_CHANGED, { value: text });
+          }
         } catch (error) {
-          console.error(error);
+          try {
+            const img = await readImage();
+            if (img) await emit(IMAGE_CHANGED, { value: img });
+          } catch (error) {
+            console.error(error);
+          }
         }
       }
     }
@@ -174,6 +188,15 @@ export async function onTextUpdate(
   return await listen(TEXT_CHANGED, (event) => {
     const text = ClipboardChangedPayloadSchema.parse(event.payload).value;
     cb(text);
+  });
+}
+
+export async function onFilesUpdate(
+  cb: (files: string[]) => void
+): Promise<UnlistenFn> {
+  return await listen(FILES_CHANGED, (event) => {
+    const files = ClipboardChangedFilesPayloadSchema.parse(event.payload).value;
+    cb(files);
   });
 }
 

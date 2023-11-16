@@ -1,7 +1,9 @@
 use arboard::{Clipboard, ImageData};
 use base64::{engine::general_purpose, Engine as _};
+use clipboard_files;
 use clipboard_master::{CallbackResult, ClipboardHandler, Master};
 use image::GenericImageView;
+use std::path::PathBuf;
 use std::sync::Mutex;
 use std::{borrow::Cow, sync::Arc};
 use tauri::{
@@ -103,6 +105,23 @@ impl ClipboardManager {
             .map_err(|err| err.to_string())
     }
 
+    pub fn read_files(&self) -> Result<Vec<String>, String> {
+        let res = clipboard_files::read();
+        match res {
+            Ok(files) => {
+                let files_str = files
+                    .iter()
+                    .map(|file| file.to_str().unwrap().to_string())
+                    .collect::<Vec<_>>();
+                Ok(files_str)
+            }
+            Err(err) => match err {
+                clipboard_files::Error::NoFiles => Err("No files in clipboard".to_string()),
+                _ => Err("Unknown error".to_string()),
+            },
+        }
+    }
+
     pub fn write_text(&self, text: String) -> Result<(), String> {
         self.clipboard
             .lock()
@@ -163,6 +182,11 @@ impl ClipboardManager {
 #[tauri::command]
 fn read_text(manager: State<'_, ClipboardManager>) -> Result<String, String> {
     manager.read_text()
+}
+
+#[tauri::command]
+fn read_files(manager: State<'_, ClipboardManager>) -> Result<Vec<String>, String> {
+    manager.read_files()
 }
 
 #[tauri::command]
@@ -238,6 +262,7 @@ pub fn init<R: Runtime>() -> TauriPlugin<R> {
             start_monitor,
             is_monitor_running,
             read_text,
+            read_files,
             write_text,
             read_image,
             write_image,

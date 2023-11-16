@@ -3,11 +3,13 @@ import { UnlistenFn } from "@tauri-apps/api/event";
 export declare const START_MONITOR_COMMAND = "plugin:clipboard|start_monitor";
 export declare const STOP_MONITOR_COMMAND = "plugin:clipboard|stop_monitor";
 export declare const TEXT_CHANGED = "plugin:clipboard://text-changed";
+export declare const FILES_CHANGED = "plugin:clipboard://files-changed";
 export declare const IMAGE_CHANGED = "plugin:clipboard://image-changed";
 export declare const IS_MONITOR_RUNNING_COMMAND = "plugin:clipboard|is_monitor_running";
 export declare const READ_IMAGE_BINARY_COMMAND = "plugin:clipboard|read_image_binary";
 export declare const WRITE_TEXT_COMMAND = "plugin:clipboard|write_text";
 export declare const READ_TEXT_COMMAND = "plugin:clipboard|read_text";
+export declare const READ_FILES_COMMAND = "plugin:clipboard|read_files";
 export declare const READ_IMAGE_COMMAND = "plugin:clipboard|read_image";
 export declare const WRITE_IMAGE_COMMAND = "plugin:clipboard|write_image";
 export declare const CLIPBOARD_MONITOR_STATUS_UPDATE_EVENT = "plugin:clipboard://clipboard-monitor/status";
@@ -19,9 +21,17 @@ export declare const ClipboardChangedPayloadSchema: z.ZodObject<{
 }, {
     value: string;
 }>;
+export declare const ClipboardChangedFilesPayloadSchema: z.ZodObject<{
+    value: z.ZodArray<z.ZodString, "many">;
+}, "strip", z.ZodTypeAny, {
+    value: string[];
+}, {
+    value: string[];
+}>;
 export declare type ClipboardChangedPayload = z.infer<typeof ClipboardChangedPayloadSchema>;
 export declare function writeText(text: string): Promise<void>;
 export declare function readText(): Promise<string>;
+export declare function readFiles(): Promise<string[]>;
 /**
  * read clipboard image
  * @returns image in base64 string
@@ -74,6 +84,7 @@ export declare function listenToClipboard(): Promise<UnlistenFn>;
  */
 export declare function onClipboardUpdate(cb: () => void): Promise<UnlistenFn>;
 export declare function onTextUpdate(cb: (text: string) => void): Promise<UnlistenFn>;
+export declare function onFilesUpdate(cb: (files: string[]) => void): Promise<UnlistenFn>;
 export declare function onImageUpdate(cb: (base64ImageStr: string) => void): Promise<UnlistenFn>;
 /**
  * Used to check the status of clipboard monitor
