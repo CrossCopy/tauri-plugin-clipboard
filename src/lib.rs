@@ -2,8 +2,8 @@ use arboard::{Clipboard, ImageData};
 use base64::{engine::general_purpose, Engine as _};
 use clipboard_master::{CallbackResult, ClipboardHandler, Master};
 use image::GenericImageView;
-use std::borrow::Cow;
 use std::sync::Mutex;
+use std::{borrow::Cow, sync::Arc};
 use tauri::{
     plugin::{Builder, TauriPlugin},
     Manager, Runtime, State,
@@ -23,17 +23,23 @@ where
 {
     // window: tauri::Window,
     app_handle: tauri::AppHandle<R>,
-    running: Mutex<bool>,
+    running: Arc<Mutex<bool>>,
+    terminate_flag: Arc<Mutex<bool>>,
 }
 
 impl<R> ClipboardMonitor<R>
 where
     R: Runtime,
 {
-    fn new(app_handle: tauri::AppHandle<R>, running: Mutex<bool>) -> Self {
+    fn new(
+        app_handle: tauri::AppHandle<R>,
+        running: Arc<Mutex<bool>>,
+        terminate_flag: Arc<Mutex<bool>>,
+    ) -> Self {
         Self {
-            app_handle: app_handle,
+            app_handle,
             running,
+            terminate_flag,
         }
     }
 }
@@ -43,7 +49,10 @@ where
     R: Runtime,
 {
     fn on_clipboard_change(&mut self) -> CallbackResult {
-        // println!("Clipboard change happened!");
+        if *self.terminate_flag.lock().unwrap() || !*self.running.lock().unwrap() {
+            *self.running.lock().unwrap() = false;
+            return CallbackResult::Stop;
+        }
         let _ = self.app_handle.emit_all(
             "plugin:clipboard://clipboard-monitor/update",
             format!("clipboard update"),
@@ -52,6 +61,10 @@ where
     }
 
     fn on_clipboard_error(&mut self, error: std::io::Error) -> CallbackResult {
+        if *self.terminate_flag.lock().unwrap() || !*self.running.lock().unwrap() {
+            *self.running.lock().unwrap() = false;
+            return CallbackResult::Stop;
+        }
         let _ = self.app_handle.emit_all(
             "plugin:clipboard://clipboard-monitor/error",
             error.to_string(),
@@ -62,17 +75,17 @@ where
 }
 
 pub struct ClipboardManager {
-    terminate_flag: Mutex<bool>,
-    running: Mutex<bool>,
-    clipboard: Mutex<Clipboard>,
+    terminate_flag: Arc<Mutex<bool>>,
+    running: Arc<Mutex<bool>>,
+    clipboard: Arc<Mutex<Clipboard>>,
 }
 
 impl ClipboardManager {
     pub fn default() -> Self {
         return ClipboardManager {
-            terminate_flag: Mutex::default(),
-            running: Mutex::default(),
-            clipboard: Mutex::from(Clipboard::new().unwrap()),
+            terminate_flag: Arc::default(),
+            running: Arc::default(),
+            clipboard: Arc::new(Mutex::from(Clipboard::new().unwrap())),
         };
     }
 
@@ -168,10 +181,43 @@ fn write_image(manager: State<'_, ClipboardManager>, base64_image: String) -> Re
     manager.write_image(base64_image)
 }
 
+#[tauri::command]
+async fn start_listener<R: Runtime>(
+    app: tauri::AppHandle<R>,
+    state: tauri::State<'_, ClipboardManager>,
+) -> Result<(), String> {
+    let mut running = state.running.lock().unwrap();
+    if *running {
+        return Ok(());
+    }
+    *running = true;
+    *state.terminate_flag.lock().unwrap() = false;
+    let running = state.running.clone();
+    let terminate_flag = state.terminate_flag.clone();
+    std::thread::spawn(move || {
+        let _ = Master::new(ClipboardMonitor::new(app, running, terminate_flag)).run();
+    });
+    Ok(())
+}
+
+#[tauri::command]
+async fn stop_listener(state: tauri::State<'_, ClipboardManager>) -> Result<(), String> {
+    *state.terminate_flag.lock().unwrap() = true;
+    Ok(())
+}
+
+#[tauri::command]
+fn is_listener_running(state: tauri::State<'_, ClipboardManager>) -> bool {
+    *state.running.lock().unwrap()
+}
+
 /// Initializes the plugin.
 pub fn init<R: Runtime>() -> TauriPlugin<R> {
     Builder::new("clipboard")
         .invoke_handler(tauri::generate_handler![
+            stop_listener,
+            start_listener,
+            is_listener_running,
             read_text,
             write_text,
             read_image,
@@ -180,11 +226,6 @@ pub fn init<R: Runtime>() -> TauriPlugin<R> {
         ])
         .setup(|app| {
             app.manage(ClipboardManager::default());
-            let app_handle = app.app_handle();
-            let running = Mutex::new(true);
-            tauri::async_runtime::spawn(async move {
-                let _ = Master::new(ClipboardMonitor::new(app_handle, running)).run();
-            });
             Ok(())
         })
         .build()

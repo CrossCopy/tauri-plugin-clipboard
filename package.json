@@ -29,7 +29,8 @@
   },
   "dependencies": {
     "@tauri-apps/api": "^1.0.0",
-    "tslib": "^2.1.0"
+    "tslib": "^2.1.0",
+    "zod": "^3.22.4"
   },
   "files": [
     "webview-dist"

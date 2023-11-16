@@ -1,3 +1,4 @@
+import { z } from "zod";
 import { invoke } from "@tauri-apps/api/tauri";
 import { emit, listen, UnlistenFn } from "@tauri-apps/api/event";
 
@@ -110,4 +111,17 @@ export function listenToClipboard(): Promise<UnlistenFn> {
       }
     }
   });
+}
+export function isListenerRunning(): Promise<boolean> {
+  return invoke("plugin:clipboard|is_listener_running").then((res) =>
+    z.boolean().parse(res)
+  );
+}
+
+export function startListener(): Promise<void> {
+  return invoke("plugin:clipboard|start_listener");
+}
+
+export function stopListener(): Promise<void> {
+  return invoke("plugin:clipboard|stop_listener");
 }

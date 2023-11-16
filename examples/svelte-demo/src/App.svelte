@@ -10,10 +10,13 @@
     TEXT_CHANGED,
     IMAGE_CHANGED,
     listenImage,
-    // startListener,
     listenToClipboard,
+    isListenerRunning,
+    startListener,
+    stopListener,
   } from "tauri-plugin-clipboard-api";
   import { writeBinaryFile, BaseDirectory } from "@tauri-apps/api/fs";
+  import { invoke } from "@tauri-apps/api";
   import { emit, listen, type UnlistenFn } from "@tauri-apps/api/event";
   import { onDestroy, onMount } from "svelte";
   import { downloadDir } from "@tauri-apps/api/path";
@@ -108,13 +111,12 @@
     // textUnlisten();
     tauriTextUnlisten();
     tauriImageUnlisten();
-    startListenerUnlisten();
     listenToClipboardUnlisten();
   }
 
-  onMount(() => {
-    startListening();
-  });
+  // onMount(async () => {
+  //   startListening(); // call listen function in frontend
+  // });
 
   onDestroy(() => {
     stopListening();
@@ -130,11 +132,22 @@
   <!-- <button on:click={onDev}>Dev</button> -->
   <button on:click={onReadImageBinary}>Read Image (Binary)</button>
   <button on:click={onWriteImage}>Write Image</button>
-  <!-- <button
+  <button on:click={startListening}>Start Listening</button><br />
+  
+  <button
+    class="btn-success"
     on:click={() => {
+      // launch clipboard monitor in rust
       startListener().then(console.log).catch(console.error);
     }}>Start Listener</button
-  > -->
+  >
+
+  <button
+    on:click={() => {
+      // launch clipboard monitor in rust
+      stopListener().then(console.log).catch(console.error);
+    }}>Stop Listener</button
+  >
 
   <br />
   {#if message.length > 0}
