@@ -34,7 +34,9 @@
 
 	onDestroy(() => {
 		unlistenTextUpdate();
+		unlistenImageUpdate();
 		unlistenClipboard();
+		unlistenFiles();
 	});
 </script>
 

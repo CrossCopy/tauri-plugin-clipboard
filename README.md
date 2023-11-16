@@ -154,7 +154,9 @@ onMount(async () => {
 
 onDestroy(() => {
   unlistenTextUpdate();
+  unlistenImageUpdate();
   unlistenClipboard();
+  unlistenFiles();
 });
 ```
 
