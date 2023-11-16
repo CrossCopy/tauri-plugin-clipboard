@@ -2,15 +2,31 @@ import { z } from "zod";
 import { invoke } from "@tauri-apps/api/tauri";
 import { emit, listen, UnlistenFn } from "@tauri-apps/api/event";
 
-export const TEXT_CHANGED = "text_changed";
-export const IMAGE_CHANGED = "image_changed";
+export const START_MONITOR_COMMAND = "plugin:clipboard|start_monitor";
+export const STOP_MONITOR_COMMAND = "plugin:clipboard|stop_monitor";
+export const TEXT_CHANGED = "plugin:clipboard://text-changed";
+export const IMAGE_CHANGED = "plugin:clipboard://image-changed";
+export const IS_MONITOR_RUNNING_COMMAND = "plugin:clipboard|is_monitor_running";
+export const READ_IMAGE_BINARY_COMMAND = "plugin:clipboard|read_image_binary";
+export const WRITE_TEXT_COMMAND = "plugin:clipboard|write_text";
+export const READ_TEXT_COMMAND = "plugin:clipboard|read_text";
+export const READ_IMAGE_COMMAND = "plugin:clipboard|read_image";
+export const WRITE_IMAGE_COMMAND = "plugin:clipboard|write_image";
+export const CLIPBOARD_MONITOR_STATUS_UPDATE_EVENT =
+  "plugin:clipboard://clipboard-monitor/status";
+export const MONITOR_UPDATE_EVENT =
+  "plugin:clipboard://clipboard-monitor/update";
+export const ClipboardChangedPayloadSchema = z.object({ value: z.string() });
+export type ClipboardChangedPayload = z.infer<
+  typeof ClipboardChangedPayloadSchema
+>;
 
 export function writeText(text: string): Promise<void> {
-  return invoke("plugin:clipboard|write_text", { text });
+  return invoke(WRITE_TEXT_COMMAND, { text });
 }
 
 export function readText(): Promise<string> {
-  return invoke("plugin:clipboard|read_text");
+  return invoke(READ_TEXT_COMMAND);
 }
 
 /**
@@ -18,26 +34,28 @@ export function readText(): Promise<string> {
  * @returns image in base64 string
  */
 export function readImage(): Promise<string> {
-  return invoke("plugin:clipboard|read_image");
+  return invoke(READ_IMAGE_COMMAND);
 }
+
+export const readImageBase64 = readImage;
 
 export function readImageBinary(
   format: "int_array" | "Uint8Array" | "Blob"
 ): Promise<number[] | Uint8Array | Blob> {
-  return (
-    invoke("plugin:clipboard|read_image_binary") as Promise<number[]>
-  ).then((img_arr: number[]) => {
-    switch (format) {
-      case "int_array":
-        return img_arr;
-      case "Uint8Array":
-        return new Uint8Array(img_arr);
-      case "Blob":
-        return new Blob([new Uint8Array(img_arr)]);
-      default:
-        return img_arr;
+  return (invoke(READ_IMAGE_BINARY_COMMAND) as Promise<number[]>).then(
+    (img_arr: number[]) => {
+      switch (format) {
+        case "int_array":
+          return img_arr;
+        case "Uint8Array":
+          return new Uint8Array(img_arr);
+        case "Blob":
+          return new Blob([new Uint8Array(img_arr)]);
+        default:
+          return img_arr;
+      }
     }
-  });
+  );
 }
 
 export function readImageObjectURL(): Promise<string> {
@@ -52,10 +70,20 @@ export function readImageObjectURL(): Promise<string> {
  * @returns Promise<void>
  */
 export function writeImage(data: string): Promise<void> {
-  return invoke("plugin:clipboard|write_image", { base64Image: data });
+  return invoke(WRITE_IMAGE_COMMAND, { base64Image: data });
 }
 
-export function listenText(delay: number = 500) {
+/**
+ * @deprecated since version v0.5.x
+ * Brute force listen to clipboard text update.
+ * Detect update by comparing current value with previous value every delay ms.
+ * When there is a update, "plugin:clipboard://text-changed" is emitted.
+ * You still need to listen to the event.
+ *
+ * @param delay check interval delay
+ * @returns a stop running function that can be called when component unmounts
+ */
+export function startBruteForceTextMonitor(delay: number = 500) {
   let prevText: string = "";
   let active: boolean = true; // whether the listener should be running
   setTimeout(async function x() {
@@ -73,7 +101,16 @@ export function listenText(delay: number = 500) {
   };
 }
 
-export function listenImage(delay: number = 1000) {
+/**
+ * @deprecated since version v0.5.x
+ * Brute force monitor clipboard image update by comparing current value with previous value.
+ * When there is a update, "plugin:clipboard://image-changed" is emitted.
+ * You still need to listen to the event.
+ *
+ * @param delay check interval delay
+ * @returns stop running function that can be called to stop the monitor
+ */
+export function startBruteForceImageMonitor(delay: number = 1000) {
   let prevImg: string = "";
   let active: boolean = true; // whether the listener should be running
   setTimeout(async function x() {
@@ -93,8 +130,15 @@ export function listenImage(delay: number = 1000) {
   };
 }
 
+/**
+ * Listen to "plugin:clipboard://clipboard-monitor/update" from Tauri core.
+ * But this event doesn't tell us whether text or image is updated,
+ * so this function will detect which is changed and emit the corresponding event
+ * Event constant variables: TEXT_CHANGED or IMAGE_CHANGED
+ * @returns unlisten function
+ */
 export function listenToClipboard(): Promise<UnlistenFn> {
-  return listen("plugin:clipboard://clipboard-monitor/update", async (e) => {
+  return listen(MONITOR_UPDATE_EVENT, async (e) => {
     if (e.payload === "clipboard update") {
       try {
         const text = await readText();
@@ -112,16 +156,88 @@ export function listenToClipboard(): Promise<UnlistenFn> {
     }
   });
 }
-export function isListenerRunning(): Promise<boolean> {
-  return invoke("plugin:clipboard|is_listener_running").then((res) =>
+
+/**
+ * This listen to clipboard monitor update event, and trigger the callback function.
+ * However from this event we don't know whether it's text or image, no real data is returned.
+ * Use with listenToClipboard function.
+ * @param cb callback
+ * @returns unlisten function
+ */
+export function onClipboardUpdate(cb: () => void) {
+  return listen(MONITOR_UPDATE_EVENT, cb);
+}
+
+export async function onTextUpdate(
+  cb: (text: string) => void
+): Promise<UnlistenFn> {
+  return await listen(TEXT_CHANGED, (event) => {
+    const text = ClipboardChangedPayloadSchema.parse(event.payload).value;
+    cb(text);
+  });
+}
+
+export async function onImageUpdate(
+  cb: (base64ImageStr: string) => void
+): Promise<UnlistenFn> {
+  return await listen(IMAGE_CHANGED, (event) => {
+    const base64ImageStr = ClipboardChangedPayloadSchema.parse(
+      event.payload
+    ).value;
+    cb(base64ImageStr);
+  });
+}
+
+/**
+ * Used to check the status of clipboard monitor
+ * @returns Whether the monitor is running
+ */
+export function isMonitorRunning(): Promise<boolean> {
+  return invoke(IS_MONITOR_RUNNING_COMMAND).then((res) =>
     z.boolean().parse(res)
   );
 }
 
-export function startListener(): Promise<void> {
-  return invoke("plugin:clipboard|start_listener");
+/**
+ * Start running mointor thread in Tauri core. This feature is added in v0.5.x.
+ * Before v0.5.x, the monitor is started during setup when app starts.
+ * After v0.5.x, this function must be called first to start monitor.
+ * After monitor is started, events "plugin:clipboard://clipboard-monitor/update" will be emitted when there is clipboard update.
+ * "plugin:clipboard://clipboard-monitor/status" event is also emitted when monitor status updates
+ * Still have to listen to these events.
+ */
+export function startMonitor(): Promise<void> {
+  return invoke(START_MONITOR_COMMAND);
 }
 
-export function stopListener(): Promise<void> {
-  return invoke("plugin:clipboard|stop_listener");
+/**
+ * Stop clipboard monitor thread.
+ */
+export function stopMonitor(): Promise<void> {
+  return invoke(STOP_MONITOR_COMMAND);
+}
+/**
+ * Listen to monitor status update. Instead of calling isMonitorRunning to get status of monitor,
+ * "plugin:clipboard://clipboard-monitor/status" event is emitted from Tauri core when monitor status updates.
+ * @param cb callback to be called when there is monitor status update
+ */
+export async function listenToMonitorStatusUpdate(
+  cb: (running: boolean) => void
+): Promise<UnlistenFn> {
+  return await listen(CLIPBOARD_MONITOR_STATUS_UPDATE_EVENT, (event) => {
+    const newStatus = z.boolean().parse(event.payload);
+    cb(newStatus);
+  });
+}
+
+export function startListening() {
+  return startMonitor()
+    .then(() => listenToClipboard())
+    .then((unlistenClipboard) => {
+      // return an unlisten function that stop listening to clipboard update and stop the monitor
+      return async () => {
+        unlistenClipboard();
+        await stopMonitor();
+      };
+    });
 }
