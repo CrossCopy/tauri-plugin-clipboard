@@ -3,7 +3,6 @@ use base64::{engine::general_purpose, Engine as _};
 use clipboard_files;
 use clipboard_master::{CallbackResult, ClipboardHandler, Master};
 use image::GenericImageView;
-use std::path::PathBuf;
 use std::sync::Mutex;
 use std::{borrow::Cow, sync::Arc};
 use tauri::{
