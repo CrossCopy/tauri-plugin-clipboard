@@ -253,12 +253,14 @@ export async function listenToMonitorStatusUpdate(
   });
 }
 
-export function startListening() {
+export function startListening(): Promise<() => Promise<void>> {
   return startMonitor()
     .then(() => listenToClipboard())
     .then((unlistenClipboard) => {
       // return an unlisten function that stop listening to clipboard update and stop the monitor
       return async () => {
+        console.log("stop listening");
+
         unlistenClipboard();
         await stopMonitor();
       };

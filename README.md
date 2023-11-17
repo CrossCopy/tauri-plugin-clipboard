@@ -68,9 +68,12 @@ It works the same with other frontend frameworks like Vue, React, etc.
 
 ```ts
 import {
-  writeText,
   readText,
+  readFiles,
+  writeText,
   readImage,
+  readImageBinary,
+  readImageObjectURL,
   writeImage,
 } from "tauri-plugin-clipboard-api";
 
@@ -86,9 +89,12 @@ readImage()
   });
 
 await writeImage(sample_base64_image);
+const files: string[] = await readFiles();
 ```
 
 ### Sample Usage (Rust API)
+
+`ClipboardManager` contains the state state as well as the API functions.
 
 ```rust
 use tauri::Manager;
@@ -98,13 +104,9 @@ fn main() {
   tauri::Builder::default()
     .plugin(tauri_plugin_clipboard::init())
     .setup(|app| {
-        let app_handle = app.app_handle();
-        match app_handle.clipboard().read_text() {
-            Ok(result) => {
-                println!("content: {}", result);
-            },
-            Err(e) => print!("err is \"{}\"\n", e), // TODO: log
-        };
+        let handle = app.handle();
+        let clipboard = handle.state::<tauri_plugin_clipboard::ClipboardManager>();
+        clipboard.write_text("huakun zui shuai".to_string()).unwrap();
         Ok(())
     })
     .build(tauri::generate_context!())
@@ -127,14 +129,17 @@ import {
   onTextUpdate,
   onFilesUpdate,
   startListening,
+  listenToMonitorStatusUpdate,
+  isMonitorRunning,
 } from "tauri-plugin-clipboard-api";
 
 let text = "";
 let files: string[] = [];
 let base64Image = "";
+let monitorRunning = false;
 let unlistenTextUpdate: UnlistenFn;
 let unlistenImageUpdate: UnlistenFn;
-let unlistenClipboard: UnlistenFn;
+let unlistenClipboard: () => Promise<void>;
 let unlistenFiles: UnlistenFn;
 onMount(async () => {
   unlistenTextUpdate = await onTextUpdate((newText) => {
@@ -147,9 +152,14 @@ onMount(async () => {
     files = newFiles;
   });
   unlistenClipboard = await startListening();
+
   onClipboardUpdate(() => {
     console.log("plugin:clipboard://clipboard-monitor/update event received");
   });
+});
+
+listenToMonitorStatusUpdate((running) => {
+  monitorRunning = running;
 });
 
 onDestroy(() => {
