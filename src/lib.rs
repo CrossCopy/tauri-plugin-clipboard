@@ -87,7 +87,7 @@ impl ClipboardManager {
             .map_err(|err| err.to_string())
     }
 
-    /// read files from clipboard and return a Vec<String>
+    /// read files from clipboard and return a `Vec<String>`
     pub fn read_files(&self) -> Result<Vec<String>, String> {
         let res = clipboard_files::read();
         match res {
@@ -125,7 +125,7 @@ impl ClipboardManager {
         Ok(base64_str)
     }
 
-    /// read image from clipboard and return a Vec<u8>
+    /// read image from clipboard and return a `Vec<u8>`
     pub fn read_image_binary(&self) -> Result<Vec<u8>, String> {
         let image = self
             .clipboard
