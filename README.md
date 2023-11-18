@@ -60,7 +60,7 @@ npm run tauri dev
 # there are a few buttons you can click to test the clipboard plugin
 ```
 
-See [App.svelte](examples/svelte-app/src/App.svelte) for an example of how to use the plugin in JS/TS.
+See [+page.svelte](examples/demo/src/routes/+page.svelte) for an example of how to use the plugin in JS/TS.
 
 It works the same with other frontend frameworks like Vue, React, etc.
 
@@ -202,7 +202,7 @@ The listener `startListening` function contains two parts:
 
 The returned unlisten function from `startListening` also does two things:
 
-1. Stop monitor thread by invoking `start_monitor` command.
+1. Stop monitor thread by invoking `stop_monitor` command.
 2. Stop listener started in `listenToClipboard`.
 
 The base64 image string can be converted to `Uint8Array` and written to file system using tauri's fs API.

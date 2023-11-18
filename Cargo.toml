@@ -1,8 +1,8 @@
 [package]
 name = "tauri-plugin-clipboard"
-description = "A clipboard plugin for Tauri that supports both text and image"
 license = "MIT"
-version = "0.5.2"
+version = "0.5.3"
+description = "A clipboard plugin for Tauri that supports text, files and image, as well as clipboard update listening."
 authors = [ "Huakun" ]
 edition = "2021"
 rust-version = "1.59"
