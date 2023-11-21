@@ -10,6 +10,7 @@ export const IMAGE_CHANGED = "plugin:clipboard://image-changed";
 export const IS_MONITOR_RUNNING_COMMAND = "plugin:clipboard|is_monitor_running";
 export const READ_IMAGE_BINARY_COMMAND = "plugin:clipboard|read_image_binary";
 export const WRITE_TEXT_COMMAND = "plugin:clipboard|write_text";
+export const CLEAR_COMMAND = "plugin:clipboard|clear";
 export const READ_TEXT_COMMAND = "plugin:clipboard|read_text";
 export const READ_FILES_COMMAND = "plugin:clipboard|read_files";
 export const READ_IMAGE_COMMAND = "plugin:clipboard|read_image";
@@ -28,6 +29,10 @@ export type ClipboardChangedPayload = z.infer<
 
 export function writeText(text: string): Promise<void> {
   return invoke(WRITE_TEXT_COMMAND, { text });
+}
+
+export function clear(): Promise<void> {
+  return invoke(CLEAR_COMMAND);
 }
 
 export function readText(): Promise<string> {

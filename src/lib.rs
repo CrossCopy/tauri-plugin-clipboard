@@ -113,6 +113,14 @@ impl ClipboardManager {
             .map_err(|err| err.to_string())
     }
 
+    pub fn clear(&self) -> Result<(), String> {
+        self.clipboard
+            .lock()
+            .map_err(|err| err.to_string())?
+            .clear()
+            .map_err(|err| err.to_string())
+    }
+
     /// read image from clipboard and return a base64 string
     pub fn read_image(&self) -> Result<String, String> {
         let img = self
@@ -180,6 +188,11 @@ fn write_text(manager: State<'_, ClipboardManager>, text: String) -> Result<(), 
     manager.write_text(text)
 }
 
+#[tauri::command]
+fn clear(manager: State<'_, ClipboardManager>) -> Result<(), String> {
+    manager.clear()
+}
+
 /// read image from clipboard and return a base64 string
 #[tauri::command]
 fn read_image(manager: State<'_, ClipboardManager>) -> Result<String, String> {
@@ -244,6 +257,7 @@ pub fn init<R: Runtime>() -> TauriPlugin<R> {
             read_image,
             write_image,
             read_image_binary,
+            clear
         ])
         .setup(move |app| {
             let state = ClipboardManager::default();

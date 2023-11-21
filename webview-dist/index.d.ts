@@ -8,6 +8,7 @@ export declare const IMAGE_CHANGED = "plugin:clipboard://image-changed";
 export declare const IS_MONITOR_RUNNING_COMMAND = "plugin:clipboard|is_monitor_running";
 export declare const READ_IMAGE_BINARY_COMMAND = "plugin:clipboard|read_image_binary";
 export declare const WRITE_TEXT_COMMAND = "plugin:clipboard|write_text";
+export declare const CLEAR_COMMAND = "plugin:clipboard|clear";
 export declare const READ_TEXT_COMMAND = "plugin:clipboard|read_text";
 export declare const READ_FILES_COMMAND = "plugin:clipboard|read_files";
 export declare const READ_IMAGE_COMMAND = "plugin:clipboard|read_image";
@@ -30,6 +31,7 @@ export declare const ClipboardChangedFilesPayloadSchema: z.ZodObject<{
 }>;
 export declare type ClipboardChangedPayload = z.infer<typeof ClipboardChangedPayloadSchema>;
 export declare function writeText(text: string): Promise<void>;
+export declare function clear(): Promise<void>;
 export declare function readText(): Promise<string>;
 export declare function readFiles(): Promise<string[]>;
 /**

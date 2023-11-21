@@ -75,6 +75,7 @@ import {
   readImageBinary,
   readImageObjectURL,
   writeImage,
+  clear
 } from "tauri-plugin-clipboard-api";
 
 await readText();
