@@ -6,15 +6,18 @@
 		onImageUpdate,
 		onTextUpdate,
 		onFilesUpdate,
-		startListening
+		startListening,
+		listenToMonitorStatusUpdate,
+		isMonitorRunning
 	} from 'tauri-plugin-clipboard-api';
 
 	let text = '';
 	let files: string[] = [];
 	let base64Image = '';
+	let monitorRunning = false;
 	let unlistenTextUpdate: UnlistenFn;
 	let unlistenImageUpdate: UnlistenFn;
-	let unlistenClipboard: UnlistenFn;
+	let unlistenClipboard: () => Promise<void>;
 	let unlistenFiles: UnlistenFn;
 	onMount(async () => {
 		unlistenTextUpdate = await onTextUpdate((newText) => {
@@ -27,9 +30,14 @@
 			files = newFiles;
 		});
 		unlistenClipboard = await startListening();
+
 		onClipboardUpdate(() => {
 			console.log('plugin:clipboard://clipboard-monitor/update event received');
 		});
+	});
+
+	listenToMonitorStatusUpdate((running) => {
+		monitorRunning = running;
 	});
 
 	onDestroy(() => {
@@ -39,6 +47,24 @@
 		unlistenFiles();
 	});
 </script>
+
+<p><strong>Is Monitor Running:</strong> {monitorRunning}</p>
+{#if monitorRunning}
+	<button
+		class="btn variant-filled-error"
+		on:click={async () => {
+			unlistenClipboard = await startListening();
+			await unlistenClipboard();
+		}}>Stop Listening</button
+	>
+{:else}
+	<button
+		class="btn variant-filled-success"
+		on:click={async () => {
+			unlistenClipboard = await startListening();
+		}}>Start Listening</button
+	>
+{/if}
 
 <h2>Clipboard Text</h2>
 {#if text}

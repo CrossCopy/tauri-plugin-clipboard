@@ -60,7 +60,7 @@ npm run tauri dev
 # there are a few buttons you can click to test the clipboard plugin
 ```
 
-See [App.svelte](examples/svelte-app/src/App.svelte) for an example of how to use the plugin in JS/TS.
+See [+page.svelte](examples/demo/src/routes/+page.svelte) for an example of how to use the plugin in JS/TS.
 
 It works the same with other frontend frameworks like Vue, React, etc.
 
@@ -68,10 +68,14 @@ It works the same with other frontend frameworks like Vue, React, etc.
 
 ```ts
 import {
-  writeText,
   readText,
+  readFiles,
+  writeText,
   readImage,
+  readImageBinary,
+  readImageObjectURL,
   writeImage,
+  clear
 } from "tauri-plugin-clipboard-api";
 
 await readText();
@@ -86,9 +90,12 @@ readImage()
   });
 
 await writeImage(sample_base64_image);
+const files: string[] = await readFiles();
 ```
 
 ### Sample Usage (Rust API)
+
+`ClipboardManager` contains the state state as well as the API functions.
 
 ```rust
 use tauri::Manager;
@@ -98,13 +105,9 @@ fn main() {
   tauri::Builder::default()
     .plugin(tauri_plugin_clipboard::init())
     .setup(|app| {
-        let app_handle = app.app_handle();
-        match app_handle.clipboard().read_text() {
-            Ok(result) => {
-                println!("content: {}", result);
-            },
-            Err(e) => print!("err is \"{}\"\n", e), // TODO: log
-        };
+        let handle = app.handle();
+        let clipboard = handle.state::<tauri_plugin_clipboard::ClipboardManager>();
+        clipboard.write_text("huakun zui shuai".to_string()).unwrap();
         Ok(())
     })
     .build(tauri::generate_context!())
@@ -127,14 +130,17 @@ import {
   onTextUpdate,
   onFilesUpdate,
   startListening,
+  listenToMonitorStatusUpdate,
+  isMonitorRunning,
 } from "tauri-plugin-clipboard-api";
 
 let text = "";
 let files: string[] = [];
 let base64Image = "";
+let monitorRunning = false;
 let unlistenTextUpdate: UnlistenFn;
 let unlistenImageUpdate: UnlistenFn;
-let unlistenClipboard: UnlistenFn;
+let unlistenClipboard: () => Promise<void>;
 let unlistenFiles: UnlistenFn;
 onMount(async () => {
   unlistenTextUpdate = await onTextUpdate((newText) => {
@@ -147,9 +153,14 @@ onMount(async () => {
     files = newFiles;
   });
   unlistenClipboard = await startListening();
+
   onClipboardUpdate(() => {
     console.log("plugin:clipboard://clipboard-monitor/update event received");
   });
+});
+
+listenToMonitorStatusUpdate((running) => {
+  monitorRunning = running;
 });
 
 onDestroy(() => {
@@ -192,7 +203,7 @@ The listener `startListening` function contains two parts:
 
 The returned unlisten function from `startListening` also does two things:
 
-1. Stop monitor thread by invoking `start_monitor` command.
+1. Stop monitor thread by invoking `stop_monitor` command.
 2. Stop listener started in `listenToClipboard`.
 
 The base64 image string can be converted to `Uint8Array` and written to file system using tauri's fs API.

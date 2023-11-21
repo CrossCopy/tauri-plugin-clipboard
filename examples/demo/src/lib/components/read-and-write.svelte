@@ -6,7 +6,8 @@
 		readImage,
 		readImageBinary,
 		readImageObjectURL,
-		writeImage
+		writeImage,
+		clear
 	} from 'tauri-plugin-clipboard-api';
 
 	let text = '';
@@ -110,5 +111,14 @@
 		}}
 	>
 		Write Image
+	</button>
+	<button
+		type="button"
+		class="btn variant-filled block btn-sm"
+		on:click={async () => {
+			await clear();
+		}}
+	>
+		Clear
 	</button>
 </div>

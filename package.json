@@ -1,6 +1,6 @@
 {
   "name": "tauri-plugin-clipboard-api",
-  "version": "0.5.0",
+  "version": "0.5.4",
   "author": "Huakun Shen",
   "type": "module",
   "description": "",
@@ -10,7 +10,8 @@
   "scripts": {
     "build": "rollup -c ./webview-src/rollup.config.js",
     "prepublishOnly": "npm run build",
-    "pretest": "npm run build"
+    "pretest": "npm run build",
+    "publish:cargo": "cargo doc && cargo publish"
   },
   "repository": {
     "type": "git",
