@@ -21,7 +21,7 @@ tauri-plugin-clipboard = { git = "https://github.com/CrossCopy/tauri-plugin-clip
 You can also add a tag to github url.
 
 ```toml
-tauri-plugin-clipboard = { git = "https://github.com/CrossCopy/tauri-plugin-clipboard", tag = "v0.5.0" }
+tauri-plugin-clipboard = { git = "https://github.com/CrossCopy/tauri-plugin-clipboard", tag = "v0.5.4" }
 ```
 
 NPM Package: https://www.npmjs.com/package/tauri-plugin-clipboard-api
@@ -30,7 +30,10 @@ Run the following to install JavaScript/TypeScript API package.
 
 ```bash
 npm i tauri-plugin-clipboard-api
-# npm add https://github.com/CrossCopy/tauri-plugin-clipboard # or this for latest unpublished version (not recommended)
+
+npm i https://github.com/CrossCopy/tauri-plugin-clipboard # or this for latest unpublished version (not recommended)
+
+npm i https://github.com/CrossCopy/tauri-plugin-clipboard#v0.5.4 # or this for tag
 ```
 
 In `main.rs`, add the following to your `tauri::Builder`:
