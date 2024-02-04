@@ -5,6 +5,8 @@
 		onClipboardUpdate,
 		onImageUpdate,
 		onTextUpdate,
+		onHTMLUpdate,
+		onRTFUpdate,
 		onFilesUpdate,
 		startListening,
 		listenToMonitorStatusUpdate,
@@ -14,14 +16,19 @@
 	let text = '';
 	let files: string[] = [];
 	let base64Image = '';
+	let htmlMonitorContent = '';
 	let monitorRunning = false;
 	let unlistenTextUpdate: UnlistenFn;
 	let unlistenImageUpdate: UnlistenFn;
+	let unlistenHtmlUpdate: UnlistenFn;
 	let unlistenClipboard: () => Promise<void>;
 	let unlistenFiles: UnlistenFn;
 	onMount(async () => {
 		unlistenTextUpdate = await onTextUpdate((newText) => {
 			text = newText;
+		});
+		unlistenHtmlUpdate = await onHTMLUpdate((newHtml) => {
+			htmlMonitorContent = newHtml;
 		});
 		unlistenImageUpdate = await onImageUpdate((b64Str) => {
 			base64Image = b64Str;
@@ -79,7 +86,8 @@
 		{/each}
 	</ol>
 {/if}
-
+<h2>Clipboard HTML</h2>
+<div>{@html htmlMonitorContent}</div>
 <h2>Clipboard Image</h2>
 {#if base64Image}
 	<img width="300" src={`data:image/png;base64, ${base64Image}`} alt="" />

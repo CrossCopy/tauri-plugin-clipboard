@@ -1,17 +1,15 @@
-use arboard::{Clipboard as ArboardClipboard, ImageData};
 use base64::{engine::general_purpose, Engine as _};
 use clipboard_files;
 use clipboard_master::{CallbackResult, ClipboardHandler, Master};
 use clipboard_rs::{common::RustImage, Clipboard, ClipboardContext};
 use clipboard_rs::{ContentFormat, RustImageData};
-use image::{EncodableLayout, GenericImageView};
+use image::EncodableLayout;
+use std::sync::Arc;
 use std::sync::Mutex;
-use std::{borrow::Cow, sync::Arc};
 use tauri::{
     plugin::{Builder, TauriPlugin},
     Manager, Runtime, State,
 };
-mod util;
 
 struct ClipboardMonitor<R>
 where
@@ -97,7 +95,11 @@ impl ClipboardManager {
     }
 
     pub fn has_image(&self) -> Result<bool, String> {
-        self.has(ContentFormat::Image)
+        // todo: remove the negation once ChurchTao fixed the error
+        match self.has(ContentFormat::Image) {
+            Ok(res) => Ok(!res),
+            Err(err) => Err(err),
+        }
     }
 
     pub fn has_html(&self) -> Result<bool, String> {
@@ -203,13 +205,14 @@ impl ClipboardManager {
         let decoded = general_purpose::STANDARD_NO_PAD
             .decode(base64_image)
             .map_err(|err| err.to_string())?;
-        self.write_image_binary(decoded).map_err(|err| err.to_string())?;
+        self.write_image_binary(decoded)
+            .map_err(|err| err.to_string())?;
         Ok(())
     }
 
-    pub fn write_image_binary(&self, image_bytes: Vec<u8>) -> Result<(), String> {
-        let img =
-            RustImageData::from_bytes(image_bytes.as_bytes()).map_err(|err| err.to_string())?;
+    pub fn write_image_binary(&self, bytes: Vec<u8>) -> Result<(), String> {
+        println!("writing bin image to clipboard");
+        let img = RustImageData::from_bytes(bytes.as_bytes()).map_err(|err| err.to_string())?;
         self.clipboard
             .lock()
             .map_err(|err| err.to_string())?
@@ -227,7 +230,26 @@ impl ClipboardManager {
     }
 }
 
-/// write text to clipboard
+#[tauri::command]
+fn has_text(manager: State<'_, ClipboardManager>) -> Result<bool, String> {
+    manager.has_text()
+}
+
+#[tauri::command]
+fn has_image(manager: State<'_, ClipboardManager>) -> Result<bool, String> {
+    manager.has_image()
+}
+
+#[tauri::command]
+fn has_html(manager: State<'_, ClipboardManager>) -> Result<bool, String> {
+    manager.has_html()
+}
+
+#[tauri::command]
+fn has_rtf(manager: State<'_, ClipboardManager>) -> Result<bool, String> {
+    manager.has_rtf()
+}
+
 #[tauri::command]
 fn read_text(manager: State<'_, ClipboardManager>) -> Result<String, String> {
     manager.read_text()
@@ -276,7 +298,10 @@ fn read_image_binary(manager: State<'_, ClipboardManager>) -> Result<Vec<u8>, St
 
 /// write base64 image to clipboard
 #[tauri::command]
-fn write_image_base64(manager: State<'_, ClipboardManager>, base64_image: String) -> Result<(), String> {
+fn write_image_base64(
+    manager: State<'_, ClipboardManager>,
+    base64_image: String,
+) -> Result<(), String> {
     manager.write_image_base64(base64_image)
 }
 
@@ -331,6 +356,10 @@ pub fn init<R: Runtime>() -> TauriPlugin<R> {
             stop_monitor,
             start_monitor,
             is_monitor_running,
+            has_text,
+            has_image,
+            has_html,
+            has_rtf,
             read_text,
             read_files,
             read_html,
