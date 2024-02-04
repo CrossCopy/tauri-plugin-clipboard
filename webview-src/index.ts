@@ -8,13 +8,18 @@ export const TEXT_CHANGED = "plugin:clipboard://text-changed";
 export const FILES_CHANGED = "plugin:clipboard://files-changed";
 export const IMAGE_CHANGED = "plugin:clipboard://image-changed";
 export const IS_MONITOR_RUNNING_COMMAND = "plugin:clipboard|is_monitor_running";
-export const READ_IMAGE_BINARY_COMMAND = "plugin:clipboard|read_image_binary";
 export const WRITE_TEXT_COMMAND = "plugin:clipboard|write_text";
+export const WRITE_HTML_COMMAND = "plugin:clipboard|write_html";
+export const WRITE_RTF_COMMAND = "plugin:clipboard|write_rtf";
 export const CLEAR_COMMAND = "plugin:clipboard|clear";
 export const READ_TEXT_COMMAND = "plugin:clipboard|read_text";
+export const READ_HTML_COMMAND = "plugin:clipboard|read_html";
+export const READ_RTF_COMMAND = "plugin:clipboard|read_rtf";
 export const READ_FILES_COMMAND = "plugin:clipboard|read_files";
-export const READ_IMAGE_COMMAND = "plugin:clipboard|read_image";
-export const WRITE_IMAGE_COMMAND = "plugin:clipboard|write_image";
+export const READ_IMAGE_BINARY_COMMAND = "plugin:clipboard|read_image_binary";
+export const READ_IMAGE_BASE64_COMMAND = "plugin:clipboard|read_image_base64";
+export const WRITE_IMAGE_BINARY_COMMAND = "plugin:clipboard|write_image_binary";
+export const WRITE_IMAGE_BASE64_COMMAND = "plugin:clipboard|write_image_base64";
 export const CLIPBOARD_MONITOR_STATUS_UPDATE_EVENT =
   "plugin:clipboard://clipboard-monitor/status";
 export const MONITOR_UPDATE_EVENT =
@@ -31,12 +36,28 @@ export function writeText(text: string): Promise<void> {
   return invoke(WRITE_TEXT_COMMAND, { text });
 }
 
+export function writeHtml(html: string): Promise<void> {
+  return invoke(WRITE_HTML_COMMAND, { html });
+}
+
+export function writeRtf(rtf: string): Promise<void> {
+  return invoke(WRITE_RTF_COMMAND, { rtf });
+}
+
 export function clear(): Promise<void> {
   return invoke(CLEAR_COMMAND);
 }
 
 export function readText(): Promise<string> {
   return invoke(READ_TEXT_COMMAND);
+}
+
+export function readHtml(): Promise<string> {
+  return invoke(READ_HTML_COMMAND);
+}
+
+export function readRtf(): Promise<string> {
+  return invoke(READ_RTF_COMMAND);
 }
 
 export function readFiles(): Promise<string[]> {
@@ -47,11 +68,11 @@ export function readFiles(): Promise<string[]> {
  * read clipboard image
  * @returns image in base64 string
  */
-export function readImage(): Promise<string> {
-  return invoke(READ_IMAGE_COMMAND);
+export function readImageBase64(): Promise<string> {
+  return invoke(READ_IMAGE_BASE64_COMMAND);
 }
 
-export const readImageBase64 = readImage;
+// export const readImageBase64 = readImage;
 
 export function readImageBinary(
   format: "int_array" | "Uint8Array" | "Blob"
@@ -83,8 +104,13 @@ export function readImageObjectURL(): Promise<string> {
  * @param data image data in base64 encoded string
  * @returns Promise<void>
  */
-export function writeImage(data: string): Promise<void> {
-  return invoke(WRITE_IMAGE_COMMAND, { base64Image: data });
+export function writeImageBase64(base64: string): Promise<void> {
+  return invoke(WRITE_IMAGE_BASE64_COMMAND, { base64Image: base64 });
+}
+
+export function writeImageBinary(bytes: number[]): Promise<void> {
+  throw new Error("Not Implemented");
+  // return invoke(WRITE_IMAGE_BINARY_COMMAND, { base64Image: base64 });
 }
 
 /**
@@ -129,7 +155,7 @@ export function startBruteForceImageMonitor(delay: number = 1000) {
   let active: boolean = true; // whether the listener should be running
   setTimeout(async function x() {
     try {
-      const img = await readImage();
+      const img = await readImageBase64();
       if (prevImg !== img) {
         await emit(IMAGE_CHANGED, { value: img });
       }
@@ -165,7 +191,7 @@ export function listenToClipboard(): Promise<UnlistenFn> {
           }
         } catch (error) {
           try {
-            const img = await readImage();
+            const img = await readImageBase64();
             if (img) await emit(IMAGE_CHANGED, { value: img });
           } catch (error) {
             console.error(error);

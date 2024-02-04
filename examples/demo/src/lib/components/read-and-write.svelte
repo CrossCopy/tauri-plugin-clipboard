@@ -1,16 +1,21 @@
 <script lang="ts">
 	import {
 		readText,
+		readHtml,
+		readRtf,
 		readFiles,
 		writeText,
-		readImage,
+		writeHtml,
+		writeRtf,
+		readImageBase64,
 		readImageBinary,
 		readImageObjectURL,
-		writeImage,
+		writeImageBase64,
 		clear
 	} from 'tauri-plugin-clipboard-api';
 
 	let text = '';
+	let html = '';
 	let imageBase64 = '';
 	let imageObjectUrl = '';
 	let imageBinaryObjUrl = '';
@@ -35,6 +40,22 @@
 	{#if text}
 		<pre class="border p-2 rounded-lg">{text}</pre>
 	{/if}
+
+	<button
+		type="button"
+		class="btn variant-filled block btn-sm"
+		on:click={() => {
+			readHtml().then((t) => {
+				html = t;
+			});
+		}}
+	>
+		Read HTML
+	</button>
+
+	<!-- set inner html -->
+	<div>{@html html}</div>
+
 	<button
 		type="button"
 		class="btn variant-filled block btn-sm"
@@ -60,11 +81,22 @@
 	>
 		Write Text
 	</button>
+
 	<button
 		type="button"
 		class="btn variant-filled block btn-sm"
 		on:click={async () => {
-			imageBase64 = await readImage();
+			await writeHtml('<h1 style="color:red; font-size:larger;">huakun zui shuai</h1>');
+		}}
+	>
+		Write HTML <small>Read HTML after Write</small>
+	</button>
+
+	<button
+		type="button"
+		class="btn variant-filled block btn-sm"
+		on:click={async () => {
+			imageBase64 = await readImageBase64();
 		}}
 	>
 		Read Image (Base64)
@@ -107,7 +139,7 @@
 		type="button"
 		class="btn variant-filled block btn-sm"
 		on:click={async () => {
-			await writeImage(sampleBase64Image);
+			await writeImageBase64(sampleBase64Image);
 		}}
 	>
 		Write Image
