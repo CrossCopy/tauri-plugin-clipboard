@@ -95,11 +95,7 @@ impl ClipboardManager {
     }
 
     pub fn has_image(&self) -> Result<bool, String> {
-        // todo: remove the negation once ChurchTao fixed the error
-        match self.has(ContentFormat::Image) {
-            Ok(res) => Ok(!res),
-            Err(err) => Err(err),
-        }
+        self.has(ContentFormat::Image)
     }
 
     pub fn has_html(&self) -> Result<bool, String> {

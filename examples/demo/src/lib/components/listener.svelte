@@ -10,7 +10,11 @@
 		onFilesUpdate,
 		startListening,
 		listenToMonitorStatusUpdate,
-		isMonitorRunning
+		isMonitorRunning,
+		hasHTML,
+		hasImage,
+		hasText,
+		hasRTF
 	} from 'tauri-plugin-clipboard-api';
 
 	let text = '';
@@ -23,6 +27,12 @@
 	let unlistenHtmlUpdate: UnlistenFn;
 	let unlistenClipboard: () => Promise<void>;
 	let unlistenFiles: UnlistenFn;
+	const has = {
+		hasHTML: false,
+		hasImage: false,
+		hasText: false,
+		hasRTF: false
+	};
 	onMount(async () => {
 		unlistenTextUpdate = await onTextUpdate((newText) => {
 			text = newText;
@@ -38,7 +48,11 @@
 		});
 		unlistenClipboard = await startListening();
 
-		onClipboardUpdate(() => {
+		onClipboardUpdate(async () => {
+			has.hasHTML = await hasHTML();
+			has.hasImage = await hasImage();
+			has.hasText = await hasText();
+			has.hasRTF = await hasRTF();
 			console.log('plugin:clipboard://clipboard-monitor/update event received');
 		});
 	});
@@ -72,23 +86,32 @@
 		}}>Start Listening</button
 	>
 {/if}
+<div>
+	<div><strong>hasHTML:</strong> {has.hasHTML}</div>
+	<div><strong>hasImage:</strong> {has.hasImage}</div>
+	<div><strong>hasText:</strong> {has.hasText}</div>
+	<div><strong>hasRTF:</strong> {has.hasRTF}</div>
+</div>
+<div>
+	<h2>Clipboard Text</h2>
+	{#if text}
+		<pre class="border p-2 rounded-lg">{text}</pre>
+	{/if}
 
-<h2>Clipboard Text</h2>
-{#if text}
-	<pre class="border p-2 rounded-lg">{text}</pre>
-{/if}
-
-<h2>Clipboard Files</h2>
-{#if files}
-	<ol class="list-decimal pl-6">
-		{#each files as file}
-			<li><code>{file}</code></li>
-		{/each}
-	</ol>
-{/if}
-<h2>Clipboard HTML</h2>
-<div>{@html htmlMonitorContent}</div>
-<h2>Clipboard Image</h2>
-{#if base64Image}
-	<img width="300" src={`data:image/png;base64, ${base64Image}`} alt="" />
-{/if}
+	<h2>Clipboard Files</h2>
+	{#if files}
+		<ol class="list-decimal pl-6">
+			{#each files as file}
+				<li><code>{file}</code></li>
+			{/each}
+		</ol>
+	{/if}
+	<h2>Clipboard HTML</h2>
+	{#if htmlMonitorContent}
+		<div class="border p-2 rounded-lg">{@html htmlMonitorContent}</div>
+	{/if}
+	<h2>Clipboard Image</h2>
+	{#if base64Image}
+		<img width="300" src={`data:image/png;base64, ${base64Image}`} alt="" />
+	{/if}
+</div>
