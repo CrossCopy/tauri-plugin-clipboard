@@ -1,15 +1,15 @@
-use arboard::{Clipboard, ImageData};
 use base64::{engine::general_purpose, Engine as _};
 use clipboard_files;
 use clipboard_master::{CallbackResult, ClipboardHandler, Master};
-use image::GenericImageView;
+use clipboard_rs::{common::RustImage, Clipboard, ClipboardContext};
+use clipboard_rs::{ContentFormat, RustImageData};
+use image::EncodableLayout;
+use std::sync::Arc;
 use std::sync::Mutex;
-use std::{borrow::Cow, sync::Arc};
 use tauri::{
     plugin::{Builder, TauriPlugin},
     Manager, Runtime, State,
 };
-mod util;
 
 struct ClipboardMonitor<R>
 where
@@ -67,16 +67,42 @@ where
 
 pub struct ClipboardManager {
     running: Arc<Mutex<bool>>,
-    clipboard: Arc<Mutex<Clipboard>>,
+    clipboard: Arc<Mutex<ClipboardContext>>,
 }
 
 impl ClipboardManager {
     pub fn default() -> Self {
         return ClipboardManager {
             running: Arc::default(),
-            clipboard: Arc::new(Mutex::from(Clipboard::new().unwrap())),
+            clipboard: Arc::new(Mutex::from(ClipboardContext::new().unwrap())),
         };
     }
+
+    pub fn has(&self, format: ContentFormat) -> Result<bool, String> {
+        Ok(self
+            .clipboard
+            .lock()
+            .map_err(|err| err.to_string())?
+            .has(format))
+    }
+
+    pub fn has_text(&self) -> Result<bool, String> {
+        self.has(ContentFormat::Text)
+    }
+
+    pub fn has_rtf(&self) -> Result<bool, String> {
+        self.has(ContentFormat::Rtf)
+    }
+
+    pub fn has_image(&self) -> Result<bool, String> {
+        self.has(ContentFormat::Image)
+    }
+
+    pub fn has_html(&self) -> Result<bool, String> {
+        self.has(ContentFormat::Html)
+    }
+
+    // Read from Clipboard APIs
 
     /// read text from clipboard
     pub fn read_text(&self) -> Result<String, String> {
@@ -84,6 +110,22 @@ impl ClipboardManager {
             .lock()
             .map_err(|err| err.to_string())?
             .get_text()
+            .map_err(|err| err.to_string())
+    }
+
+    pub fn read_html(&self) -> Result<String, String> {
+        self.clipboard
+            .lock()
+            .map_err(|err| err.to_string())?
+            .get_html()
+            .map_err(|err| err.to_string())
+    }
+
+    pub fn read_rtf(&self) -> Result<String, String> {
+        self.clipboard
+            .lock()
+            .map_err(|err| err.to_string())?
+            .get_rich_text()
             .map_err(|err| err.to_string())
     }
 
@@ -105,31 +147,10 @@ impl ClipboardManager {
         }
     }
 
-    pub fn write_text(&self, text: String) -> Result<(), String> {
-        self.clipboard
-            .lock()
-            .map_err(|err| err.to_string())?
-            .set_text(text)
-            .map_err(|err| err.to_string())
-    }
-
-    pub fn clear(&self) -> Result<(), String> {
-        self.clipboard
-            .lock()
-            .map_err(|err| err.to_string())?
-            .clear()
-            .map_err(|err| err.to_string())
-    }
-
     /// read image from clipboard and return a base64 string
-    pub fn read_image(&self) -> Result<String, String> {
-        let img = self
-            .clipboard
-            .lock()
-            .map_err(|err| err.to_string())?
-            .get_image()
-            .map_err(|err| err.to_string())?;
-        let base64_str = util::image_data_to_base64(&img);
+    pub fn read_image_base64(&self) -> Result<String, String> {
+        let image_bytes = self.read_image_binary()?;
+        let base64_str = general_purpose::STANDARD_NO_PAD.encode(&image_bytes);
         Ok(base64_str)
     }
 
@@ -141,41 +162,103 @@ impl ClipboardManager {
             .map_err(|err| err.to_string())?
             .get_image()
             .map_err(|err| err.to_string())?;
-        let bytes = util::image_data_to_bytes(&image);
+        let bytes = image
+            .to_png()
+            .map_err(|err| err.to_string())?
+            .get_bytes()
+            .to_vec();
+        // let bytes = util::image_data_to_bytes(&image);
         Ok(bytes)
     }
 
-    /// write base64 png image to clipboard
-    pub fn write_image(&self, base64_image: String) -> Result<(), String> {
-        let decoded = general_purpose::STANDARD_NO_PAD
-            .decode(base64_image)
-            .map_err(|err| err.to_string())?;
-        // println!("base64_image: {:?}", decoded);
-        let img = image::load_from_memory(&decoded).map_err(|err| err.to_string())?;
-        let pixels = img
-            .pixels()
-            .into_iter()
-            .map(|(_, _, pixel)| pixel.0)
-            .flatten()
-            .collect::<Vec<_>>();
-        let img_data = ImageData {
-            height: img.height() as usize,
-            width: img.width() as usize,
-            bytes: Cow::Owned(pixels),
-        };
+    // Write to Clipboard APIs
+    pub fn write_text(&self, text: String) -> Result<(), String> {
         self.clipboard
             .lock()
             .map_err(|err| err.to_string())?
-            .set_image(img_data)
+            .set_text(text)
+            .map_err(|err| err.to_string())
+    }
+
+    pub fn write_html(&self, html: String) -> Result<(), String> {
+        self.clipboard
+            .lock()
+            .map_err(|err| err.to_string())?
+            .set_html(html)
+            .map_err(|err| err.to_string())
+    }
+
+    pub fn write_rtf(&self, rtf: String) -> Result<(), String> {
+        self.clipboard
+            .lock()
+            .map_err(|err| err.to_string())?
+            .set_rich_text(rtf)
+            .map_err(|err| err.to_string())
+    }
+
+    /// write base64 png image to clipboard
+    pub fn write_image_base64(&self, base64_image: String) -> Result<(), String> {
+        let decoded = general_purpose::STANDARD_NO_PAD
+            .decode(base64_image)
+            .map_err(|err| err.to_string())?;
+        self.write_image_binary(decoded)
             .map_err(|err| err.to_string())?;
         Ok(())
     }
+
+    pub fn write_image_binary(&self, bytes: Vec<u8>) -> Result<(), String> {
+        println!("writing bin image to clipboard");
+        let img = RustImageData::from_bytes(bytes.as_bytes()).map_err(|err| err.to_string())?;
+        self.clipboard
+            .lock()
+            .map_err(|err| err.to_string())?
+            .set_image(img)
+            .unwrap();
+        Ok(())
+    }
+
+    pub fn clear(&self) -> Result<(), String> {
+        self.clipboard
+            .lock()
+            .map_err(|err| err.to_string())?
+            .clear()
+            .map_err(|err| err.to_string())
+    }
 }
 
-/// write text to clipboard
+#[tauri::command]
+fn has_text(manager: State<'_, ClipboardManager>) -> Result<bool, String> {
+    manager.has_text()
+}
+
+#[tauri::command]
+fn has_image(manager: State<'_, ClipboardManager>) -> Result<bool, String> {
+    manager.has_image()
+}
+
+#[tauri::command]
+fn has_html(manager: State<'_, ClipboardManager>) -> Result<bool, String> {
+    manager.has_html()
+}
+
+#[tauri::command]
+fn has_rtf(manager: State<'_, ClipboardManager>) -> Result<bool, String> {
+    manager.has_rtf()
+}
+
 #[tauri::command]
 fn read_text(manager: State<'_, ClipboardManager>) -> Result<String, String> {
     manager.read_text()
+}
+
+#[tauri::command]
+fn read_html(manager: State<'_, ClipboardManager>) -> Result<String, String> {
+    manager.read_html()
+}
+
+#[tauri::command]
+fn read_rtf(manager: State<'_, ClipboardManager>) -> Result<String, String> {
+    manager.read_rtf()
 }
 
 #[tauri::command]
@@ -189,14 +272,19 @@ fn write_text(manager: State<'_, ClipboardManager>, text: String) -> Result<(), 
 }
 
 #[tauri::command]
-fn clear(manager: State<'_, ClipboardManager>) -> Result<(), String> {
-    manager.clear()
+fn write_html(manager: State<'_, ClipboardManager>, html: String) -> Result<(), String> {
+    manager.write_html(html)
+}
+
+#[tauri::command]
+fn write_rtf(manager: State<'_, ClipboardManager>, rtf_content: String) -> Result<(), String> {
+    manager.write_rtf(rtf_content)
 }
 
 /// read image from clipboard and return a base64 string
 #[tauri::command]
-fn read_image(manager: State<'_, ClipboardManager>) -> Result<String, String> {
-    manager.read_image()
+fn read_image_base64(manager: State<'_, ClipboardManager>) -> Result<String, String> {
+    manager.read_image_base64()
 }
 
 #[tauri::command]
@@ -206,8 +294,21 @@ fn read_image_binary(manager: State<'_, ClipboardManager>) -> Result<Vec<u8>, St
 
 /// write base64 image to clipboard
 #[tauri::command]
-fn write_image(manager: State<'_, ClipboardManager>, base64_image: String) -> Result<(), String> {
-    manager.write_image(base64_image)
+fn write_image_base64(
+    manager: State<'_, ClipboardManager>,
+    base64_image: String,
+) -> Result<(), String> {
+    manager.write_image_base64(base64_image)
+}
+
+#[tauri::command]
+fn write_image_binary(manager: State<'_, ClipboardManager>, bytes: Vec<u8>) -> Result<(), String> {
+    manager.write_image_binary(bytes)
+}
+
+#[tauri::command]
+fn clear(manager: State<'_, ClipboardManager>) -> Result<(), String> {
+    manager.clear()
 }
 
 #[tauri::command]
@@ -251,12 +352,21 @@ pub fn init<R: Runtime>() -> TauriPlugin<R> {
             stop_monitor,
             start_monitor,
             is_monitor_running,
+            has_text,
+            has_image,
+            has_html,
+            has_rtf,
             read_text,
             read_files,
-            write_text,
-            read_image,
-            write_image,
+            read_html,
+            read_image_base64,
             read_image_binary,
+            read_rtf,
+            write_text,
+            write_html,
+            write_rtf,
+            write_image_binary,
+            write_image_base64,
             clear
         ])
         .setup(move |app| {
