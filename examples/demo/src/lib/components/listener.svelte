@@ -64,8 +64,9 @@
 	onDestroy(() => {
 		unlistenTextUpdate();
 		unlistenImageUpdate();
-		unlistenClipboard();
+		unlistenHtmlUpdate();
 		unlistenFiles();
+		unlistenClipboard();
 	});
 </script>
 

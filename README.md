@@ -1,8 +1,8 @@
 # Tauri Plugin clipboard
 
-> A Tauri plugin for clipboard read/write/monitor. Support text, files and image.
+> A Tauri plugin for clipboard read/write/monitor. Support text, rich text, HTML, files and image.
 >
-> The reason I built this plugin is becasue official Tauri API only supports clipboard with text, not image or files. So you can still use the official API for text.
+> The reason I built this plugin is becasue official Tauri API only supports clipboard read and write for text, not image, HTML, rich text or files. So you can still use the official API for text.
 
 ## Installation
 
@@ -21,7 +21,7 @@ tauri-plugin-clipboard = { git = "https://github.com/CrossCopy/tauri-plugin-clip
 You can also add a tag to github url.
 
 ```toml
-tauri-plugin-clipboard = { git = "https://github.com/CrossCopy/tauri-plugin-clipboard", tag = "v0.5.4" }
+tauri-plugin-clipboard = { git = "https://github.com/CrossCopy/tauri-plugin-clipboard", tag = "v0.6.0" }
 ```
 
 NPM Package: https://www.npmjs.com/package/tauri-plugin-clipboard-api
@@ -33,7 +33,7 @@ npm i tauri-plugin-clipboard-api
 
 npm i https://github.com/CrossCopy/tauri-plugin-clipboard # or this for latest unpublished version (not recommended)
 
-npm i https://github.com/CrossCopy/tauri-plugin-clipboard#v0.5.4 # or this for tag
+npm i https://github.com/CrossCopy/tauri-plugin-clipboard#v0.6.0 # or this for tag
 ```
 
 In `main.rs`, add the following to your `tauri::Builder`:
@@ -53,7 +53,8 @@ Read more in the [official doc](https://tauri.app/v1/guides/features/plugin/#usi
 >
 > The example is very detailed.
 
-![](./README.assets/tauri-plugin-clipboard-dmeo.png)
+![](./README.assets/tauri-plugin-clipboard-dmeo-1.png)
+![](./README.assets/tauri-plugin-clipboard-dmeo-2.png)
 
 ```bash
 npm run build
@@ -70,21 +71,14 @@ It works the same with other frontend frameworks like Vue, React, etc.
 ## Sample Usage (TypeScript API)
 
 ```ts
-import {
-  readText,
-  readFiles,
-  writeText,
-  readImage,
-  readImageBinary,
-  readImageObjectURL,
-  writeImage,
-  clear
-} from "tauri-plugin-clipboard-api";
+import clipboard from 'tauri-plugin-clipboard-api';
 
-await readText();
-await writeText("huakun zui shuai");
 
-readImage()
+await clipboard.readText();
+await clipboard.writeText('huakun zui shuai');
+
+
+clipboard.readImageBase64()
   .then((base64Img) => {
     imageStr = `data:image/png;base64, ${base64Img}`;
   })
@@ -92,8 +86,12 @@ readImage()
     alert(err);
   });
 
-await writeImage(sample_base64_image);
+await clipboard.writeImageBase64(sample_base64_image);
 const files: string[] = await readFiles();
+
+clipboard.readHtml().then((t: string) => {
+  // todo
+});
 ```
 
 ### Sample Usage (Rust API)
@@ -124,30 +122,47 @@ We use Tauri's event system. Start a listener with Tauri's `listen()` function t
 
 The following example is in svelte.
 
+Read the full source code in [examples/demo/src/lib/components/listener.svelte](./examples/demo/src/lib/components/listener.svelte).
+
 ```ts
-import type { UnlistenFn } from "@tauri-apps/api/event";
-import { onDestroy, onMount } from "svelte";
+import type { UnlistenFn } from '@tauri-apps/api/event';
+import { onDestroy, onMount } from 'svelte';
 import {
   onClipboardUpdate,
   onImageUpdate,
   onTextUpdate,
+  onHTMLUpdate,
   onFilesUpdate,
   startListening,
   listenToMonitorStatusUpdate,
-  isMonitorRunning,
-} from "tauri-plugin-clipboard-api";
+  hasHTML,
+  hasImage,
+  hasText,
+  hasRTF
+} from 'tauri-plugin-clipboard-api';
 
-let text = "";
+let text = '';
 let files: string[] = [];
-let base64Image = "";
+let base64Image = '';
+let htmlMonitorContent = '';
 let monitorRunning = false;
 let unlistenTextUpdate: UnlistenFn;
 let unlistenImageUpdate: UnlistenFn;
+let unlistenHtmlUpdate: UnlistenFn;
 let unlistenClipboard: () => Promise<void>;
 let unlistenFiles: UnlistenFn;
+const has = {
+  hasHTML: false,
+  hasImage: false,
+  hasText: false,
+  hasRTF: false
+};
 onMount(async () => {
   unlistenTextUpdate = await onTextUpdate((newText) => {
     text = newText;
+  });
+  unlistenHtmlUpdate = await onHTMLUpdate((newHtml) => {
+    htmlMonitorContent = newHtml;
   });
   unlistenImageUpdate = await onImageUpdate((b64Str) => {
     base64Image = b64Str;
@@ -157,8 +172,12 @@ onMount(async () => {
   });
   unlistenClipboard = await startListening();
 
-  onClipboardUpdate(() => {
-    console.log("plugin:clipboard://clipboard-monitor/update event received");
+  onClipboardUpdate(async () => {
+    has.hasHTML = await hasHTML();
+    has.hasImage = await hasImage();
+    has.hasText = await hasText();
+    has.hasRTF = await hasRTF();
+    console.log('plugin:clipboard://clipboard-monitor/update event received');
   });
 });
 
@@ -169,8 +188,9 @@ listenToMonitorStatusUpdate((running) => {
 onDestroy(() => {
   unlistenTextUpdate();
   unlistenImageUpdate();
-  unlistenClipboard();
+  unlistenHtmlUpdate();
   unlistenFiles();
+  unlistenClipboard();
 });
 ```
 
@@ -203,13 +223,19 @@ The listener `startListening` function contains two parts:
       1. `plugin:clipboard://text-changed`
       2. `plugin:clipboard://files-changed`
       3. `plugin:clipboard://image-changed`
+      4. `plugin:clipboard://html-changed`
+      5. `plugin:clipboard://rtf-changed`
 
 The returned unlisten function from `startListening` also does two things:
 
-1. Stop monitor thread by invoking `stop_monitor` command.
+1. Stop monitor thread by invoking `stop_monitor` command to Tauri core.
 2. Stop listener started in `listenToClipboard`.
 
-The base64 image string can be converted to `Uint8Array` and written to file system using tauri's fs API.
+For more details read the source code from [./webview-src/api.ts](./webview-src/api.ts).
+
+## Note
+
+The base64 image string can be converted to `Uint8Array` and written to file system using tauri's fs API. (We also provide a `readImageBinary` function to read image as binary data (`Uint8Array` is one of the available return type).
 
 ```ts
 import { writeBinaryFile, BaseDirectory } from "@tauri-apps/api/fs";

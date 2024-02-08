@@ -58,7 +58,19 @@ export declare function readFiles(): Promise<string[]>;
  * @returns image in base64 string
  */
 export declare function readImageBase64(): Promise<string>;
+/**
+ * Read clipboard image, get the data in binary format
+ * int_array (Array<number>) is received from Tauri core, Uint8Array and Blob are transformed from int_array
+ * @param format data type of returned value, "int_array" is the fastest
+ * @returns
+ */
 export declare function readImageBinary(format: "int_array" | "Uint8Array" | "Blob"): Promise<number[] | Uint8Array | Blob>;
+/**
+ * Here is the transformation flow,
+ * read clipboard image as Array<number> (int_array) -> int_array -> Uint8Array -> Blob -> ObjectURL
+ * There are many layers which could make this function slow for large images.
+ * @returns ObjectURL for clipboard image
+ */
 export declare function readImageObjectURL(): Promise<string>;
 /**
  * write image to clipboard
