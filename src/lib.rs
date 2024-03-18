@@ -130,6 +130,7 @@ impl ClipboardManager {
 
     /// read files from clipboard and return a `Vec<String>`
     /// Will return a vector of strings, in uri format: `file:///path/to/file`. File path is absolute path.
+    /// On Windows, the path will be in the format `C:\\path\\to\\file`. This method is the same as read_files on windows
     pub fn read_files_uris(&self) -> Result<Vec<String>, String> {
         let files = self
             .clipboard
@@ -142,6 +143,7 @@ impl ClipboardManager {
 
     /// read files from clipboard and return a `Vec<String>`
     /// Will return a vector of strings, in absolute path format: `/path/to/file`.
+    /// On Windows, the path will be in the format `C:\\path\\to\\file`. This method is the same as read_files_uris on windows
     pub fn read_files(&self) -> Result<Vec<String>, String> {
         let files = self.read_files_uris()?;
         // iterate through the files and remove the `file://` prefix if there is any. Only remove the prefix if it's in the beginning

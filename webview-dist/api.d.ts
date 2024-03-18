@@ -20,6 +20,7 @@ export declare const READ_TEXT_COMMAND = "plugin:clipboard|read_text";
 export declare const READ_HTML_COMMAND = "plugin:clipboard|read_html";
 export declare const READ_RTF_COMMAND = "plugin:clipboard|read_rtf";
 export declare const READ_FILES_COMMAND = "plugin:clipboard|read_files";
+export declare const READ_FILES_URIS_COMMAND = "plugin:clipboard|read_files_uris";
 export declare const READ_IMAGE_BINARY_COMMAND = "plugin:clipboard|read_image_binary";
 export declare const READ_IMAGE_BASE64_COMMAND = "plugin:clipboard|read_image_base64";
 export declare const WRITE_IMAGE_BINARY_COMMAND = "plugin:clipboard|write_image_binary";
@@ -53,6 +54,7 @@ export declare function readText(): Promise<string>;
 export declare function readHtml(): Promise<string>;
 export declare function readRtf(): Promise<string>;
 export declare function readFiles(): Promise<string[]>;
+export declare function readFilesURIs(): Promise<string[]>;
 /**
  * read clipboard image
  * @returns image in base64 string
