@@ -1,5 +1,4 @@
 use base64::{engine::general_purpose, Engine as _};
-use clipboard_files;
 use clipboard_master::{CallbackResult, ClipboardHandler, Master};
 use clipboard_rs::{common::RustImage, Clipboard, ClipboardContext};
 use clipboard_rs::{ContentFormat, RustImageData};
@@ -130,22 +129,43 @@ impl ClipboardManager {
     }
 
     /// read files from clipboard and return a `Vec<String>`
-    pub fn read_files(&self) -> Result<Vec<String>, String> {
-        let res = clipboard_files::read();
-        match res {
-            Ok(files) => {
-                let files_str = files
-                    .iter()
-                    .map(|file| file.to_str().unwrap().to_string())
-                    .collect::<Vec<_>>();
-                Ok(files_str)
-            }
-            Err(err) => match err {
-                clipboard_files::Error::NoFiles => Err("No files in clipboard".to_string()),
-                _ => Err("Unknown error".to_string()),
-            },
-        }
+    /// Will return a vector of strings, in uri format: `file:///path/to/file`. File path is absolute path.
+    pub fn read_files_uris(&self) -> Result<Vec<String>, String> {
+        let files = self
+            .clipboard
+            .lock()
+            .map_err(|err| err.to_string())?
+            .get_files()
+            .map_err(|err| err.to_string())?;
+        Ok(files)
     }
+
+    /// read files from clipboard and return a `Vec<String>`
+    /// Will return a vector of strings, in absolute path format: `/path/to/file`.
+    pub fn read_files(&self) -> Result<Vec<String>, String> {
+        let files = self.read_files_uris()?;
+        // iterate through the files and remove the `file://` prefix if there is any. Only remove the prefix if it's in the beginning
+        let files_str = files
+            .iter()
+            .map(|file| {
+                if file.starts_with("file://") {
+                    file[7..].to_string()
+                } else {
+                    file.to_string()
+                }
+            })
+            .collect::<Vec<_>>();
+        Ok(files_str)
+    }
+
+    pub fn set_files(&self, files: Vec<String>) -> Result<(), String> {
+        self.clipboard
+            .lock()
+            .map_err(|err| err.to_string())?
+            .set_files(files)
+            .map_err(|err| err.to_string())
+    }
+
 
     /// read image from clipboard and return a base64 string
     pub fn read_image_base64(&self) -> Result<String, String> {
@@ -267,6 +287,11 @@ fn read_files(manager: State<'_, ClipboardManager>) -> Result<Vec<String>, Strin
 }
 
 #[tauri::command]
+fn read_files_uris(manager: State<'_, ClipboardManager>) -> Result<Vec<String>, String> {
+    manager.read_files_uris()
+}
+
+#[tauri::command]
 fn write_text(manager: State<'_, ClipboardManager>, text: String) -> Result<(), String> {
     manager.write_text(text)
 }
@@ -358,6 +383,7 @@ pub fn init<R: Runtime>() -> TauriPlugin<R> {
             has_rtf,
             read_text,
             read_files,
+            read_files_uris,
             read_html,
             read_image_base64,
             read_image_binary,
