@@ -71,14 +71,13 @@ It works the same with other frontend frameworks like Vue, React, etc.
 ## Sample Usage (TypeScript API)
 
 ```ts
-import clipboard from 'tauri-plugin-clipboard-api';
-
+import clipboard from "tauri-plugin-clipboard-api";
 
 await clipboard.readText();
-await clipboard.writeText('huakun zui shuai');
+await clipboard.writeText("huakun zui shuai");
 
-
-clipboard.readImageBase64()
+clipboard
+  .readImageBase64()
   .then((base64Img) => {
     imageStr = `data:image/png;base64, ${base64Img}`;
   })
@@ -125,8 +124,8 @@ The following example is in svelte.
 Read the full source code in [examples/demo/src/lib/components/listener.svelte](./examples/demo/src/lib/components/listener.svelte).
 
 ```ts
-import type { UnlistenFn } from '@tauri-apps/api/event';
-import { onDestroy, onMount } from 'svelte';
+import type { UnlistenFn } from "@tauri-apps/api/event";
+import { onDestroy, onMount } from "svelte";
 import {
   onClipboardUpdate,
   onImageUpdate,
@@ -138,13 +137,13 @@ import {
   hasHTML,
   hasImage,
   hasText,
-  hasRTF
-} from 'tauri-plugin-clipboard-api';
+  hasRTF,
+} from "tauri-plugin-clipboard-api";
 
-let text = '';
+let text = "";
 let files: string[] = [];
-let base64Image = '';
-let htmlMonitorContent = '';
+let base64Image = "";
+let htmlMonitorContent = "";
 let monitorRunning = false;
 let unlistenTextUpdate: UnlistenFn;
 let unlistenImageUpdate: UnlistenFn;
@@ -155,7 +154,7 @@ const has = {
   hasHTML: false,
   hasImage: false,
   hasText: false,
-  hasRTF: false
+  hasRTF: false,
 };
 onMount(async () => {
   unlistenTextUpdate = await onTextUpdate((newText) => {
@@ -177,7 +176,7 @@ onMount(async () => {
     has.hasImage = await hasImage();
     has.hasText = await hasText();
     has.hasRTF = await hasRTF();
-    console.log('plugin:clipboard://clipboard-monitor/update event received');
+    console.log("plugin:clipboard://clipboard-monitor/update event received");
   });
 });
 
@@ -193,6 +192,19 @@ onDestroy(() => {
   unlistenClipboard();
 });
 ```
+
+## API
+
+### Files
+
+CLipboard Files has the following APIs, check the source code for more details ([./webview-src/api.ts](./webview-src/api.ts)).
+
+1. `writeFilesURIs`
+   1. On Linux and MacOS, the URIs should start with `files://`. Otherwise the code will throw an error. See the docstring in the source code for more details ([./src/lib.rs](./src/lib.rs)).
+2. `readFiles`
+3. `readFilesURIs`
+
+Difference between URI and no-URI is that URI starts with `files://` on Linux and MacOS. On Windows `readFiles` and `readFilesURIs` have no difference.
 
 ## Notes
 

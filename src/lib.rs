@@ -160,14 +160,40 @@ impl ClipboardManager {
         Ok(files_str)
     }
 
-    pub fn set_files(&self, files: Vec<String>) -> Result<(), String> {
+    /// Write files uris to clipboard. The files should be in uri format: `file:///path/to/file` on Mac and Linux. File path is absolute path.
+    /// On Windows, the path should be in the format `C:\\path\\to\\file`.
+    pub fn write_files_uris(&self, files: Vec<String>) -> Result<(), String> {
+        // iterate through files, check if it starts with files://, if not throw error (only linux and mac)
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
+        {
+            for file in &files {
+                if !file.starts_with("file://") {
+                    return Err(format!(
+                        "Invalid file uri: {}. File uri should start with file://",
+                        file
+                    ));
+                }
+            }
+        }
+        // On Windows, we don't need the file:// prefix, so we remove it if it's there
+        #[cfg(target_os = "windows")]
+        {
+            for file in &files {
+                if file.starts_with("file://") {
+                    return Err(format!(
+                        "Invalid file uri: {}. File uri on Windows should not start with file://",
+                        file
+                    ));
+                }
+            }
+        }
+
         self.clipboard
             .lock()
             .map_err(|err| err.to_string())?
             .set_files(files)
             .map_err(|err| err.to_string())
     }
-
 
     /// read image from clipboard and return a base64 string
     pub fn read_image_base64(&self) -> Result<String, String> {
@@ -229,7 +255,6 @@ impl ClipboardManager {
     }
 
     pub fn write_image_binary(&self, bytes: Vec<u8>) -> Result<(), String> {
-        println!("writing bin image to clipboard");
         let img = RustImageData::from_bytes(bytes.as_bytes()).map_err(|err| err.to_string())?;
         self.clipboard
             .lock()
@@ -291,6 +316,14 @@ fn read_files(manager: State<'_, ClipboardManager>) -> Result<Vec<String>, Strin
 #[tauri::command]
 fn read_files_uris(manager: State<'_, ClipboardManager>) -> Result<Vec<String>, String> {
     manager.read_files_uris()
+}
+
+#[tauri::command]
+fn write_files_uris(
+    manager: State<'_, ClipboardManager>,
+    files_uris: Vec<String>,
+) -> Result<(), String> {
+    manager.write_files_uris(files_uris)
 }
 
 #[tauri::command]
@@ -395,6 +428,7 @@ pub fn init<R: Runtime>() -> TauriPlugin<R> {
             write_rtf,
             write_image_binary,
             write_image_base64,
+            write_files_uris,
             clear
         ])
         .setup(move |app| {

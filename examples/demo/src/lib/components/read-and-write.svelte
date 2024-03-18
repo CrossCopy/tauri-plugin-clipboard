@@ -62,7 +62,6 @@
 		{/each}
 	</ol>
 
-
 	<button
 		type="button"
 		class="btn variant-filled block btn-sm"
@@ -79,7 +78,7 @@
 			<li><code>{file}</code></li>
 		{/each}
 	</ol>
-	
+
 	<button
 		type="button"
 		class="btn variant-filled block btn-sm"
@@ -88,6 +87,16 @@
 		}}
 	>
 		Write Text
+	</button>
+
+	<button
+		type="button"
+		class="btn variant-filled block btn-sm"
+		on:click={async () => {
+			clipboard.writeFilesURIs(['/Users/hacker/Desktop/clipboard-rs/CHANGELOG.md']).catch(alert);
+		}}
+	>
+		Write Files URIs
 	</button>
 
 	<button
@@ -104,43 +113,57 @@
 		type="button"
 		class="btn variant-filled block btn-sm"
 		on:click={async () => {
-			imageBase64 = await clipboard.readImageBase64();
+			clipboard
+				.readImageBase64()
+				.then((data) => {
+					imageBase64 = data;
+				})
+				.catch(alert);
 		}}
 	>
 		Read Image (Base64)
 	</button>
 	{#if imageBase64}
-		<img src={`data:image/png;base64, ${imageBase64}`} alt="" />
+		<img src={`data:image/png;base64, ${imageBase64}`} width="300" alt="" />
 	{/if}
 	<button
 		type="button"
 		class="btn variant-filled block btn-sm"
 		on:click={async () => {
-			const binaryImage = await clipboard.readImageBinary('Uint8Array');
-			if (binaryImage instanceof Uint8Array) {
-				const blob = new Blob([binaryImage]);
-				imageBinaryObjUrl = URL.createObjectURL(blob);
-			} else if (binaryImage instanceof Blob) {
-				imageBinaryObjUrl = URL.createObjectURL(binaryImage);
+			try {
+				const binaryImage = await clipboard.readImageBinary('Uint8Array');
+				if (binaryImage instanceof Uint8Array) {
+					const blob = new Blob([binaryImage]);
+					imageBinaryObjUrl = URL.createObjectURL(blob);
+				} else if (binaryImage instanceof Blob) {
+					imageBinaryObjUrl = URL.createObjectURL(binaryImage);
+				}
+			} catch (error) {
+				alert(error);
 			}
 		}}
 	>
 		Read Image (Binary)
 	</button>
 	{#if imageBinaryObjUrl}
-		<img src={imageBinaryObjUrl} alt="" />
+		<img src={imageBinaryObjUrl} width="300" alt="" />
 	{/if}
 	<button
 		type="button"
 		class="btn variant-filled block btn-sm"
 		on:click={async () => {
-			imageObjectUrl = await clipboard.readImageObjectURL();
+			clipboard
+				.readImageObjectURL()
+				.then((data) => {
+					imageObjectUrl = data;
+				})
+				.catch(alert);
 		}}
 	>
 		Read Image (ObjectURL)
 	</button>
 	{#if imageObjectUrl}
-		<img src={imageObjectUrl} alt="" />
+		<img src={imageObjectUrl} width="300" alt="" />
 	{/if}
 
 	<button
