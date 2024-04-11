@@ -21,7 +21,7 @@ tauri-plugin-clipboard = { git = "https://github.com/CrossCopy/tauri-plugin-clip
 You can also add a tag to github url.
 
 ```toml
-tauri-plugin-clipboard = { git = "https://github.com/CrossCopy/tauri-plugin-clipboard", tag = "v0.6.0" }
+tauri-plugin-clipboard = { git = "https://github.com/CrossCopy/tauri-plugin-clipboard", tag = "v0.6.2" }
 ```
 
 NPM Package: https://www.npmjs.com/package/tauri-plugin-clipboard-api
@@ -33,7 +33,7 @@ npm i tauri-plugin-clipboard-api
 
 npm i https://github.com/CrossCopy/tauri-plugin-clipboard # or this for latest unpublished version (not recommended)
 
-npm i https://github.com/CrossCopy/tauri-plugin-clipboard#v0.6.0 # or this for tag
+npm i https://github.com/CrossCopy/tauri-plugin-clipboard#v0.6.2 # or this for tag
 ```
 
 In `main.rs`, add the following to your `tauri::Builder`:
