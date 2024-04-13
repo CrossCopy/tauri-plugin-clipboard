@@ -14,6 +14,7 @@ export const HAS_TEXT_COMMAND = "plugin:clipboard|has_text";
 export const HAS_IMAGE_COMMAND = "plugin:clipboard|has_image";
 export const HAS_HTML_COMMAND = "plugin:clipboard|has_html";
 export const HAS_RTF_COMMAND = "plugin:clipboard|has_rtf";
+export const HAS_FILES_COMMAND = "plugin:clipboard|has_files";
 export const WRITE_TEXT_COMMAND = "plugin:clipboard|write_text";
 export const WRITE_HTML_COMMAND = "plugin:clipboard|write_html";
 export const WRITE_RTF_COMMAND = "plugin:clipboard|write_rtf";
@@ -54,6 +55,10 @@ export function hasRTF(): Promise<boolean> {
 
 export function hasImage(): Promise<boolean> {
   return invoke(HAS_IMAGE_COMMAND);
+}
+
+export function hasFiles(): Promise<boolean> {
+  return invoke(HAS_FILES_COMMAND);
 }
 
 export function writeText(text: string): Promise<void> {
@@ -110,7 +115,7 @@ export function readImageBase64(): Promise<string> {
  * Read clipboard image, get the data in binary format
  * int_array (Array<number>) is received from Tauri core, Uint8Array and Blob are transformed from int_array
  * @param format data type of returned value, "int_array" is the fastest
- * @returns 
+ * @returns
  */
 export function readImageBinary(
   format: "int_array" | "Uint8Array" | "Blob"
@@ -132,7 +137,7 @@ export function readImageBinary(
 }
 
 /**
- * Here is the transformation flow, 
+ * Here is the transformation flow,
  * read clipboard image as Array<number> (int_array) -> int_array -> Uint8Array -> Blob -> ObjectURL
  * There are many layers which could make this function slow for large images.
  * @returns ObjectURL for clipboard image
@@ -223,32 +228,34 @@ export function startBruteForceImageMonitor(delay: number = 1000) {
 export function listenToClipboard(): Promise<UnlistenFn> {
   return listen(MONITOR_UPDATE_EVENT, async (e) => {
     if (e.payload === "clipboard update") {
-      // todo: update the file part when clipboard-rs crate supports files
-      try {
+      let success = false;
+      if (await hasFiles()) {
         const files = await readFiles();
-        await emit(FILES_CHANGED, { value: files });
-      } catch (error) {
-        let success = false;
-        if (await hasImage()) {
-          const img = await readImageBase64();
-          if (img) await emit(IMAGE_CHANGED, { value: img });
-          success = true;
+        if (files && files.length > 0) {
+          await emit(FILES_CHANGED, { value: files });
         }
-        if (await hasHTML()) {
-          await emit(HTML_CHANGED, { value: await readHtml() });
-          success = true;
-        }
-        if (await hasRTF()) {
-          await emit(RTF_CHANGED, { value: await readRtf() });
-          success = true;
-        }
-        if (await hasText()) {
-          await emit(TEXT_CHANGED, { value: await readText() });
-          success = true;
-        }
-        if (!success) {
-          throw new Error("Unexpected Error: No proper clipboard type");
-        }
+        success = true;
+        return; // ! this return is necessary, copying files also update clipboard text, but we don't want text update to be triggered
+      }
+      if (await hasImage()) {
+        const img = await readImageBase64();
+        if (img) await emit(IMAGE_CHANGED, { value: img });
+        success = true;
+      }
+      if (await hasHTML()) {
+        await emit(HTML_CHANGED, { value: await readHtml() });
+        success = true;
+      }
+      if (await hasRTF()) {
+        await emit(RTF_CHANGED, { value: await readRtf() });
+        success = true;
+      }
+      if (await hasText()) {
+        await emit(TEXT_CHANGED, { value: await readText() });
+        success = true;
+      }
+      if (!success) {
+        throw new Error("Unexpected Error: No proper clipboard type");
       }
     }
   });
