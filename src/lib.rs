@@ -17,26 +17,15 @@ struct ClipboardMonitor<R>
 where
     R: Runtime,
 {
-    ctx: ClipboardContext,
     app_handle: tauri::AppHandle<R>,
-    // running: Arc<Mutex<bool>>, // TODO: might need to be replaced with a shutdown channel
 }
 
 impl<R> ClipboardMonitor<R>
 where
     R: Runtime,
 {
-    fn new(
-        app_handle: tauri::AppHandle<R>,
-        // ctx: ClipboardContext
-        // running: Arc<Mutex<bool>>
-    ) -> Self {
-        let ctx = ClipboardContext::new().unwrap();
-        Self {
-            ctx,
-            app_handle,
-            // running,
-        }
+    fn new(app_handle: tauri::AppHandle<R>) -> Self {
+        Self { app_handle }
     }
 }
 
@@ -45,54 +34,14 @@ where
     R: Runtime,
 {
     fn on_clipboard_change(&mut self) {
-        println!("Clipboard Update");
         let _ = self.app_handle.emit_all(
             "plugin:clipboard://clipboard-monitor/update",
             format!("clipboard update"),
         );
-        // println!(
-        //     "on_clipboard_change, txt = {}",
-        //     self.ctx.get_text().unwrap()
-        // );
     }
 }
 
-// impl<R> ClipboardHandler for ClipboardMonitor<R>
-// where
-//     R: Runtime,
-// {
-//     fn on_clipboard_change(&mut self) -> CallbackResult {
-//         if !*self.running.lock().unwrap() {
-//             let _ = self
-//                 .app_handle
-//                 .emit_all("plugin:clipboard://clipboard-monitor/status", false);
-//             return CallbackResult::Stop;
-//         }
-//         let _ = self.app_handle.emit_all(
-//             "plugin:clipboard://clipboard-monitor/update",
-//             format!("clipboard update"),
-//         );
-//         CallbackResult::Next
-//     }
-
-//     fn on_clipboard_error(&mut self, error: std::io::Error) -> CallbackResult {
-//         let _ = self.app_handle.emit_all(
-//             "plugin:clipboard://clipboard-monitor/error",
-//             error.to_string(),
-//         );
-//         if !*self.running.lock().unwrap() {
-//             let _ = self
-//                 .app_handle
-//                 .emit_all("plugin:clipboard://clipboard-monitor/status", false);
-//             return CallbackResult::Stop;
-//         }
-//         eprintln!("Error: {}", error);
-//         CallbackResult::Next
-//     }
-// }
-
 pub struct ClipboardManager {
-    // running: Arc<Mutex<bool>>,
     clipboard: Arc<Mutex<ClipboardContext>>,
     watcher_shutdown: Arc<Mutex<Option<WatcherShutdown>>>,
 }
@@ -100,7 +49,6 @@ pub struct ClipboardManager {
 impl ClipboardManager {
     pub fn default() -> Self {
         return ClipboardManager {
-            // running: Arc::default(),
             clipboard: Arc::new(Mutex::from(ClipboardContext::new().unwrap())),
             watcher_shutdown: Arc::default(),
         };
@@ -128,6 +76,10 @@ impl ClipboardManager {
 
     pub fn has_html(&self) -> Result<bool, String> {
         self.has(ContentFormat::Html)
+    }
+
+    pub fn has_files(&self) -> Result<bool, String> {
+        self.has(ContentFormat::Files)
     }
 
     // Read from Clipboard APIs
@@ -323,6 +275,11 @@ fn has_rtf(manager: State<'_, ClipboardManager>) -> Result<bool, String> {
 }
 
 #[tauri::command]
+fn has_files(manager: State<'_, ClipboardManager>) -> Result<bool, String> {
+    manager.has_files()
+}
+
+#[tauri::command]
 fn read_text(manager: State<'_, ClipboardManager>) -> Result<String, String> {
     manager.read_text()
 }
@@ -406,32 +363,17 @@ async fn start_monitor<R: Runtime>(
     state: tauri::State<'_, ClipboardManager>,
 ) -> Result<(), String> {
     let _ = app.emit_all("plugin:clipboard://clipboard-monitor/status", true);
-    // let clipboard_ctx = state.clipboard.lock().unwrap().get_files();
     let manager = ClipboardMonitor::new(app);
     let mut watcher: ClipboardWatcherContext<ClipboardMonitor<R>> =
         ClipboardWatcherContext::new().unwrap();
     let watcher_shutdown = watcher.add_handler(manager).get_shutdown_channel();
-    // println!("shutdown: {:?}", watcher_shutdown);
-    println!("shutdown created");
-
-    // state.watcher_shutdown = Arc::new(Mutex::from(Some(watcher_shutdown)));
     let mut watcher_shutdown_state = state.watcher_shutdown.lock().unwrap();
     if (*watcher_shutdown_state).is_some() {
-        println!("Monitor Already Running");
         return Ok(());
     }
     *watcher_shutdown_state = Some(watcher_shutdown);
-    println!("Monitor Started");
-    // let mut running = state.running.lock().unwrap();
-    // if *running {
-    //     return Ok(());
-    // }
-    // *running = true;
-    // let running = state.running.clone();
     std::thread::spawn(move || {
         watcher.start_watch();
-        println!("watcher thread stopped");
-    // let _ = Master::new(ClipboardMonitor::new(app, running)).run();
     });
     Ok(())
 }
@@ -441,24 +383,18 @@ async fn stop_monitor<R: Runtime>(
     app: tauri::AppHandle<R>,
     state: tauri::State<'_, ClipboardManager>,
 ) -> Result<(), String> {
-    // *state.running.lock().unwrap() = false;
-    println!("stop_monitor called");
     let _ = app.emit_all("plugin:clipboard://clipboard-monitor/status", false);
     let mut watcher_shutdown_state = state.watcher_shutdown.lock().unwrap();
     if let Some(watcher_shutdown) = (*watcher_shutdown_state).take() {
         watcher_shutdown.stop();
-        println!("watcher_shutdown called");
     }
     *watcher_shutdown_state = None;
-    println!("stop_monitor done");
     Ok(())
 }
 
 #[tauri::command]
 fn is_monitor_running(state: tauri::State<'_, ClipboardManager>) -> bool {
     (*state.watcher_shutdown.lock().unwrap()).is_some()
-    // *state.running.lock().unwrap()
-    // todo!()
 }
 
 /// Initializes the plugin.
@@ -473,6 +409,7 @@ pub fn init<R: Runtime>() -> TauriPlugin<R> {
             has_image,
             has_html,
             has_rtf,
+            has_files,
             read_text,
             read_files,
             read_files_uris,
