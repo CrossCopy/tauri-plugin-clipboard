@@ -1,7 +1,7 @@
 [package]
 name = "tauri-plugin-clipboard"
 license = "MIT"
-version = "0.6.3"
+version = "0.6.4"
 description = "A clipboard plugin for Tauri that supports text, files and image, as well as clipboard update listening."
 authors = [ "Huakun" ]
 edition = "2021"
