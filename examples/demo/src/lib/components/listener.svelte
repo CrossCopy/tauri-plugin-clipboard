@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { UnlistenFn } from '@tauri-apps/api/event';
+	// type UnlistenFn = () => void;
 	import { onDestroy, onMount } from 'svelte';
 	import {
 		onClipboardUpdate,
@@ -74,11 +75,11 @@
 	});
 
 	onDestroy(() => {
-		unlistenTextUpdate();
-		unlistenImageUpdate();
-		unlistenHtmlUpdate();
-		unlistenFiles();
-		unlistenClipboard();
+		if (unlistenTextUpdate) unlistenTextUpdate();
+		if (unlistenImageUpdate) unlistenImageUpdate();
+		if (unlistenHtmlUpdate) unlistenHtmlUpdate();
+		if (unlistenFiles) unlistenFiles();
+		if (unlistenClipboard) unlistenClipboard();
 	});
 </script>
 

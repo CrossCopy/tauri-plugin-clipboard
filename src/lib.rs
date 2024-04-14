@@ -329,18 +329,18 @@ fn write_rtf(manager: State<'_, ClipboardManager>, rtf_content: String) -> Resul
 
 /// read image from clipboard and return a base64 string
 #[tauri::command]
-fn read_image_base64(manager: State<'_, ClipboardManager>) -> Result<String, String> {
+async fn read_image_base64(manager: State<'_, ClipboardManager>) -> Result<String, String> {
     manager.read_image_base64()
 }
 
 #[tauri::command]
-fn read_image_binary(manager: State<'_, ClipboardManager>) -> Result<Vec<u8>, String> {
+async fn read_image_binary(manager: State<'_, ClipboardManager>) -> Result<Vec<u8>, String> {
     manager.read_image_binary()
 }
 
 /// write base64 image to clipboard
 #[tauri::command]
-fn write_image_base64(
+async fn write_image_base64(
     manager: State<'_, ClipboardManager>,
     base64_image: String,
 ) -> Result<(), String> {
@@ -348,7 +348,7 @@ fn write_image_base64(
 }
 
 #[tauri::command]
-fn write_image_binary(manager: State<'_, ClipboardManager>, bytes: Vec<u8>) -> Result<(), String> {
+async fn write_image_binary(manager: State<'_, ClipboardManager>, bytes: Vec<u8>) -> Result<(), String> {
     manager.write_image_binary(bytes)
 }
 
