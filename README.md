@@ -8,7 +8,7 @@
 
 > If you are installing from npm and crate.io package registry, make sure the versions for both packages are the same, otherwise, the API may not match.
 > 
-> I will make sure the latest version is published to both npm and crate.io.
+> I will make sure the latest version is published to both npm and crates.io.
 
 ### Short Instructions
 
