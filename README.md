@@ -38,7 +38,7 @@ You can also add a tag to github url.
 
 ```toml
 # for tag v0.6.5, this may not be the latest version, check the tag on github
-tauri-plugin-clipboard = { git = "https://github.com/CrossCopy/tauri-plugin-clipboard", tag = "v0.6.5" }
+tauri-plugin-clipboard = { git = "https://github.com/CrossCopy/tauri-plugin-clipboard", tag = "v0.6.6" }
 ```
 
 NPM Package: https://www.npmjs.com/package/tauri-plugin-clipboard-api
@@ -52,7 +52,7 @@ npm i tauri-plugin-clipboard-api
 npm i https://github.com/CrossCopy/tauri-plugin-clipboard
 
 # or this for tag, e.g. v0.6.5 (this may not be the latest version, check the tag on github)
-npm i https://github.com/CrossCopy/tauri-plugin-clipboard#v0.6.5
+npm i https://github.com/CrossCopy/tauri-plugin-clipboard#v0.6.6
 ```
 
 </details>
