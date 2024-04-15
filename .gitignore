@@ -12,3 +12,4 @@ Cargo.lock
 node_modules/
 .yarn
 examples/*/target
+docs/.vitepress/dist
