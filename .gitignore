@@ -13,3 +13,4 @@ node_modules/
 .yarn
 examples/*/target
 docs/.vitepress/dist
+docs/.vitepress/cache

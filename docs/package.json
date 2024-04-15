@@ -12,6 +12,6 @@
   "author": "Huakun",
   "license": "ISC",
   "devDependencies": {
-    "vitepress": "^1.0.0-rc.25"
+    "vitepress": "^1.1.0"
   }
 }
