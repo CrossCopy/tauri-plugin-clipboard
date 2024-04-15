@@ -4,8 +4,8 @@ layout: home
 
 hero:
   name: "tauri-plugin-clipboard"
-  text: "A VitePress Site"
-  tagline: My great project tagline
+  text: "Documentation"
+  tagline: A clipboard plugin for Tauri
   actions:
     - theme: brand
       text: Markdown Examples
