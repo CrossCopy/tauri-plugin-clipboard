@@ -3,6 +3,7 @@
 > A Tauri plugin for clipboard read/write/monitor. Support text, rich text, HTML, files and image.
 >
 > The reason I built this plugin is becasue official Tauri API only supports clipboard read and write for text, not image, HTML, rich text or files. So you can still use the official API for text.
+> Update: V2 now supports text, HTML, and image.
 
 ## Installation
 
@@ -89,7 +90,7 @@ See [+page.svelte](examples/demo/src/routes/+page.svelte) for an example of how 
 
 It works the same with other frontend frameworks like Vue, React, etc.
 
-## Sample Usage (TypeScript API)
+### Sample Usage (TypeScript API)
 
 ```ts
 import clipboard from "tauri-plugin-clipboard-api";
@@ -152,13 +153,16 @@ import {
   onImageUpdate,
   onTextUpdate,
   onHTMLUpdate,
+  onRTFUpdate,
   onFilesUpdate,
   startListening,
   listenToMonitorStatusUpdate,
+  isMonitorRunning,
   hasHTML,
   hasImage,
   hasText,
   hasRTF,
+  hasFiles,
 } from "tauri-plugin-clipboard-api";
 
 let text = "";
@@ -166,9 +170,11 @@ let files: string[] = [];
 let base64Image = "";
 let htmlMonitorContent = "";
 let monitorRunning = false;
+let rtf = "";
 let unlistenTextUpdate: UnlistenFn;
 let unlistenImageUpdate: UnlistenFn;
 let unlistenHtmlUpdate: UnlistenFn;
+let unlistenRTF: UnlistenFn;
 let unlistenClipboard: () => Promise<void>;
 let unlistenFiles: UnlistenFn;
 const has = {
@@ -176,6 +182,7 @@ const has = {
   hasImage: false,
   hasText: false,
   hasRTF: false,
+  hasFiles: false,
 };
 onMount(async () => {
   unlistenTextUpdate = await onTextUpdate((newText) => {
@@ -190,6 +197,9 @@ onMount(async () => {
   unlistenFiles = await onFilesUpdate((newFiles) => {
     files = newFiles;
   });
+  unlistenRTF = await onRTFUpdate((newRTF) => {
+    rtf = newRTF;
+  });
   unlistenClipboard = await startListening();
 
   onClipboardUpdate(async () => {
@@ -197,8 +207,13 @@ onMount(async () => {
     has.hasImage = await hasImage();
     has.hasText = await hasText();
     has.hasRTF = await hasRTF();
+    has.hasFiles = await hasFiles();
     console.log("plugin:clipboard://clipboard-monitor/update event received");
   });
+
+  // setInterval(async () => {
+  // 	console.log("Running:", await isMonitorRunning());
+  // }, 1000);
 });
 
 listenToMonitorStatusUpdate((running) => {
@@ -206,11 +221,11 @@ listenToMonitorStatusUpdate((running) => {
 });
 
 onDestroy(() => {
-  unlistenTextUpdate();
-  unlistenImageUpdate();
-  unlistenHtmlUpdate();
-  unlistenFiles();
-  unlistenClipboard();
+  if (unlistenTextUpdate) unlistenTextUpdate();
+  if (unlistenImageUpdate) unlistenImageUpdate();
+  if (unlistenHtmlUpdate) unlistenHtmlUpdate();
+  if (unlistenFiles) unlistenFiles();
+  if (unlistenClipboard) unlistenClipboard();
 });
 ```
 
@@ -218,7 +233,7 @@ onDestroy(() => {
 
 ### Files
 
-CLipboard Files has the following APIs, check the source code for more details ([./webview-src/api.ts](./webview-src/api.ts)).
+Clipboard Files has the following APIs, check the source code for more details ([./webview-src/api.ts](./webview-src/api.ts)).
 
 1. `writeFilesURIs`
    1. On Linux and MacOS, the URIs should start with `files://`. Otherwise the code will throw an error. See the docstring in the source code for more details ([./src/lib.rs](./src/lib.rs)).
