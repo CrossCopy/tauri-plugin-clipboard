@@ -4,7 +4,7 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: "tauri-plugin-clipboard",
   description: "A VitePress Site",
-  base: "./",
+  base: "/tauri-plugin-clipboard",
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
