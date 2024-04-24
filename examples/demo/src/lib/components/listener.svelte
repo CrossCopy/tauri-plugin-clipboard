@@ -37,20 +37,34 @@
 		hasRTF: false,
 		hasFiles: false
 	};
+
+	function clear() {
+		text = '';
+		files = [];
+		base64Image = '';
+		htmlMonitorContent = '';
+		rtf = '';
+	}
+
 	onMount(async () => {
 		unlistenTextUpdate = await onTextUpdate((newText) => {
+			clear();
 			text = newText;
 		});
 		unlistenHtmlUpdate = await onHTMLUpdate((newHtml) => {
+			clear();
 			htmlMonitorContent = newHtml;
 		});
 		unlistenImageUpdate = await onImageUpdate((b64Str) => {
+			clear();
 			base64Image = b64Str;
 		});
 		unlistenFiles = await onFilesUpdate((newFiles) => {
+			clear();
 			files = newFiles;
 		});
 		unlistenRTF = await onRTFUpdate((newRTF) => {
+			clear();
 			rtf = newRTF;
 		});
 		unlistenClipboard = await startListening();
