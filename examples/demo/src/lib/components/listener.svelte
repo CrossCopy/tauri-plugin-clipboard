@@ -48,28 +48,24 @@
 
 	onMount(async () => {
 		unlistenTextUpdate = await onTextUpdate((newText) => {
-			clear();
 			text = newText;
 		});
 		unlistenHtmlUpdate = await onHTMLUpdate((newHtml) => {
-			clear();
 			htmlMonitorContent = newHtml;
 		});
 		unlistenImageUpdate = await onImageUpdate((b64Str) => {
-			clear();
 			base64Image = b64Str;
 		});
 		unlistenFiles = await onFilesUpdate((newFiles) => {
-			clear();
 			files = newFiles;
 		});
 		unlistenRTF = await onRTFUpdate((newRTF) => {
-			clear();
 			rtf = newRTF;
 		});
 		unlistenClipboard = await startListening();
 
 		onClipboardUpdate(async () => {
+			clear();
 			has.hasHTML = await hasHTML();
 			has.hasImage = await hasImage();
 			has.hasText = await hasText();
