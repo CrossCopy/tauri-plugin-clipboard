@@ -222,8 +222,8 @@ impl ClipboardManager {
             .lock()
             .map_err(|err| err.to_string())?
             .set(vec![
-                ClipboardContent::Html(html),
                 ClipboardContent::Text(text),
+                ClipboardContent::Html(html),
             ])
             .map_err(|err| err.to_string())
     }
