@@ -103,10 +103,20 @@
 		type="button"
 		class="btn variant-filled block btn-sm"
 		on:click={async () => {
-			await clipboard.writeHtml('<h1 style="color:red; font-size:larger;">huakun zui shuai</h1>');
+			await clipboard.writeHtml('<h1 style="color:red; font-size:larger;">HTML written by writeHtml</h1>');
 		}}
 	>
-		Write HTML <small>Read HTML after Write</small>
+		Write HTML
+	</button>
+
+	<button
+		type="button"
+		class="btn variant-filled block btn-sm"
+		on:click={async () => {
+			await clipboard.writeHtmlAndText('<h1 style="color:red; font-size:larger;">HTML written by <code>writeHtmlAndText</code></h1>', 'HTML written by writeHtmlAndText');
+		}}
+	>
+		Write HTML and Text
 	</button>
 
 	<button

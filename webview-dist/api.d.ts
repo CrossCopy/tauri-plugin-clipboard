@@ -15,6 +15,7 @@ export declare const HAS_RTF_COMMAND = "plugin:clipboard|has_rtf";
 export declare const HAS_FILES_COMMAND = "plugin:clipboard|has_files";
 export declare const WRITE_TEXT_COMMAND = "plugin:clipboard|write_text";
 export declare const WRITE_HTML_COMMAND = "plugin:clipboard|write_html";
+export declare const WRITE_HTML_AND_TEXT_COMMAND = "plugin:clipboard|write_html_and_text";
 export declare const WRITE_RTF_COMMAND = "plugin:clipboard|write_rtf";
 export declare const WRITE_FILES_URIS_COMMAND = "plugin:clipboard|write_files_uris";
 export declare const CLEAR_COMMAND = "plugin:clipboard|clear";
@@ -51,6 +52,12 @@ export declare function hasImage(): Promise<boolean>;
 export declare function hasFiles(): Promise<boolean>;
 export declare function writeText(text: string): Promise<void>;
 export declare function writeHtml(html: string): Promise<void>;
+/**
+ * Write html and text to clipboard.
+ * writeHtml API only writes html, readText will return nothing.
+ * This API writes both html and text, so readText will return the text.
+ */
+export declare function writeHtmlAndText(html: string, text: string): Promise<void>;
 export declare function writeRtf(rtf: string): Promise<void>;
 export declare function writeFilesURIs(filesUris: string[]): Promise<void>;
 export declare function clear(): Promise<void>;

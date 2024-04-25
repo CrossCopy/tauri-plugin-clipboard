@@ -4,7 +4,7 @@ use clipboard_rs::{
     common::RustImage, Clipboard, ClipboardContext, ClipboardHandler, ClipboardWatcher,
     ClipboardWatcherContext,
 };
-use clipboard_rs::{ContentFormat, RustImageData, WatcherShutdown};
+use clipboard_rs::{ClipboardContent, ContentFormat, RustImageData, WatcherShutdown};
 use image::EncodableLayout;
 use std::sync::Arc;
 use std::sync::Mutex;
@@ -217,6 +217,17 @@ impl ClipboardManager {
             .map_err(|err| err.to_string())
     }
 
+    pub fn write_html_and_text(&self, html: String, text: String) -> Result<(), String> {
+        self.clipboard
+            .lock()
+            .map_err(|err| err.to_string())?
+            .set(vec![
+                ClipboardContent::Html(html),
+                ClipboardContent::Text(text),
+            ])
+            .map_err(|err| err.to_string())
+    }
+
     pub fn write_rtf(&self, rtf: String) -> Result<(), String> {
         self.clipboard
             .lock()
@@ -323,6 +334,11 @@ fn write_html(manager: State<'_, ClipboardManager>, html: String) -> Result<(), 
 }
 
 #[tauri::command]
+fn write_html_and_text(manager: State<'_, ClipboardManager>, html: String, text: String) -> Result<(), String> {
+    manager.write_html_and_text(html, text)
+}
+
+#[tauri::command]
 fn write_rtf(manager: State<'_, ClipboardManager>, rtf_content: String) -> Result<(), String> {
     manager.write_rtf(rtf_content)
 }
@@ -348,7 +364,10 @@ async fn write_image_base64(
 }
 
 #[tauri::command]
-async fn write_image_binary(manager: State<'_, ClipboardManager>, bytes: Vec<u8>) -> Result<(), String> {
+async fn write_image_binary(
+    manager: State<'_, ClipboardManager>,
+    bytes: Vec<u8>,
+) -> Result<(), String> {
     manager.write_image_binary(bytes)
 }
 
@@ -419,6 +438,7 @@ pub fn init<R: Runtime>() -> TauriPlugin<R> {
             read_rtf,
             write_text,
             write_html,
+            write_html_and_text,
             write_rtf,
             write_image_binary,
             write_image_base64,
