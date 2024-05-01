@@ -5,6 +5,7 @@ export default defineConfig({
   title: "tauri-plugin-clipboard",
   description: "Documentation",
   base: "/tauri-plugin-clipboard",
+  ignoreDeadLinks: true,
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [

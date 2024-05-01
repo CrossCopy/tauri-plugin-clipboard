@@ -334,7 +334,11 @@ fn write_html(manager: State<'_, ClipboardManager>, html: String) -> Result<(), 
 }
 
 #[tauri::command]
-fn write_html_and_text(manager: State<'_, ClipboardManager>, html: String, text: String) -> Result<(), String> {
+fn write_html_and_text(
+    manager: State<'_, ClipboardManager>,
+    html: String,
+    text: String,
+) -> Result<(), String> {
     manager.write_html_and_text(html, text)
 }
 
