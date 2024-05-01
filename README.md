@@ -1,5 +1,14 @@
 # Tauri Plugin clipboard
 
+[![Deploy VitePress site to Pages](https://github.com/CrossCopy/tauri-plugin-clipboard/actions/workflows/docs.yml/badge.svg)](https://github.com/CrossCopy/tauri-plugin-clipboard/actions/workflows/docs.yml)
+[![Clippy](https://github.com/CrossCopy/tauri-plugin-clipboard/actions/workflows/clippy.yml/badge.svg)](https://github.com/CrossCopy/tauri-plugin-clipboard/actions/workflows/clippy.yml)
+[![Format](https://github.com/CrossCopy/tauri-plugin-clipboard/actions/workflows/format.yml/badge.svg)](https://github.com/CrossCopy/tauri-plugin-clipboard/actions/workflows/format.yml)
+[![Test](https://github.com/CrossCopy/tauri-plugin-clipboard/actions/workflows/test.yml/badge.svg)](https://github.com/CrossCopy/tauri-plugin-clipboard/actions/workflows/test.yml)
+![Crates.io Version](https://img.shields.io/crates/v/tauri-plugin-clipboard)
+![NPM Version](https://img.shields.io/npm/v/tauri-plugin-clipboard-api)
+[![Documentation](https://docs.rs/tauri-plugin-clipboard/badge.svg)](https://docs.rs/tauri-plugin-clipboard)
+![GitHub License](https://img.shields.io/github/license/CrossCopy/tauri-plugin-clipboard)
+
 ## Documentation Website: https://crosscopy.github.io/tauri-plugin-clipboard
 
 > A Tauri plugin for clipboard read/write/monitor. Support text, rich text, HTML, files and image.

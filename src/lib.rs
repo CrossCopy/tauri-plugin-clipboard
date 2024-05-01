@@ -36,7 +36,7 @@ where
     fn on_clipboard_change(&mut self) {
         let _ = self.app_handle.emit_all(
             "plugin:clipboard://clipboard-monitor/update",
-            format!("clipboard update"),
+            "clipboard update",
         );
     }
 }
@@ -46,14 +46,16 @@ pub struct ClipboardManager {
     watcher_shutdown: Arc<Mutex<Option<WatcherShutdown>>>,
 }
 
-impl ClipboardManager {
-    pub fn default() -> Self {
-        return ClipboardManager {
-            clipboard: Arc::new(Mutex::from(ClipboardContext::new().unwrap())),
+impl Default for ClipboardManager {
+    fn default() -> Self {
+        Self {
+            clipboard: Arc::new(Mutex::new(ClipboardContext::new().unwrap())),
             watcher_shutdown: Arc::default(),
-        };
+        }
     }
+}
 
+impl ClipboardManager {
     pub fn has(&self, format: ContentFormat) -> Result<bool, String> {
         Ok(self
             .clipboard
@@ -132,7 +134,7 @@ impl ClipboardManager {
             .iter()
             .map(|file| {
                 if file.starts_with("file://") {
-                    file[7..].to_string()
+                    file.strip_prefix("file://").unwrap().to_string()
                 } else {
                     file.to_string()
                 }
@@ -179,7 +181,7 @@ impl ClipboardManager {
     /// read image from clipboard and return a base64 string
     pub fn read_image_base64(&self) -> Result<String, String> {
         let image_bytes = self.read_image_binary()?;
-        let base64_str = general_purpose::STANDARD_NO_PAD.encode(&image_bytes);
+        let base64_str = general_purpose::STANDARD_NO_PAD.encode(image_bytes);
         Ok(base64_str)
     }
 
