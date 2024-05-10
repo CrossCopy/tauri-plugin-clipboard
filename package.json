@@ -1,6 +1,6 @@
 {
   "name": "tauri-plugin-clipboard-api",
-  "version": "0.6.9",
+  "version": "0.6.10",
   "author": "Huakun Shen",
   "type": "module",
   "description": "",
