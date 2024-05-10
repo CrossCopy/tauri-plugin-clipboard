@@ -181,7 +181,7 @@ impl ClipboardManager {
     /// read image from clipboard and return a base64 string
     pub fn read_image_base64(&self) -> Result<String, String> {
         let image_bytes = self.read_image_binary()?;
-        let base64_str = general_purpose::STANDARD_NO_PAD.encode(image_bytes);
+        let base64_str = general_purpose::STANDARD.encode(image_bytes);
         Ok(base64_str)
     }
 
@@ -240,7 +240,7 @@ impl ClipboardManager {
 
     /// write base64 png image to clipboard
     pub fn write_image_base64(&self, base64_image: String) -> Result<(), String> {
-        let decoded = general_purpose::STANDARD_NO_PAD
+        let decoded = general_purpose::STANDARD
             .decode(base64_image)
             .map_err(|err| err.to_string())?;
         self.write_image_binary(decoded)
