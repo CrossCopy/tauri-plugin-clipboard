@@ -1,19 +1,17 @@
 [package]
 name = "tauri-plugin-clipboard"
-license = "MIT"
-version = "0.6.10"
-description = "A clipboard plugin for Tauri that supports text, files and image, as well as clipboard update listening."
-authors = [ "Huakun" ]
+version = "0.0.0"
+authors = [ "You" ]
+description = ""
 edition = "2021"
-rust-version = "1.59"
-exclude = ["/examples", "/webview-dist", "/webview-src", "node_modules"]
-repository = "https://github.com/CrossCopy/tauri-plugin-clipboard"
+rust-version = "1.70"
+exclude = ["/examples", "/webview-dist", "/webview-src", "/node_modules"]
+links = "tauri-plugin-clipboard"
 
 [dependencies]
-tauri = { version = "1.5.2" }
+tauri = { version = "2.0.0-beta.19" }
 serde = "1.0"
 thiserror = "1.0"
-base64 = "0.21.5"
-tempfile = "3.8.1"
-image = "0.24.7"
-clipboard-rs = "0.1.7"
+
+[build-dependencies]
+tauri-plugin = { version = "2.0.0-beta.15", features = ["build"] }
