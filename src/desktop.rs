@@ -230,11 +230,15 @@ impl<R: Runtime> Clipboard<R> {
     }
 
     pub fn clear(&self) -> Result<(), String> {
-        self.clipboard
+        Ok(self
+            .clipboard
             .lock()
-            .map_err(|err| err.to_string())?
+            .unwrap()
+            // .map_err(|err| err.to_string())?
             .clear()
-            .map_err(|err| err.to_string())
+            .unwrap())
+
+        // .map_err(|err| err.to_string())
     }
 }
 

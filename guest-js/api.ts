@@ -265,9 +265,10 @@ export function listenToClipboard(): Promise<UnlistenFn> {
         await emit(TEXT_CHANGED, { value: await readText() });
         success = true;
       }
-      if (!success) {
-        throw new Error("Unexpected Error: No proper clipboard type");
-      }
+      // when clear() is called, this error is thrown, let ignore it
+      // if (!success) {
+      //   throw new Error("Unexpected Error: No proper clipboard type");
+      // }
     }
   });
 }
