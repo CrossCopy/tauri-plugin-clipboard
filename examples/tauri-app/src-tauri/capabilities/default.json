@@ -1,0 +1,34 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "enables the default permissions",
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "clipboard:allow-clear",
+    "clipboard:allow-execute",
+    "clipboard:allow-has-files",
+    "clipboard:allow-has-html",
+    "clipboard:allow-has-image",
+    "clipboard:allow-has-rtf",
+    "clipboard:allow-has-text",
+    "clipboard:allow-is-monitor-running",
+    "clipboard:allow-read-files",
+    "clipboard:allow-read-files-uris",
+    "clipboard:allow-read-html",
+    "clipboard:allow-read-image-base64",
+    "clipboard:allow-read-image-binary",
+    "clipboard:allow-read-rtf",
+    "clipboard:allow-read-text",
+    "clipboard:allow-start-monitor",
+    "clipboard:allow-stop-monitor",
+    "clipboard:allow-write-files-uris",
+    "clipboard:allow-write-html",
+    "clipboard:allow-write-html-and-text",
+    "clipboard:allow-write-image-base64",
+    "clipboard:allow-write-image-binary",
+    "clipboard:allow-write-rtf",
+    "clipboard:allow-write-text"
+  ]
+}

@@ -9,11 +9,14 @@ importers:
   .:
     dependencies:
       '@tauri-apps/api':
-        specifier: ^2.0.0-alpha.11
+        specifier: 2.0.0-beta.11
         version: 2.0.0-beta.11
       tauri-plugin-clipboard-api:
         specifier: link:../../
         version: link:../..
+      zod:
+        specifier: ^3.23.8
+        version: 3.23.8
     devDependencies:
       '@sveltejs/vite-plugin-svelte':
         specifier: ^1.0.1
@@ -458,6 +461,9 @@ packages:
     engines: {node: '>= 8'}
     hasBin: true
 
+  zod@3.23.8:
+    resolution: {integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==}
+
 snapshots:
 
   '@esbuild/android-arm@0.15.18':
@@ -765,3 +771,5 @@ snapshots:
   which@2.0.2:
     dependencies:
       isexe: 2.0.0
+
+  zod@3.23.8: {}

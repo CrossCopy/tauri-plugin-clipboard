@@ -295,6 +295,20 @@
       "type": "string",
       "oneOf": [
         {
+          "description": "allow-clear -> Enables the clear command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "allow-clear"
+          ]
+        },
+        {
+          "description": "deny-clear -> Denies the clear command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "deny-clear"
+          ]
+        },
+        {
           "description": "allow-execute -> Enables the execute command without any pre-configured scope.",
           "type": "string",
           "enum": [
@@ -309,6 +323,90 @@
           ]
         },
         {
+          "description": "allow-has-files -> Enables the has_files command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "allow-has-files"
+          ]
+        },
+        {
+          "description": "deny-has-files -> Denies the has_files command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "deny-has-files"
+          ]
+        },
+        {
+          "description": "allow-has-html -> Enables the has_html command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "allow-has-html"
+          ]
+        },
+        {
+          "description": "deny-has-html -> Denies the has_html command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "deny-has-html"
+          ]
+        },
+        {
+          "description": "allow-has-image -> Enables the has_image command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "allow-has-image"
+          ]
+        },
+        {
+          "description": "deny-has-image -> Denies the has_image command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "deny-has-image"
+          ]
+        },
+        {
+          "description": "allow-has-rtf -> Enables the has_rtf command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "allow-has-rtf"
+          ]
+        },
+        {
+          "description": "deny-has-rtf -> Denies the has_rtf command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "deny-has-rtf"
+          ]
+        },
+        {
+          "description": "allow-has-text -> Enables the has_text command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "allow-has-text"
+          ]
+        },
+        {
+          "description": "deny-has-text -> Denies the has_text command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "deny-has-text"
+          ]
+        },
+        {
+          "description": "allow-is-monitor-running -> Enables the is_monitor_running command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "allow-is-monitor-running"
+          ]
+        },
+        {
+          "description": "deny-is-monitor-running -> Denies the is_monitor_running command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "deny-is-monitor-running"
+          ]
+        },
+        {
           "description": "allow-ping -> Enables the ping command without any pre-configured scope.",
           "type": "string",
           "enum": [
@@ -320,6 +418,230 @@
           "type": "string",
           "enum": [
             "deny-ping"
+          ]
+        },
+        {
+          "description": "allow-read-files -> Enables the read_files command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "allow-read-files"
+          ]
+        },
+        {
+          "description": "deny-read-files -> Denies the read_files command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "deny-read-files"
+          ]
+        },
+        {
+          "description": "allow-read-files-uris -> Enables the read_files_uris command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "allow-read-files-uris"
+          ]
+        },
+        {
+          "description": "deny-read-files-uris -> Denies the read_files_uris command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "deny-read-files-uris"
+          ]
+        },
+        {
+          "description": "allow-read-html -> Enables the read_html command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "allow-read-html"
+          ]
+        },
+        {
+          "description": "deny-read-html -> Denies the read_html command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "deny-read-html"
+          ]
+        },
+        {
+          "description": "allow-read-image-base64 -> Enables the read_image_base64 command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "allow-read-image-base64"
+          ]
+        },
+        {
+          "description": "deny-read-image-base64 -> Denies the read_image_base64 command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "deny-read-image-base64"
+          ]
+        },
+        {
+          "description": "allow-read-image-binary -> Enables the read_image_binary command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "allow-read-image-binary"
+          ]
+        },
+        {
+          "description": "deny-read-image-binary -> Denies the read_image_binary command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "deny-read-image-binary"
+          ]
+        },
+        {
+          "description": "allow-read-rtf -> Enables the read_rtf command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "allow-read-rtf"
+          ]
+        },
+        {
+          "description": "deny-read-rtf -> Denies the read_rtf command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "deny-read-rtf"
+          ]
+        },
+        {
+          "description": "allow-read-text -> Enables the read_text command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "allow-read-text"
+          ]
+        },
+        {
+          "description": "deny-read-text -> Denies the read_text command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "deny-read-text"
+          ]
+        },
+        {
+          "description": "allow-start-monitor -> Enables the start_monitor command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "allow-start-monitor"
+          ]
+        },
+        {
+          "description": "deny-start-monitor -> Denies the start_monitor command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "deny-start-monitor"
+          ]
+        },
+        {
+          "description": "allow-stop-monitor -> Enables the stop_monitor command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "allow-stop-monitor"
+          ]
+        },
+        {
+          "description": "deny-stop-monitor -> Denies the stop_monitor command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "deny-stop-monitor"
+          ]
+        },
+        {
+          "description": "allow-write-files-uris -> Enables the write_files_uris command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "allow-write-files-uris"
+          ]
+        },
+        {
+          "description": "deny-write-files-uris -> Denies the write_files_uris command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "deny-write-files-uris"
+          ]
+        },
+        {
+          "description": "allow-write-html -> Enables the write_html command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "allow-write-html"
+          ]
+        },
+        {
+          "description": "deny-write-html -> Denies the write_html command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "deny-write-html"
+          ]
+        },
+        {
+          "description": "allow-write-html-and-text -> Enables the write_html_and_text command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "allow-write-html-and-text"
+          ]
+        },
+        {
+          "description": "deny-write-html-and-text -> Denies the write_html_and_text command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "deny-write-html-and-text"
+          ]
+        },
+        {
+          "description": "allow-write-image-base64 -> Enables the write_image_base64 command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "allow-write-image-base64"
+          ]
+        },
+        {
+          "description": "deny-write-image-base64 -> Denies the write_image_base64 command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "deny-write-image-base64"
+          ]
+        },
+        {
+          "description": "allow-write-image-binary -> Enables the write_image_binary command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "allow-write-image-binary"
+          ]
+        },
+        {
+          "description": "deny-write-image-binary -> Denies the write_image_binary command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "deny-write-image-binary"
+          ]
+        },
+        {
+          "description": "allow-write-rtf -> Enables the write_rtf command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "allow-write-rtf"
+          ]
+        },
+        {
+          "description": "deny-write-rtf -> Denies the write_rtf command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "deny-write-rtf"
+          ]
+        },
+        {
+          "description": "allow-write-text -> Enables the write_text command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "allow-write-text"
+          ]
+        },
+        {
+          "description": "deny-write-text -> Denies the write_text command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "deny-write-text"
           ]
         }
       ]

@@ -9,8 +9,11 @@ importers:
   .:
     dependencies:
       '@tauri-apps/api':
-        specifier: '>=2.0.0-beta.6'
+        specifier: 2.0.0-beta.11
         version: 2.0.0-beta.11
+      zod:
+        specifier: ^3.23.8
+        version: 3.23.8
     devDependencies:
       '@rollup/plugin-typescript':
         specifier: ^11.1.6
@@ -182,6 +185,9 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
+  zod@3.23.8:
+    resolution: {integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==}
+
 snapshots:
 
   '@rollup/plugin-typescript@11.1.6(rollup@4.17.2)(tslib@2.6.2)(typescript@5.4.5)':
@@ -305,3 +311,5 @@ snapshots:
   tslib@2.6.2: {}
 
   typescript@5.4.5: {}
+
+  zod@3.23.8: {}

@@ -254,10 +254,59 @@
           ]
         },
         {
+          "description": "clipboard:allow-clear -> Enables the clear command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "clipboard:allow-clear"
+          ]
+        },
+        {
           "description": "clipboard:allow-execute -> Enables the execute command without any pre-configured scope.",
           "type": "string",
           "enum": [
             "clipboard:allow-execute"
+          ]
+        },
+        {
+          "description": "clipboard:allow-has-files -> Enables the has_files command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "clipboard:allow-has-files"
+          ]
+        },
+        {
+          "description": "clipboard:allow-has-html -> Enables the has_html command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "clipboard:allow-has-html"
+          ]
+        },
+        {
+          "description": "clipboard:allow-has-image -> Enables the has_image command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "clipboard:allow-has-image"
+          ]
+        },
+        {
+          "description": "clipboard:allow-has-rtf -> Enables the has_rtf command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "clipboard:allow-has-rtf"
+          ]
+        },
+        {
+          "description": "clipboard:allow-has-text -> Enables the has_text command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "clipboard:allow-has-text"
+          ]
+        },
+        {
+          "description": "clipboard:allow-is-monitor-running -> Enables the is_monitor_running command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "clipboard:allow-is-monitor-running"
           ]
         },
         {
@@ -268,6 +317,125 @@
           ]
         },
         {
+          "description": "clipboard:allow-read-files -> Enables the read_files command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "clipboard:allow-read-files"
+          ]
+        },
+        {
+          "description": "clipboard:allow-read-files-uris -> Enables the read_files_uris command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "clipboard:allow-read-files-uris"
+          ]
+        },
+        {
+          "description": "clipboard:allow-read-html -> Enables the read_html command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "clipboard:allow-read-html"
+          ]
+        },
+        {
+          "description": "clipboard:allow-read-image-base64 -> Enables the read_image_base64 command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "clipboard:allow-read-image-base64"
+          ]
+        },
+        {
+          "description": "clipboard:allow-read-image-binary -> Enables the read_image_binary command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "clipboard:allow-read-image-binary"
+          ]
+        },
+        {
+          "description": "clipboard:allow-read-rtf -> Enables the read_rtf command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "clipboard:allow-read-rtf"
+          ]
+        },
+        {
+          "description": "clipboard:allow-read-text -> Enables the read_text command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "clipboard:allow-read-text"
+          ]
+        },
+        {
+          "description": "clipboard:allow-start-monitor -> Enables the start_monitor command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "clipboard:allow-start-monitor"
+          ]
+        },
+        {
+          "description": "clipboard:allow-stop-monitor -> Enables the stop_monitor command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "clipboard:allow-stop-monitor"
+          ]
+        },
+        {
+          "description": "clipboard:allow-write-files-uris -> Enables the write_files_uris command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "clipboard:allow-write-files-uris"
+          ]
+        },
+        {
+          "description": "clipboard:allow-write-html -> Enables the write_html command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "clipboard:allow-write-html"
+          ]
+        },
+        {
+          "description": "clipboard:allow-write-html-and-text -> Enables the write_html_and_text command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "clipboard:allow-write-html-and-text"
+          ]
+        },
+        {
+          "description": "clipboard:allow-write-image-base64 -> Enables the write_image_base64 command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "clipboard:allow-write-image-base64"
+          ]
+        },
+        {
+          "description": "clipboard:allow-write-image-binary -> Enables the write_image_binary command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "clipboard:allow-write-image-binary"
+          ]
+        },
+        {
+          "description": "clipboard:allow-write-rtf -> Enables the write_rtf command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "clipboard:allow-write-rtf"
+          ]
+        },
+        {
+          "description": "clipboard:allow-write-text -> Enables the write_text command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "clipboard:allow-write-text"
+          ]
+        },
+        {
+          "description": "clipboard:deny-clear -> Denies the clear command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "clipboard:deny-clear"
+          ]
+        },
+        {
           "description": "clipboard:deny-execute -> Denies the execute command without any pre-configured scope.",
           "type": "string",
           "enum": [
@@ -275,10 +443,164 @@
           ]
         },
         {
+          "description": "clipboard:deny-has-files -> Denies the has_files command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "clipboard:deny-has-files"
+          ]
+        },
+        {
+          "description": "clipboard:deny-has-html -> Denies the has_html command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "clipboard:deny-has-html"
+          ]
+        },
+        {
+          "description": "clipboard:deny-has-image -> Denies the has_image command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "clipboard:deny-has-image"
+          ]
+        },
+        {
+          "description": "clipboard:deny-has-rtf -> Denies the has_rtf command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "clipboard:deny-has-rtf"
+          ]
+        },
+        {
+          "description": "clipboard:deny-has-text -> Denies the has_text command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "clipboard:deny-has-text"
+          ]
+        },
+        {
+          "description": "clipboard:deny-is-monitor-running -> Denies the is_monitor_running command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "clipboard:deny-is-monitor-running"
+          ]
+        },
+        {
           "description": "clipboard:deny-ping -> Denies the ping command without any pre-configured scope.",
           "type": "string",
           "enum": [
             "clipboard:deny-ping"
+          ]
+        },
+        {
+          "description": "clipboard:deny-read-files -> Denies the read_files command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "clipboard:deny-read-files"
+          ]
+        },
+        {
+          "description": "clipboard:deny-read-files-uris -> Denies the read_files_uris command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "clipboard:deny-read-files-uris"
+          ]
+        },
+        {
+          "description": "clipboard:deny-read-html -> Denies the read_html command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "clipboard:deny-read-html"
+          ]
+        },
+        {
+          "description": "clipboard:deny-read-image-base64 -> Denies the read_image_base64 command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "clipboard:deny-read-image-base64"
+          ]
+        },
+        {
+          "description": "clipboard:deny-read-image-binary -> Denies the read_image_binary command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "clipboard:deny-read-image-binary"
+          ]
+        },
+        {
+          "description": "clipboard:deny-read-rtf -> Denies the read_rtf command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "clipboard:deny-read-rtf"
+          ]
+        },
+        {
+          "description": "clipboard:deny-read-text -> Denies the read_text command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "clipboard:deny-read-text"
+          ]
+        },
+        {
+          "description": "clipboard:deny-start-monitor -> Denies the start_monitor command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "clipboard:deny-start-monitor"
+          ]
+        },
+        {
+          "description": "clipboard:deny-stop-monitor -> Denies the stop_monitor command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "clipboard:deny-stop-monitor"
+          ]
+        },
+        {
+          "description": "clipboard:deny-write-files-uris -> Denies the write_files_uris command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "clipboard:deny-write-files-uris"
+          ]
+        },
+        {
+          "description": "clipboard:deny-write-html -> Denies the write_html command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "clipboard:deny-write-html"
+          ]
+        },
+        {
+          "description": "clipboard:deny-write-html-and-text -> Denies the write_html_and_text command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "clipboard:deny-write-html-and-text"
+          ]
+        },
+        {
+          "description": "clipboard:deny-write-image-base64 -> Denies the write_image_base64 command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "clipboard:deny-write-image-base64"
+          ]
+        },
+        {
+          "description": "clipboard:deny-write-image-binary -> Denies the write_image_binary command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "clipboard:deny-write-image-binary"
+          ]
+        },
+        {
+          "description": "clipboard:deny-write-rtf -> Denies the write_rtf command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "clipboard:deny-write-rtf"
+          ]
+        },
+        {
+          "description": "clipboard:deny-write-text -> Denies the write_text command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "clipboard:deny-write-text"
           ]
         },
         {

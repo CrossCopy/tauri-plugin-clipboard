@@ -12,6 +12,9 @@ links = "tauri-plugin-clipboard"
 tauri = { version = "2.0.0-beta.19" }
 serde = "1.0"
 thiserror = "1.0"
+base64 = "0.22.1"
+image = "0.25.1"
+clipboard-rs = "0.1.7"
 
 [build-dependencies]
 tauri-plugin = { version = "2.0.0-beta.15", features = ["build"] }

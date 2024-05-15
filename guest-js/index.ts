@@ -1,5 +1,2 @@
-import { invoke } from '@tauri-apps/api/core'
-
-export async function execute() {
-  await invoke('plugin:clipboard|execute')
-}
+export * from "./api";
+export * as default from "./api";
