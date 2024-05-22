@@ -1,14 +1,13 @@
-use crate::models::*;
 use base64::{engine::general_purpose, Engine as _};
 use clipboard_rs::{
     common::RustImage, Clipboard as ClipboardRS, ClipboardContent,
-    ClipboardContext as ClipboardRsContext, ClipboardContext, ClipboardHandler, ClipboardWatcher,
-    ClipboardWatcherContext, ContentFormat, RustImageData, WatcherShutdown,
+    ClipboardContext as ClipboardRsContext, ClipboardHandler, ContentFormat, RustImageData,
+    WatcherShutdown,
 };
 use image::EncodableLayout;
 use serde::de::DeserializeOwned;
 use std::sync::{Arc, Mutex};
-use tauri::{command, plugin::PluginApi, AppHandle, Manager, Runtime, State, Window};
+use tauri::{plugin::PluginApi, AppHandle, Manager, Runtime};
 pub fn init<R: Runtime, C: DeserializeOwned>(
     app: &AppHandle<R>,
     _api: PluginApi<R, C>,
@@ -230,15 +229,8 @@ impl<R: Runtime> Clipboard<R> {
     }
 
     pub fn clear(&self) -> Result<(), String> {
-        Ok(self
-            .clipboard
-            .lock()
-            .unwrap()
-            // .map_err(|err| err.to_string())?
-            .clear()
-            .unwrap())
-
-        // .map_err(|err| err.to_string())
+        self.clipboard.lock().unwrap().clear().unwrap();
+        Ok(())
     }
 }
 
