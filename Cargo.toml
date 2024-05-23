@@ -1,12 +1,14 @@
 [package]
 name = "tauri-plugin-clipboard"
-version = "0.0.0"
-authors = [ "You" ]
-description = ""
+version = "0.7.0-beta.0"
+license = "MIT"
+description = "A clipboard plugin for Tauri that supports text, files and image, as well as clipboard update listening."
+authors = [ "Huakun" ]
 edition = "2021"
 rust-version = "1.70"
 exclude = ["/examples", "/webview-dist", "/webview-src", "/node_modules"]
 links = "tauri-plugin-clipboard"
+repository = "https://github.com/CrossCopy/tauri-plugin-clipboard"
 
 [dependencies]
 tauri = { version = "2.0.0-beta.19" }
