@@ -50,3 +50,6 @@
 |`deny-write-rtf`|Denies the write_rtf command without any pre-configured scope.|
 |`allow-write-text`|Enables the write_text command without any pre-configured scope.|
 |`deny-write-text`|Denies the write_text command without any pre-configured scope.|
+|`monitor-all`|This enables all monitor related commands|
+|`read-all`|This enables all read related commands to clipboard|
+|`write-all`|This enables all write related commands to clipboard|

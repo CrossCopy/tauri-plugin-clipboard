@@ -643,6 +643,27 @@
           "enum": [
             "deny-write-text"
           ]
+        },
+        {
+          "description": "monitor-all -> This enables all monitor related commands",
+          "type": "string",
+          "enum": [
+            "monitor-all"
+          ]
+        },
+        {
+          "description": "read-all -> This enables all read related commands to clipboard",
+          "type": "string",
+          "enum": [
+            "read-all"
+          ]
+        },
+        {
+          "description": "write-all -> This enables all write related commands to clipboard",
+          "type": "string",
+          "enum": [
+            "write-all"
+          ]
         }
       ]
     }
