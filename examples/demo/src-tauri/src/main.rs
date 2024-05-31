@@ -9,7 +9,9 @@ fn main() {
         .setup(|app| {
             let handle = app.handle();
             let clipboard = handle.state::<tauri_plugin_clipboard::ClipboardManager>();
-            clipboard.write_text("huakun zui shuai".to_string()).unwrap();
+            clipboard
+                .write_text("huakun zui shuai".to_string())
+                .unwrap();
             // #[cfg(debug_assertions)] // only include this code on debug builds
             // {
             //     let window = app.get_window("main").unwrap();

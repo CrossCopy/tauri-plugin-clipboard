@@ -1,6 +1,6 @@
 # Sample workflow for building and deploying a VitePress site to GitHub Pages
 #
-name: Deploy VitePress site to Pages
+name: Generate and Deploy Docs
 
 on:
   # Runs on pushes targeting the `main` branch. Change this to `master` if you're
@@ -46,9 +46,11 @@ jobs:
       # - name: Install dependencies
       #   working-directory: ./docs
       #   run: npm ci # or pnpm install / yarn install / bun install
-      - name: Build with VitePress
+      - name: Build with Typedoc
         # working-directory: ./docs
-        run: npx typedoc webview-src/index.ts # or pnpm docs:build / yarn docs:build / bun run docs:build
+        run: |
+          npm i
+          npx typedoc webview-src/index.ts
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
