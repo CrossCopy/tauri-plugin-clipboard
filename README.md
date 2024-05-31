@@ -29,9 +29,25 @@ Crate: https://crates.io/crates/tauri-plugin-clipboard
 NPM Package: https://www.npmjs.com/package/tauri-plugin-clipboard-api
 
 ```bash
-cargo add tauri-plugin-clipboard # in src-tauri folder
-npm i tauri-plugin-clipboard-api
+cargo add tauri-plugin-clipboard@<version> # in src-tauri folder
+npm i tauri-plugin-clipboard-api@<version>
 ```
+
+You need to make sure the package versions is compatible with the correct version of Tauri.
+
+- Tauri 1.x: package and crate version should start with 1.x
+- Tauri 2.x: package and crate version should start with 2.x
+  - Or you can install with git url and branch `v2`
+    
+    ```toml
+    tauri-plugin-clipboard = { git = "https://github.com/CrossCopy/tauri-plugin-clipboard", branch = "v2" }
+    ```
+
+#### Check versions
+
+- Check crate versions at https://crates.io/crates/tauri-plugin-clipboard/versions
+- Check npm package verison at https://www.npmjs.com/package/tauri-plugin-clipboard-api?activeTab=versions
+
 
 <details>
 <summary>More Installation Options</summary>

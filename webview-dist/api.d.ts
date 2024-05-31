@@ -113,6 +113,28 @@ export declare function startBruteForceTextMonitor(delay?: number): () => void;
  * @returns stop running function that can be called to stop the monitor
  */
 export declare function startBruteForceImageMonitor(delay?: number): () => void;
+export declare const BreakOnType: z.ZodObject<{
+    text: z.ZodDefault<z.ZodBoolean>;
+    html: z.ZodDefault<z.ZodBoolean>;
+    rtf: z.ZodDefault<z.ZodBoolean>;
+    image: z.ZodDefault<z.ZodBoolean>;
+    files: z.ZodDefault<z.ZodBoolean>;
+}, "strip", z.ZodTypeAny, {
+    text: boolean;
+    html: boolean;
+    rtf: boolean;
+    image: boolean;
+    files: boolean;
+}, {
+    text?: boolean | undefined;
+    html?: boolean | undefined;
+    rtf?: boolean | undefined;
+    image?: boolean | undefined;
+    files?: boolean | undefined;
+}>;
+export declare type BreakOnTypeInput = z.input<typeof BreakOnType>;
+export declare type BreakOnType = z.infer<typeof BreakOnType>;
+export declare const DefaultBreakOn: BreakOnType;
 /**
  * Listen to "plugin:clipboard://clipboard-monitor/update" from Tauri core.
  * But this event doesn't tell us whether text or image is updated,
@@ -120,7 +142,7 @@ export declare function startBruteForceImageMonitor(delay?: number): () => void;
  * Event constant variables: TEXT_CHANGED or IMAGE_CHANGED
  * @returns unlisten function
  */
-export declare function listenToClipboard(): Promise<UnlistenFn>;
+export declare function listenToClipboard(breakOn?: BreakOnTypeInput): Promise<UnlistenFn>;
 /**
  * This listen to clipboard monitor update event, and trigger the callback function.
  * However from this event we don't know whether it's text or image, no real data is returned.
@@ -158,4 +180,4 @@ export declare function stopMonitor(): Promise<void>;
  * @param cb callback to be called when there is monitor status update
  */
 export declare function listenToMonitorStatusUpdate(cb: (running: boolean) => void): Promise<UnlistenFn>;
-export declare function startListening(): Promise<() => Promise<void>>;
+export declare function startListening(breakOn?: BreakOnTypeInput): Promise<() => Promise<void>>;
