@@ -93,7 +93,7 @@
 		type="button"
 		class="btn variant-filled block btn-sm"
 		on:click={async () => {
-			clipboard.writeFilesURIs(['/Users/hacker/Desktop/clipboard-rs/CHANGELOG.md']).catch(alert);
+			clipboard.writeFilesURIs(['file:///Users/user/Desktop/desktop-v2/package.json']).catch(alert);
 		}}
 	>
 		Write Files URIs
@@ -103,7 +103,9 @@
 		type="button"
 		class="btn variant-filled block btn-sm"
 		on:click={async () => {
-			await clipboard.writeHtml('<h1 style="color:red; font-size:larger;">HTML written by writeHtml</h1>');
+			await clipboard.writeHtml(
+				'<h1 style="color:red; font-size:larger;">HTML written by writeHtml</h1>'
+			);
 		}}
 	>
 		Write HTML
@@ -113,7 +115,10 @@
 		type="button"
 		class="btn variant-filled block btn-sm"
 		on:click={async () => {
-			await clipboard.writeHtmlAndText('<h1 style="color:red; font-size:larger;">HTML written by <code>writeHtmlAndText</code></h1>', 'HTML written by writeHtmlAndText');
+			await clipboard.writeHtmlAndText(
+				'<h1 style="color:red; font-size:larger;">HTML written by <code>writeHtmlAndText</code></h1>',
+				'HTML written by writeHtmlAndText'
+			);
 		}}
 	>
 		Write HTML and Text
@@ -199,8 +204,8 @@
 	<button
 		type="button"
 		class="btn variant-filled block btn-sm"
-		on:click={async () => {
-			await clipboard.clear();
+		on:click={() => {
+			return clipboard.clear();
 		}}
 	>
 		Clear
