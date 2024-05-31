@@ -9,6 +9,7 @@
 		onRTFUpdate,
 		onFilesUpdate,
 		startListening,
+		onSomethingUpdate,
 		listenToMonitorStatusUpdate,
 		isMonitorRunning,
 		hasHTML,
@@ -30,6 +31,7 @@
 	let unlistenRTF: UnlistenFn;
 	let unlistenClipboard: () => Promise<void>;
 	let unlistenFiles: UnlistenFn;
+	let unlistenSomethingUpdate: UnlistenFn;
 	const has = {
 		hasHTML: false,
 		hasImage: false,
@@ -62,6 +64,10 @@
 		unlistenRTF = await onRTFUpdate((newRTF) => {
 			rtf = newRTF;
 		});
+		unlistenSomethingUpdate = await onSomethingUpdate((updatedTypes) => {
+			console.log('updated types:', updatedTypes);
+		});
+
 		unlistenClipboard = await startListening();
 
 		onClipboardUpdate(async () => {

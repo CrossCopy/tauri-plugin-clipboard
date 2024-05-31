@@ -2,6 +2,7 @@ import { z } from "zod";
 import { UnlistenFn } from "@tauri-apps/api/event";
 export declare const START_MONITOR_COMMAND = "plugin:clipboard|start_monitor";
 export declare const STOP_MONITOR_COMMAND = "plugin:clipboard|stop_monitor";
+export declare const SOMETHING_CHANGED = "plugin:clipboard://something-changed";
 export declare const TEXT_CHANGED = "plugin:clipboard://text-changed";
 export declare const HTML_CHANGED = "plugin:clipboard://html-changed";
 export declare const RTF_CHANGED = "plugin:clipboard://rtf-changed";
@@ -113,36 +114,19 @@ export declare function startBruteForceTextMonitor(delay?: number): () => void;
  * @returns stop running function that can be called to stop the monitor
  */
 export declare function startBruteForceImageMonitor(delay?: number): () => void;
-export declare const BreakOnType: z.ZodObject<{
-    text: z.ZodDefault<z.ZodBoolean>;
-    html: z.ZodDefault<z.ZodBoolean>;
-    rtf: z.ZodDefault<z.ZodBoolean>;
-    image: z.ZodDefault<z.ZodBoolean>;
-    files: z.ZodDefault<z.ZodBoolean>;
-}, "strip", z.ZodTypeAny, {
+declare type UpdatedTypes = {
     text: boolean;
     html: boolean;
     rtf: boolean;
     image: boolean;
     files: boolean;
-}, {
-    text?: boolean | undefined;
-    html?: boolean | undefined;
-    rtf?: boolean | undefined;
-    image?: boolean | undefined;
-    files?: boolean | undefined;
-}>;
-export declare type BreakOnTypeInput = z.input<typeof BreakOnType>;
-export declare type BreakOnType = z.infer<typeof BreakOnType>;
-export declare const DefaultBreakOn: BreakOnType;
+};
 /**
  * Listen to "plugin:clipboard://clipboard-monitor/update" from Tauri core.
- * But this event doesn't tell us whether text or image is updated,
- * so this function will detect which is changed and emit the corresponding event
- * Event constant variables: TEXT_CHANGED or IMAGE_CHANGED
+ * The corresponding clipboard type event will be emitted when there is clipboard update.
  * @returns unlisten function
  */
-export declare function listenToClipboard(breakOn?: BreakOnTypeInput): Promise<UnlistenFn>;
+export declare function listenToClipboard(): Promise<UnlistenFn>;
 /**
  * This listen to clipboard monitor update event, and trigger the callback function.
  * However from this event we don't know whether it's text or image, no real data is returned.
@@ -152,6 +136,16 @@ export declare function listenToClipboard(breakOn?: BreakOnTypeInput): Promise<U
  */
 export declare function onClipboardUpdate(cb: () => void): Promise<UnlistenFn>;
 export declare function onTextUpdate(cb: (text: string) => void): Promise<UnlistenFn>;
+/**
+ * Listen to clipboard update event and get the updated types in a callback.
+ * This listener tells you what types of data are updated.
+ * This relies on `listenToClipboard()` who emits events this function listens to.
+ * You can run `listenToClipboard()` or `startListening()` before calling this function.
+ * When HTML is copied, this will be passed to callback: {files: false, image: false, html: true, rtf: false, text: true}
+ * @param cb
+ * @returns
+ */
+export declare function onSomethingUpdate(cb: (updatedTypes: UpdatedTypes) => void): Promise<UnlistenFn>;
 export declare function onHTMLUpdate(cb: (text: string) => void): Promise<UnlistenFn>;
 export declare function onRTFUpdate(cb: (text: string) => void): Promise<UnlistenFn>;
 export declare function onFilesUpdate(cb: (files: string[]) => void): Promise<UnlistenFn>;
@@ -180,4 +174,5 @@ export declare function stopMonitor(): Promise<void>;
  * @param cb callback to be called when there is monitor status update
  */
 export declare function listenToMonitorStatusUpdate(cb: (running: boolean) => void): Promise<UnlistenFn>;
-export declare function startListening(breakOn?: BreakOnTypeInput): Promise<() => Promise<void>>;
+export declare function startListening(): Promise<() => Promise<void>>;
+export {};

@@ -4,6 +4,7 @@ import { emit, listen, UnlistenFn } from "@tauri-apps/api/event";
 
 export const START_MONITOR_COMMAND = "plugin:clipboard|start_monitor";
 export const STOP_MONITOR_COMMAND = "plugin:clipboard|stop_monitor";
+export const SOMETHING_CHANGED = "plugin:clipboard://something-changed";
 export const TEXT_CHANGED = "plugin:clipboard://text-changed";
 export const HTML_CHANGED = "plugin:clipboard://html-changed";
 export const RTF_CHANGED = "plugin:clipboard://rtf-changed";
@@ -229,65 +230,53 @@ export function startBruteForceImageMonitor(delay: number = 1000) {
   };
 }
 
-export const BreakOnType = z.object({
-  text: z.boolean().default(false),
-  html: z.boolean().default(false),
-  rtf: z.boolean().default(false),
-  image: z.boolean().default(false),
-  files: z.boolean().default(true),
-});
-export type BreakOnTypeInput = z.input<typeof BreakOnType>;
-export type BreakOnType = z.infer<typeof BreakOnType>;
-export const DefaultBreakOn: BreakOnType = {
-  text: false,
-  html: false,
-  rtf: false,
-  image: false,
-  files: true,
+type UpdatedTypes = {
+  text: boolean;
+  html: boolean;
+  rtf: boolean;
+  image: boolean;
+  files: boolean;
 };
-
 /**
  * Listen to "plugin:clipboard://clipboard-monitor/update" from Tauri core.
  * The corresponding clipboard type event will be emitted when there is clipboard update.
- * Multiple types of clipboard data can be copied at the same time. e.g. When HTML is copied, text is also updated. files copy also update text.
- * There is an optional `breakOn` argument to control whether to break event emitting for other types.
- * Type checking order: files -> image -> html -> rtf -> text
- * If you don't want text update triggered when html is copied, pass breakOn argument `{html: true}`
- * By default, files is set to true. When files are copied, text event won't be triggered. If you want text event to be triggered, pass `{files: false}`
- * 
- * Due to the order of checking, the text field doesn't matter as no other types are checked after text.
  * @returns unlisten function
  */
-export function listenToClipboard(
-  breakOn: BreakOnTypeInput = DefaultBreakOn
-): Promise<UnlistenFn> {
-  const parseBreakOn = BreakOnType.parse(breakOn);
+export function listenToClipboard(): Promise<UnlistenFn> {
   return listen(MONITOR_UPDATE_EVENT, async (e) => {
     if (e.payload === "clipboard update") {
-      if (await hasFiles()) {
+      const flags: UpdatedTypes = {
+        files: await hasFiles(),
+        image: await hasImage(),
+        html: await hasHTML(),
+        rtf: await hasRTF(),
+        text: await hasText(),
+      };
+      await emit(SOMETHING_CHANGED, flags);
+      if (flags.files) {
         const files = await readFiles();
         if (files && files.length > 0) {
           await emit(FILES_CHANGED, { value: files });
         }
-        if (parseBreakOn.files) return;
-        // return; // ! this return is necessary, copying files also update clipboard text, but we don't want text update to be triggered
+        flags.files = true;
+        return; // ! this return is necessary, copying files also update clipboard text, but we don't want text update to be triggered
       }
-      if (await hasImage()) {
+      if (flags.image) {
         const img = await readImageBase64();
         if (img) await emit(IMAGE_CHANGED, { value: img });
-        if (parseBreakOn.image) return;
+        flags.image = true;
       }
-      if (await hasHTML()) {
+      if (flags.html) {
         await emit(HTML_CHANGED, { value: await readHtml() });
-        if (parseBreakOn.html) return;
+        flags.html = true;
       }
-      if (await hasRTF()) {
+      if (flags.rtf) {
         await emit(RTF_CHANGED, { value: await readRtf() });
-        if (parseBreakOn.rtf) return;
+        flags.rtf = true;
       }
-      if (await hasText()) {
+      if (flags.text) {
         await emit(TEXT_CHANGED, { value: await readText() });
-        if (parseBreakOn.text) return;
+        flags.text = true;
       }
       // when clear() is called, this error is thrown, let ignore it
       // if (!success) {
@@ -314,6 +303,23 @@ export async function onTextUpdate(
   return await listen(TEXT_CHANGED, (event) => {
     const text = ClipboardChangedPayloadSchema.parse(event.payload).value;
     cb(text);
+  });
+}
+
+/**
+ * Listen to clipboard update event and get the updated types in a callback.
+ * This listener tells you what types of data are updated.
+ * This relies on `listenToClipboard()` who emits events this function listens to.
+ * You can run `listenToClipboard()` or `startListening()` before calling this function.
+ * When HTML is copied, this will be passed to callback: {files: false, image: false, html: true, rtf: false, text: true}
+ * @param cb 
+ * @returns 
+ */
+export async function onSomethingUpdate(
+  cb: (updatedTypes: UpdatedTypes) => void
+) {
+  return await listen(SOMETHING_CHANGED, (event) => {
+    cb(event.payload as UpdatedTypes);
   });
 }
 
@@ -397,25 +403,9 @@ export async function listenToMonitorStatusUpdate(
   });
 }
 
-/**
- * Start monitor service thread with `startMonitor()` and then run `listenToClipboard()`
- * The corresponding clipboard type event will be emitted when there is clipboard update.
- * Use `onImageUpdate()`, `onTextUpdate()`, `onHTMLUpdate()`, `onFilesUpdate()`, `onRTFUpdate()` to listen to the event after calling this function.
- * 
- * Multiple types of clipboard data can be copied at the same time. e.g. When HTML is copied, text is also updated. files copy also update text.
- * There is an optional `breakOn` argument to control whether to break event emitting for other types.
- * Type checking order: files -> image -> html -> rtf -> text
- * If you don't want text update triggered when html is copied, pass breakOn argument `{html: true}`
- * By default, files is set to true. When files are copied, text event won't be triggered. If you want text event to be triggered, pass `{files: false}`
- * 
- * Due to the order of checking, the text field doesn't matter as no other types are checked after text.
- * @returns unlisten function
- */
-export function startListening(
-  breakOn: BreakOnTypeInput = DefaultBreakOn
-): Promise<() => Promise<void>> {
+export function startListening(): Promise<() => Promise<void>> {
   return startMonitor()
-    .then(() => listenToClipboard(breakOn))
+    .then(() => listenToClipboard())
     .then((unlistenClipboard) => {
       // return an unlisten function that stop listening to clipboard update and stop the monitor
       return async () => {
