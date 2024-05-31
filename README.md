@@ -19,7 +19,7 @@
 ## Installation
 
 > If you are installing from npm and crate.io package registry, make sure the versions for both packages are the same, otherwise, the API may not match.
-> 
+>
 > I will make sure the latest version is published to both npm and crates.io.
 
 ### Short Instructions
@@ -38,7 +38,7 @@ You need to make sure the package versions is compatible with the correct versio
 - Tauri 1.x: package and crate version should start with 1.x
 - Tauri 2.x: package and crate version should start with 2.x
   - Or you can install with git url and branch `v2`
-    
+
     ```toml
     tauri-plugin-clipboard = { git = "https://github.com/CrossCopy/tauri-plugin-clipboard", branch = "v2" }
     ```
@@ -47,7 +47,6 @@ You need to make sure the package versions is compatible with the correct versio
 
 - Check crate versions at https://crates.io/crates/tauri-plugin-clipboard/versions
 - Check npm package verison at https://www.npmjs.com/package/tauri-plugin-clipboard-api?activeTab=versions
-
 
 <details>
 <summary>More Installation Options</summary>
@@ -271,7 +270,7 @@ Difference between URI and no-URI is that URI starts with `files://` on Linux an
 
 ## Notes
 
-> You don't really need to read this section if you are just using the plugin.
+### Monitor
 
 The logic of tauri's listen API is encapsulated in `onTextUpdate`, `onFilesUpdate`, `startListening`.
 
@@ -308,7 +307,45 @@ The returned unlisten function from `startListening` also does two things:
 
 For more details read the source code from [./webview-src/api.ts](./webview-src/api.ts).
 
-## Note
+#### Break On Type
+
+`listenToClipboard` and `startListening` function takes an optional parameter `breakOnType` with type
+
+```ts
+type BreakOnTypeInput = {
+  text?: boolean;
+  html?: boolean;
+  rtf?: boolean;
+  image?: boolean;
+  files?: boolean;
+};
+```
+
+This parameter is used to break the monitor event emission when the clipboard content type matches the type. For example, when HTML content is copied, text update event will also be emitted.
+
+The order of type checking is `file -> image -> html -> rtf -> text`.
+
+The default `breakOnType` is
+
+```ts
+{
+    text: false,
+    html: false,
+    rtf: false,
+    image: false,
+    files: true
+}
+```
+
+When files are copied, text is also updated. By default, text update event will not be emitted when files are copied.
+
+If you don't want to listen to text update when HTML content is copied, you can set `breakOnType` to `{ html: true }`.
+
+Read more 
+- https://crosscopy.github.io/tauri-plugin-clipboard/functions/listenToClipboard.html
+- https://crosscopy.github.io/tauri-plugin-clipboard/functions/startListening.html
+
+### Image
 
 The base64 image string can be converted to `Uint8Array` and written to file system using tauri's fs API. (We also provide a `readImageBinary` function to read image as binary data (`Uint8Array` is one of the available return type).
 

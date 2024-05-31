@@ -248,17 +248,20 @@ export const DefaultBreakOn: BreakOnType = {
 
 /**
  * Listen to "plugin:clipboard://clipboard-monitor/update" from Tauri core.
- * But this event doesn't tell us whether text or image is updated,
- * so this function will detect which is changed and emit the corresponding event
- * Event constant variables: TEXT_CHANGED or IMAGE_CHANGED
+ * The corresponding clipboard type event will be emitted when there is clipboard update.
+ * Multiple types of clipboard data can be copied at the same time. e.g. When HTML is copied, text is also updated. files copy also update text.
+ * There is an optional `breakOn` argument to control whether to break event emitting for other types.
+ * Type checking order: files -> image -> html -> rtf -> text
+ * If you don't want text update triggered when html is copied, pass breakOn argument `{html: true}`
+ * By default, files is set to true. When files are copied, text event won't be triggered. If you want text event to be triggered, pass `{files: false}`
+ * 
+ * Due to the order of checking, the text field doesn't matter as no other types are checked after text.
  * @returns unlisten function
  */
 export function listenToClipboard(
   breakOn: BreakOnTypeInput = DefaultBreakOn
 ): Promise<UnlistenFn> {
   const parseBreakOn = BreakOnType.parse(breakOn);
-  console.log(parseBreakOn);
-  
   return listen(MONITOR_UPDATE_EVENT, async (e) => {
     if (e.payload === "clipboard update") {
       if (await hasFiles()) {
@@ -394,6 +397,20 @@ export async function listenToMonitorStatusUpdate(
   });
 }
 
+/**
+ * Start monitor service thread with `startMonitor()` and then run `listenToClipboard()`
+ * The corresponding clipboard type event will be emitted when there is clipboard update.
+ * Use `onImageUpdate()`, `onTextUpdate()`, `onHTMLUpdate()`, `onFilesUpdate()`, `onRTFUpdate()` to listen to the event after calling this function.
+ * 
+ * Multiple types of clipboard data can be copied at the same time. e.g. When HTML is copied, text is also updated. files copy also update text.
+ * There is an optional `breakOn` argument to control whether to break event emitting for other types.
+ * Type checking order: files -> image -> html -> rtf -> text
+ * If you don't want text update triggered when html is copied, pass breakOn argument `{html: true}`
+ * By default, files is set to true. When files are copied, text event won't be triggered. If you want text event to be triggered, pass `{files: false}`
+ * 
+ * Due to the order of checking, the text field doesn't matter as no other types are checked after text.
+ * @returns unlisten function
+ */
 export function startListening(
   breakOn: BreakOnTypeInput = DefaultBreakOn
 ): Promise<() => Promise<void>> {
