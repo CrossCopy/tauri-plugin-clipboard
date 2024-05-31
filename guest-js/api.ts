@@ -229,6 +229,23 @@ export function startBruteForceImageMonitor(delay: number = 1000) {
   };
 }
 
+export const BreakOnType = z.object({
+  text: z.boolean().default(false),
+  html: z.boolean().default(false),
+  rtf: z.boolean().default(false),
+  image: z.boolean().default(false),
+  files: z.boolean().default(true),
+});
+export type BreakOnTypeInput = z.input<typeof BreakOnType>;
+export type BreakOnType = z.infer<typeof BreakOnType>;
+export const DefaultBreakOn: BreakOnType = {
+  text: false,
+  html: false,
+  rtf: false,
+  image: false,
+  files: true,
+};
+
 /**
  * Listen to "plugin:clipboard://clipboard-monitor/update" from Tauri core.
  * But this event doesn't tell us whether text or image is updated,
@@ -236,34 +253,36 @@ export function startBruteForceImageMonitor(delay: number = 1000) {
  * Event constant variables: TEXT_CHANGED or IMAGE_CHANGED
  * @returns unlisten function
  */
-export function listenToClipboard(): Promise<UnlistenFn> {
+export function listenToClipboard(
+  breakOn: BreakOnTypeInput = DefaultBreakOn
+): Promise<UnlistenFn> {
+  const parseBreakOn = BreakOnType.parse(breakOn);
   return listen(MONITOR_UPDATE_EVENT, async (e) => {
     if (e.payload === "clipboard update") {
-      let success = false;
       if (await hasFiles()) {
         const files = await readFiles();
         if (files && files.length > 0) {
           await emit(FILES_CHANGED, { value: files });
         }
-        success = true;
-        return; // ! this return is necessary, copying files also update clipboard text, but we don't want text update to be triggered
+        if (parseBreakOn.files) return;
+        // return; // ! this return is necessary, copying files also update clipboard text, but we don't want text update to be triggered
       }
       if (await hasImage()) {
         const img = await readImageBase64();
         if (img) await emit(IMAGE_CHANGED, { value: img });
-        success = true;
+        if (parseBreakOn.image) return;
       }
       if (await hasHTML()) {
         await emit(HTML_CHANGED, { value: await readHtml() });
-        success = true;
+        if (parseBreakOn.html) return;
       }
       if (await hasRTF()) {
         await emit(RTF_CHANGED, { value: await readRtf() });
-        success = true;
+        if (parseBreakOn.rtf) return;
       }
       if (await hasText()) {
         await emit(TEXT_CHANGED, { value: await readText() });
-        success = true;
+        if (parseBreakOn.text) return;
       }
       // when clear() is called, this error is thrown, let ignore it
       // if (!success) {
@@ -373,9 +392,11 @@ export async function listenToMonitorStatusUpdate(
   });
 }
 
-export function startListening(): Promise<() => Promise<void>> {
+export function startListening(
+  breakOn: BreakOnTypeInput = DefaultBreakOn
+): Promise<() => Promise<void>> {
   return startMonitor()
-    .then(() => listenToClipboard())
+    .then(() => listenToClipboard(breakOn))
     .then((unlistenClipboard) => {
       // return an unlisten function that stop listening to clipboard update and stop the monitor
       return async () => {

@@ -28,6 +28,8 @@ Crate: https://crates.io/crates/tauri-plugin-clipboard
 
 NPM Package: https://www.npmjs.com/package/tauri-plugin-clipboard-api
 
+#### For Tauri V1
+
 ```bash
 cargo add tauri-plugin-clipboard # in src-tauri folder
 npm i tauri-plugin-clipboard-api
@@ -68,6 +70,20 @@ npm i https://github.com/CrossCopy/tauri-plugin-clipboard#v0.6.6
 ```
 
 </details>
+
+#### For Tauri V2
+
+Since Tauri V2 is still in beta. This plugin will still default to Tauri V2. If you are using this with Tauri v2, you can use branch `v2`.
+
+```toml
+# In Cargo.toml
+tauri-plugin-clipboard = { git = "https://github.com/CrossCopy/tauri-plugin-clipboard", branch = "v2" }
+```
+
+```bash
+# Install npm package
+npm i tauri-plugin-clipboard-api#v2 --save
+```
 
 In `main.rs`, add the following to your `tauri::Builder`:
 
