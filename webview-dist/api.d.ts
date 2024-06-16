@@ -86,7 +86,7 @@ export declare function readImageBase64(): Promise<string>;
  * @param format data type of returned value, "int_array" is the fastest
  * @returns
  */
-export declare function readImageBinary(format: "int_array" | "Uint8Array" | "Blob"): Promise<number[] | Uint8Array | Blob>;
+export declare function readImageBinary(format: "int_array" | "Uint8Array" | "Blob"): Promise<Uint8Array | Blob | number[]>;
 /**
  * Here is the transformation flow,
  * read clipboard image as Array<number> (int_array) -> int_array -> Uint8Array -> Blob -> ObjectURL
