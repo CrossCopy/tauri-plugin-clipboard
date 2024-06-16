@@ -547,6 +547,20 @@
           ]
         },
         {
+          "description": "allow-write-files -> Enables the write_files command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "allow-write-files"
+          ]
+        },
+        {
+          "description": "deny-write-files -> Denies the write_files command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "deny-write-files"
+          ]
+        },
+        {
           "description": "allow-write-files-uris -> Enables the write_files_uris command without any pre-configured scope.",
           "type": "string",
           "enum": [

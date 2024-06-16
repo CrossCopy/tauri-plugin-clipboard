@@ -36,6 +36,8 @@
 |`deny-start-monitor`|Denies the start_monitor command without any pre-configured scope.|
 |`allow-stop-monitor`|Enables the stop_monitor command without any pre-configured scope.|
 |`deny-stop-monitor`|Denies the stop_monitor command without any pre-configured scope.|
+|`allow-write-files`|Enables the write_files command without any pre-configured scope.|
+|`deny-write-files`|Denies the write_files command without any pre-configured scope.|
 |`allow-write-files-uris`|Enables the write_files_uris command without any pre-configured scope.|
 |`deny-write-files-uris`|Denies the write_files_uris command without any pre-configured scope.|
 |`allow-write-html`|Enables the write_html command without any pre-configured scope.|

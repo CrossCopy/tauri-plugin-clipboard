@@ -59,6 +59,7 @@ pub fn init<R: Runtime>() -> TauriPlugin<R> {
             commands::write_image_binary,
             commands::write_image_base64,
             commands::write_files_uris,
+            commands::write_files,
             commands::clear
         ])
         .setup(|app, api| {

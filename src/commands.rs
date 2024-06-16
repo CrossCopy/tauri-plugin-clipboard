@@ -101,6 +101,41 @@ pub fn write_files_uris<R: Runtime>(
     clipboard.write_files_uris(files_uris)
 }
 
+
+#[command]
+pub fn write_files<R: Runtime>(
+    _app: AppHandle<R>,
+    _window: Window<R>,
+    clipboard: State<'_, Clipboard<R>>,
+    files_paths: Vec<String>,
+) -> Result<(), String> {
+    for file in &files_paths {
+        if file.starts_with("file://") {
+            return Err(format!(
+                "Invalid file uri: {}. File uri should not start with file://",
+                file
+            ));
+        }
+    }
+    let mut files_uris: Vec<String> = vec![];
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    {
+        for file in &files_paths {
+            files_uris.push(format!("file://{}", file))
+        }
+    }
+
+    #[cfg(target_os = "windows")]
+    {
+        for file in &files_paths {
+            files_uris.push(file.clone())
+        }
+    }
+    write_files_uris(_app, _window, clipboard, files_uris)
+}
+
+
+
 #[command]
 pub fn write_text<R: Runtime>(
     _app: AppHandle<R>,

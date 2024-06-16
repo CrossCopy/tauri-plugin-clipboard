@@ -21,6 +21,7 @@ const COMMANDS: &[&str] = &[
     "write_image_binary",
     "write_image_base64",
     "write_files_uris",
+    "write_files",
     "clear",
 ];
 

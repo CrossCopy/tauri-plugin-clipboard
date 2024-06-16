@@ -22,6 +22,7 @@ export const WRITE_HTML_AND_TEXT_COMMAND =
   "plugin:clipboard|write_html_and_text";
 export const WRITE_RTF_COMMAND = "plugin:clipboard|write_rtf";
 export const WRITE_FILES_URIS_COMMAND = "plugin:clipboard|write_files_uris";
+export const WRITE_FILES_COMMAND = "plugin:clipboard|write_files";
 export const CLEAR_COMMAND = "plugin:clipboard|clear";
 export const READ_TEXT_COMMAND = "plugin:clipboard|read_text";
 export const READ_HTML_COMMAND = "plugin:clipboard|read_html";
@@ -87,6 +88,10 @@ export function writeRtf(rtf: string): Promise<void> {
 
 export function writeFilesURIs(filesUris: string[]): Promise<void> {
   return invoke(WRITE_FILES_URIS_COMMAND, { filesUris });
+}
+
+export function writeFiles(filesPaths: string[]): Promise<void> {
+  return invoke(WRITE_FILES_COMMAND, { filesPaths });
 }
 
 export function clear(): Promise<void> {
