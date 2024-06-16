@@ -45,32 +45,32 @@ export type ClipboardChangedPayload = z.infer<
   typeof ClipboardChangedPayloadSchema
 >;
 
-export function hasText(): Promise<boolean> {
-  return invoke(HAS_TEXT_COMMAND);
+export function hasText() {
+  return invoke<boolean>(HAS_TEXT_COMMAND);
 }
 
-export function hasHTML(): Promise<boolean> {
-  return invoke(HAS_HTML_COMMAND);
+export function hasHTML() {
+  return invoke<boolean>(HAS_HTML_COMMAND);
 }
 
-export function hasRTF(): Promise<boolean> {
-  return invoke(HAS_RTF_COMMAND);
+export function hasRTF() {
+  return invoke<boolean>(HAS_RTF_COMMAND);
 }
 
-export function hasImage(): Promise<boolean> {
-  return invoke(HAS_IMAGE_COMMAND);
+export function hasImage() {
+  return invoke<boolean>(HAS_IMAGE_COMMAND);
 }
 
-export function hasFiles(): Promise<boolean> {
-  return invoke(HAS_FILES_COMMAND);
+export function hasFiles() {
+  return invoke<boolean>(HAS_FILES_COMMAND);
 }
 
-export function writeText(text: string): Promise<void> {
-  return invoke(WRITE_TEXT_COMMAND, { text });
+export function writeText(text: string) {
+  return invoke<void>(WRITE_TEXT_COMMAND, { text });
 }
 
-export function writeHtml(html: string): Promise<void> {
-  return invoke(WRITE_HTML_COMMAND, { html });
+export function writeHtml(html: string) {
+  return invoke<void>(WRITE_HTML_COMMAND, { html });
 }
 
 /**
@@ -78,12 +78,12 @@ export function writeHtml(html: string): Promise<void> {
  * writeHtml API only writes html, readText will return nothing.
  * This API writes both html and text, so readText will return the text.
  */
-export function writeHtmlAndText(html: string, text: string): Promise<void> {
-  return invoke(WRITE_HTML_AND_TEXT_COMMAND, { html, text });
+export function writeHtmlAndText(html: string, text: string) {
+  return invoke<void>(WRITE_HTML_AND_TEXT_COMMAND, { html, text });
 }
 
-export function writeRtf(rtf: string): Promise<void> {
-  return invoke(WRITE_RTF_COMMAND, { rtf });
+export function writeRtf(rtf: string) {
+  return invoke<void>(WRITE_RTF_COMMAND, { rtf });
 }
 
 /**
@@ -92,44 +92,44 @@ export function writeRtf(rtf: string): Promise<void> {
  * @param filesUris
  * @returns
  */
-export function writeFilesURIs(filesUris: string[]): Promise<void> {
-  return invoke(WRITE_FILES_URIS_COMMAND, { filesUris });
+export function writeFilesURIs(filesUris: string[]) {
+  return invoke<void>(WRITE_FILES_URIS_COMMAND, { filesUris });
 }
 
-export function writeFiles(filesPaths: string[]): Promise<void> {
-  return invoke(WRITE_FILES_COMMAND, { filesPaths });
+export function writeFiles(filesPaths: string[]) {
+  return invoke<void>(WRITE_FILES_COMMAND, { filesPaths });
 }
 
-export function clear(): Promise<void> {
-  return invoke(CLEAR_COMMAND);
+export function clear() {
+  return invoke<void>(CLEAR_COMMAND);
 }
 
-export function readText(): Promise<string> {
-  return invoke(READ_TEXT_COMMAND);
+export function readText() {
+  return invoke<string>(READ_TEXT_COMMAND);
 }
 
-export function readHtml(): Promise<string> {
-  return invoke(READ_HTML_COMMAND);
+export function readHtml() {
+  return invoke<string>(READ_HTML_COMMAND);
 }
 
-export function readRtf(): Promise<string> {
-  return invoke(READ_RTF_COMMAND);
+export function readRtf() {
+  return invoke<string>(READ_RTF_COMMAND);
 }
 
-export function readFiles(): Promise<string[]> {
-  return invoke(READ_FILES_COMMAND);
+export function readFiles() {
+  return invoke<string[]>(READ_FILES_COMMAND);
 }
 
-export function readFilesURIs(): Promise<string[]> {
-  return invoke(READ_FILES_URIS_COMMAND);
+export function readFilesURIs() {
+  return invoke<string[]>(READ_FILES_URIS_COMMAND);
 }
 
 /**
  * read clipboard image
  * @returns image in base64 string
  */
-export function readImageBase64(): Promise<string> {
-  return invoke(READ_IMAGE_BASE64_COMMAND);
+export function readImageBase64() {
+  return invoke<string>(READ_IMAGE_BASE64_COMMAND);
 }
 
 // export const readImageBase64 = readImage;
@@ -140,23 +140,23 @@ export function readImageBase64(): Promise<string> {
  * @param format data type of returned value, "int_array" is the fastest
  * @returns
  */
-export function readImageBinary(
-  format: "int_array" | "Uint8Array" | "Blob"
-): Promise<number[] | Uint8Array | Blob> {
-  return (invoke(READ_IMAGE_BINARY_COMMAND) as Promise<number[]>).then(
-    (img_arr: number[]) => {
-      switch (format) {
-        case "int_array":
-          return img_arr;
-        case "Uint8Array":
-          return new Uint8Array(img_arr);
-        case "Blob":
-          return new Blob([new Uint8Array(img_arr)]);
-        default:
-          return img_arr;
-      }
+export function readImageBinary(format: "int_array" | "Uint8Array" | "Blob") {
+  return (
+    invoke<number[] | Uint8Array | Blob>(READ_IMAGE_BINARY_COMMAND) as Promise<
+      number[]
+    >
+  ).then((img_arr: number[]) => {
+    switch (format) {
+      case "int_array":
+        return img_arr;
+      case "Uint8Array":
+        return new Uint8Array(img_arr);
+      case "Blob":
+        return new Blob([new Uint8Array(img_arr)]);
+      default:
+        return img_arr;
     }
-  );
+  });
 }
 
 /**
@@ -176,12 +176,12 @@ export function readImageObjectURL(): Promise<string> {
  * @param data image data in base64 encoded string
  * @returns Promise<void>
  */
-export function writeImageBase64(base64: string): Promise<void> {
-  return invoke(WRITE_IMAGE_BASE64_COMMAND, { base64Image: base64 });
+export function writeImageBase64(base64: string) {
+  return invoke<void>(WRITE_IMAGE_BASE64_COMMAND, { base64Image: base64 });
 }
 
-export function writeImageBinary(bytes: number[]): Promise<void> {
-  return invoke(WRITE_IMAGE_BINARY_COMMAND, { bytes: bytes });
+export function writeImageBinary(bytes: number[]) {
+  return invoke<void>(WRITE_IMAGE_BINARY_COMMAND, { bytes: bytes });
 }
 
 /**
@@ -376,8 +376,8 @@ export async function onImageUpdate(
  * Used to check the status of clipboard monitor
  * @returns Whether the monitor is running
  */
-export function isMonitorRunning(): Promise<boolean> {
-  return invoke(IS_MONITOR_RUNNING_COMMAND).then((res: unknown) =>
+export function isMonitorRunning() {
+  return invoke<boolean>(IS_MONITOR_RUNNING_COMMAND).then((res: unknown) =>
     z.boolean().parse(res)
   );
 }
@@ -390,15 +390,15 @@ export function isMonitorRunning(): Promise<boolean> {
  * "plugin:clipboard://clipboard-monitor/status" event is also emitted when monitor status updates
  * Still have to listen to these events.
  */
-export function startMonitor(): Promise<void> {
-  return invoke(START_MONITOR_COMMAND);
+export function startMonitor() {
+  return invoke<void>(START_MONITOR_COMMAND);
 }
 
 /**
  * Stop clipboard monitor thread.
  */
-export function stopMonitor(): Promise<void> {
-  return invoke(STOP_MONITOR_COMMAND);
+export function stopMonitor() {
+  return invoke<void>(STOP_MONITOR_COMMAND);
 }
 /**
  * Listen to monitor status update. Instead of calling isMonitorRunning to get status of monitor,
@@ -417,7 +417,7 @@ export async function listenToMonitorStatusUpdate(
 export function startListening(): Promise<() => Promise<void>> {
   return startMonitor()
     .then(() => listenToClipboard())
-    .then((unlistenClipboard) => {
+    .then((unlistenClipboard: UnlistenFn) => {
       // return an unlisten function that stop listening to clipboard update and stop the monitor
       return async () => {
         unlistenClipboard();
