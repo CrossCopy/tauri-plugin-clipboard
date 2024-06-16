@@ -22,6 +22,7 @@ export const WRITE_HTML_AND_TEXT_COMMAND =
   "plugin:clipboard|write_html_and_text";
 export const WRITE_RTF_COMMAND = "plugin:clipboard|write_rtf";
 export const WRITE_FILES_URIS_COMMAND = "plugin:clipboard|write_files_uris";
+export const WRITE_FILES_COMMAND = "plugin:clipboard|write_files";
 export const CLEAR_COMMAND = "plugin:clipboard|clear";
 export const READ_TEXT_COMMAND = "plugin:clipboard|read_text";
 export const READ_HTML_COMMAND = "plugin:clipboard|read_html";
@@ -85,8 +86,18 @@ export function writeRtf(rtf: string): Promise<void> {
   return invoke(WRITE_RTF_COMMAND, { rtf });
 }
 
+/**
+ * Write files uris to clipboard. The files should be in uri format: `file:///path/to/file` on Mac and Linux. File path is absolute path.
+ * On Windows, the path should be in the format `C:\\path\\to\\file`.
+ * @param filesUris
+ * @returns
+ */
 export function writeFilesURIs(filesUris: string[]): Promise<void> {
   return invoke(WRITE_FILES_URIS_COMMAND, { filesUris });
+}
+
+export function writeFiles(filesPaths: string[]): Promise<void> {
+  return invoke(WRITE_FILES_COMMAND, { filesPaths });
 }
 
 export function clear(): Promise<void> {
@@ -312,8 +323,8 @@ export async function onTextUpdate(
  * This relies on `listenToClipboard()` who emits events this function listens to.
  * You can run `listenToClipboard()` or `startListening()` before calling this function.
  * When HTML is copied, this will be passed to callback: {files: false, image: false, html: true, rtf: false, text: true}
- * @param cb 
- * @returns 
+ * @param cb
+ * @returns
  */
 export async function onSomethingUpdate(
   cb: (updatedTypes: UpdatedTypes) => void

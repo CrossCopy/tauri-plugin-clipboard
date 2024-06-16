@@ -6,6 +6,7 @@ use clipboard_rs::{
 };
 use clipboard_rs::{ClipboardContent, ContentFormat, RustImageData, WatcherShutdown};
 use image::EncodableLayout;
+use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::Mutex;
 use tauri::{
@@ -326,6 +327,36 @@ fn write_files_uris(
 }
 
 #[tauri::command]
+fn write_files(
+    manager: State<'_, ClipboardManager>,
+    files_paths: Vec<String>,
+) -> Result<(), String> {
+    for file in &files_paths {
+        if file.starts_with("file://") {
+            return Err(format!(
+                "Invalid file uri: {}. File uri should not start with file://",
+                file
+            ));
+        }
+    }
+    let mut files_uris: Vec<String> = vec![];
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    {
+        for file in &files_paths {
+            files_uris.push(format!("file://{}", file))
+        }
+    }
+
+    #[cfg(target_os = "windows")]
+    {
+        for file in &files_paths {
+            files_uris.push(file.clone())
+        }
+    }
+    write_files_uris(manager, files_uris)
+}
+
+#[tauri::command]
 fn write_text(manager: State<'_, ClipboardManager>, text: String) -> Result<(), String> {
     manager.write_text(text)
 }
@@ -449,6 +480,7 @@ pub fn init<R: Runtime>() -> TauriPlugin<R> {
             write_image_binary,
             write_image_base64,
             write_files_uris,
+            write_files,
             clear
         ])
         .setup(move |app| {

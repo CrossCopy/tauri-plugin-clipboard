@@ -93,10 +93,20 @@
 		type="button"
 		class="btn variant-filled block btn-sm"
 		on:click={async () => {
-			clipboard.writeFilesURIs(['/Users/hacker/Desktop/clipboard-rs/CHANGELOG.md']).catch(alert);
+			clipboard.writeFilesURIs(['file:///Users/hacker/Dev/brain/docs/notes/Analysis/LaunchApp/raycast.md']).catch(alert);
 		}}
 	>
 		Write Files URIs
+	</button>
+
+	<button
+		type="button"
+		class="btn variant-filled block btn-sm"
+		on:click={async () => {
+			clipboard.writeFiles(['/Users/hacker/Dev/brain/docs/notes/Analysis/LaunchApp/raycast.md']).catch(alert);
+		}}
+	>
+		Write Files Paths
 	</button>
 
 	<button
