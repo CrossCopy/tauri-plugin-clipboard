@@ -64,9 +64,11 @@ export declare function writeRtf(rtf: string): Promise<void>;
 /**
  * Write files uris to clipboard. The files should be in uri format: `file:///path/to/file` on Mac and Linux. File path is absolute path.
  * On Windows, the path should be in the format `C:\\path\\to\\file`.
+ * @param filesUris
+ * @returns
  */
-export declare function writeFilesURIs(files: string[]): Promise<void>;
-export declare function writeFiles(files: string[]): Promise<void>;
+export declare function writeFilesURIs(filesUris: string[]): Promise<void>;
+export declare function writeFiles(filesPaths: string[]): Promise<void>;
 export declare function clear(): Promise<void>;
 export declare function readText(): Promise<string>;
 export declare function readHtml(): Promise<string>;
