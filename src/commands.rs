@@ -172,9 +172,9 @@ pub fn write_rtf<R: Runtime>(
     _app: AppHandle<R>,
     _window: Window<R>,
     clipboard: State<'_, Clipboard<R>>,
-    rtf_content: String,
+    rtf: String,
 ) -> Result<(), String> {
-    clipboard.write_rtf(rtf_content)
+    clipboard.write_rtf(rtf)
 }
 
 /// read image from clipboard and return a base64 string

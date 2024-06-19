@@ -1,6 +1,7 @@
 <script lang="ts">
 	import clipboard from 'tauri-plugin-clipboard-api';
 	let text = '';
+	let rtf = '';
 	let html = '';
 	let imageBase64 = '';
 	let imageObjectUrl = '';
@@ -28,6 +29,24 @@
 	</button>
 	{#if text}
 		<pre class="border p-2 rounded-lg">{text}</pre>
+	{/if}
+
+	<button
+		type="button"
+		class="btn variant-filled block btn-sm"
+		on:click={() => {
+			clipboard
+				.readRtf()
+				.then((t) => {
+					rtf = t;
+				})
+				.catch(alert);
+		}}
+	>
+		Read RTF
+	</button>
+	{#if rtf}
+		<pre class="border p-2 rounded-lg">{rtf}</pre>
 	{/if}
 
 	<button
@@ -123,6 +142,25 @@
 		}}
 	>
 		Write HTML
+	</button>
+
+	<button
+		type="button"
+		class="btn variant-filled block btn-sm"
+		on:click={async () => {
+			await clipboard.writeRtf(`{\\rtf1\\ansi\\ansicpg1252\\cocoartf2761
+\\cocoatextscaling0\\cocoaplatform0{\\fonttbl\\f0\\fswiss\\fcharset0 Arial-BoldMT;\\f1\\froman\\fcharset0 Times-Roman;}
+{\\colortbl;\\red255\\green255\\blue255;\\red230\\green0\\blue14;}
+{\\*\\expandedcolortbl;;\\cssrgb\\c93213\\c13483\\c4656;}
+\\deftab720
+\\pard\\pardeftab720\\partightenfactor0
+
+\\f0\\b\\fs48 \\cf2 \\up0 \\nosupersub \\ulnone hello
+\\f1\\b0\\fs24 \\cf2 \\
+World}`);
+		}}
+	>
+		Write RTF
 	</button>
 
 	<button
