@@ -376,8 +376,8 @@ fn write_html_and_text(
 }
 
 #[tauri::command]
-fn write_rtf(manager: State<'_, ClipboardManager>, rtf_content: String) -> Result<(), String> {
-    manager.write_rtf(rtf_content)
+fn write_rtf(manager: State<'_, ClipboardManager>, rtf: String) -> Result<(), String> {
+    manager.write_rtf(rtf)
 }
 
 /// read image from clipboard and return a base64 string

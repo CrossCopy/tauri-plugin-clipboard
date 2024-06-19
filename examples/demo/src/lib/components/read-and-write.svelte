@@ -1,6 +1,7 @@
 <script lang="ts">
 	import clipboard from 'tauri-plugin-clipboard-api';
 	let text = '';
+	let rtf = '';
 	let html = '';
 	let imageBase64 = '';
 	let imageObjectUrl = '';
@@ -28,6 +29,23 @@
 	</button>
 	{#if text}
 		<pre class="border p-2 rounded-lg">{text}</pre>
+	{/if}
+	<button
+		type="button"
+		class="btn variant-filled block btn-sm"
+		on:click={() => {
+			clipboard
+				.readRtf()
+				.then((t) => {
+					rtf = t;
+				})
+				.catch(alert);
+		}}
+	>
+		Read RTF
+	</button>
+	{#if rtf}
+		<pre class="border p-2 rounded-lg">{rtf}</pre>
 	{/if}
 
 	<button
@@ -93,7 +111,28 @@
 		type="button"
 		class="btn variant-filled block btn-sm"
 		on:click={async () => {
-			clipboard.writeFilesURIs(['file:///Users/hacker/Dev/brain/docs/notes/Analysis/LaunchApp/raycast.md']).catch(alert);
+			await clipboard.writeRtf(`{\\rtf1\\ansi\\ansicpg1252\\cocoartf2761
+\\cocoatextscaling0\\cocoaplatform0{\\fonttbl\\f0\\fswiss\\fcharset0 Arial-BoldMT;\\f1\\froman\\fcharset0 Times-Roman;}
+{\\colortbl;\\red255\\green255\\blue255;\\red230\\green0\\blue14;}
+{\\*\\expandedcolortbl;;\\cssrgb\\c93213\\c13483\\c4656;}
+\\deftab720
+\\pard\\pardeftab720\\partightenfactor0
+
+\\f0\\b\\fs48 \\cf2 \\up0 \\nosupersub \\ulnone hello
+\\f1\\b0\\fs24 \\cf2 \\
+World}`);
+		}}
+	>
+		Write RTF
+	</button>
+
+	<button
+		type="button"
+		class="btn variant-filled block btn-sm"
+		on:click={async () => {
+			clipboard
+				.writeFilesURIs(['file:///Users/hacker/Dev/brain/docs/notes/Analysis/LaunchApp/raycast.md'])
+				.catch(alert);
 		}}
 	>
 		Write Files URIs
@@ -103,7 +142,9 @@
 		type="button"
 		class="btn variant-filled block btn-sm"
 		on:click={async () => {
-			clipboard.writeFiles(['/Users/hacker/Dev/brain/docs/notes/Analysis/LaunchApp/raycast.md']).catch(alert);
+			clipboard
+				.writeFiles(['/Users/hacker/Dev/brain/docs/notes/Analysis/LaunchApp/raycast.md'])
+				.catch(alert);
 		}}
 	>
 		Write Files Paths
@@ -113,7 +154,9 @@
 		type="button"
 		class="btn variant-filled block btn-sm"
 		on:click={async () => {
-			await clipboard.writeHtml('<h1 style="color:red; font-size:larger;">HTML written by writeHtml</h1>');
+			await clipboard.writeHtml(
+				'<h1 style="color:red; font-size:larger;">HTML written by writeHtml</h1>'
+			);
 		}}
 	>
 		Write HTML
@@ -123,7 +166,10 @@
 		type="button"
 		class="btn variant-filled block btn-sm"
 		on:click={async () => {
-			await clipboard.writeHtmlAndText('<h1 style="color:red; font-size:larger;">HTML written by <code>writeHtmlAndText</code></h1>', 'HTML written by writeHtmlAndText');
+			await clipboard.writeHtmlAndText(
+				'<h1 style="color:red; font-size:larger;">HTML written by <code>writeHtmlAndText</code></h1>',
+				'HTML written by writeHtmlAndText'
+			);
 		}}
 	>
 		Write HTML and Text
