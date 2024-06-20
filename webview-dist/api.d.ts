@@ -184,3 +184,4 @@ export declare function stopMonitor(): Promise<void>;
 export declare function listenToMonitorStatusUpdate(cb: (running: boolean) => void): Promise<UnlistenFn>;
 export declare function startListening(): Promise<() => Promise<void>>;
 export {};
+//# sourceMappingURL=api.d.ts.map

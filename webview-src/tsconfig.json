@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
-    "target": "ES5",
+    "target": "es2021",
+    "module": "esnext",
     "strict": true,
     "allowJs": true,
     "esModuleInterop": true,
@@ -9,6 +10,7 @@
       "types": ["@types"]
     },
     "declaration": true,
+    "declarationMap": true,
     "declarationDir": "../webview-dist",
     "rootDir": "./"
   },
