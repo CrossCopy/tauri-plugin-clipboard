@@ -18,10 +18,7 @@ export default {
     }
   ],
   plugins: [
-    typescript({
-      declaration: true,
-      declarationDir: `./${pkg.exports.import.split('/')[0]}`
-    })
+    typescript()
   ],
   external: [
     /^@tauri-apps\/api/,
