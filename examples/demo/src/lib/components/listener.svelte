@@ -62,9 +62,7 @@
 		unlistenRTF = await onRTFUpdate((newRTF) => {
 			rtf = newRTF;
 		});
-		unlistenClipboard = await startListening({
-			html: true,
-		});
+		unlistenClipboard = await startListening();
 
 		onClipboardUpdate(async () => {
 			clear();
