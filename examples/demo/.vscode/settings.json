@@ -114,5 +114,10 @@
 		"transition",
 		"width",
 		"zIndex"
-	]
+	],
+	"workbench.colorCustomizations": {
+		"activityBar.background": "#531A12",
+		"titleBar.activeBackground": "#752519",
+		"titleBar.activeForeground": "#FDF9F8"
+	}
 }

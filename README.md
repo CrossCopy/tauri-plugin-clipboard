@@ -155,7 +155,7 @@ fn main() {
     .plugin(tauri_plugin_clipboard::init())
     .setup(|app| {
         let handle = app.handle();
-        let clipboard = handle.state::<tauri_plugin_clipboard::ClipboardManager>();
+        let clipboard = handle.state::<tauri_plugin_clipboard::Clipboard>();
         clipboard.write_text("huakun zui shuai".to_string()).unwrap();
         Ok(())
     })

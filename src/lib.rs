@@ -15,9 +15,9 @@ mod models;
 pub use error::{Error, Result};
 
 #[cfg(desktop)]
-use desktop::Clipboard;
+pub use desktop::Clipboard;
 #[cfg(mobile)]
-use mobile::Clipboard;
+pub use mobile::Clipboard;
 
 // #[derive(Default)]
 // struct MyState(Mutex<HashMap<String, String>>);
