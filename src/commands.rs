@@ -5,7 +5,7 @@ use tauri::{command, AppHandle, Manager, Runtime, State, Window};
 #[command]
 pub fn has_text<R: Runtime>(
     _app: AppHandle<R>,
-    clipboard: State<'_, Clipboard<R>>,
+    clipboard: State<'_, Clipboard>,
 ) -> Result<bool, String> {
     clipboard.has_text()
 }
@@ -14,7 +14,7 @@ pub fn has_text<R: Runtime>(
 pub fn has_image<R: Runtime>(
     _app: AppHandle<R>,
     _window: Window<R>,
-    clipboard: State<'_, Clipboard<R>>,
+    clipboard: State<'_, Clipboard>,
 ) -> Result<bool, String> {
     clipboard.has_image()
 }
@@ -23,7 +23,7 @@ pub fn has_image<R: Runtime>(
 pub fn has_html<R: Runtime>(
     _app: AppHandle<R>,
     _window: Window<R>,
-    clipboard: State<'_, Clipboard<R>>,
+    clipboard: State<'_, Clipboard>,
 ) -> Result<bool, String> {
     clipboard.has_html()
 }
@@ -32,7 +32,7 @@ pub fn has_html<R: Runtime>(
 pub fn has_rtf<R: Runtime>(
     _app: AppHandle<R>,
     _window: Window<R>,
-    clipboard: State<'_, Clipboard<R>>,
+    clipboard: State<'_, Clipboard>,
 ) -> Result<bool, String> {
     clipboard.has_rtf()
 }
@@ -41,7 +41,7 @@ pub fn has_rtf<R: Runtime>(
 pub fn has_files<R: Runtime>(
     _app: AppHandle<R>,
     _window: Window<R>,
-    clipboard: State<'_, Clipboard<R>>,
+    clipboard: State<'_, Clipboard>,
 ) -> Result<bool, String> {
     clipboard.has_files()
 }
@@ -50,7 +50,7 @@ pub fn has_files<R: Runtime>(
 pub fn read_text<R: Runtime>(
     _app: AppHandle<R>,
     _window: Window<R>,
-    clipboard: State<'_, Clipboard<R>>,
+    clipboard: State<'_, Clipboard>,
 ) -> Result<String, String> {
     clipboard.read_text()
 }
@@ -59,7 +59,7 @@ pub fn read_text<R: Runtime>(
 pub fn read_html<R: Runtime>(
     _app: AppHandle<R>,
     _window: Window<R>,
-    clipboard: State<'_, Clipboard<R>>,
+    clipboard: State<'_, Clipboard>,
 ) -> Result<String, String> {
     clipboard.read_html()
 }
@@ -68,7 +68,7 @@ pub fn read_html<R: Runtime>(
 pub fn read_rtf<R: Runtime>(
     _app: AppHandle<R>,
     _window: Window<R>,
-    clipboard: State<'_, Clipboard<R>>,
+    clipboard: State<'_, Clipboard>,
 ) -> Result<String, String> {
     clipboard.read_rtf()
 }
@@ -77,7 +77,7 @@ pub fn read_rtf<R: Runtime>(
 pub fn read_files<R: Runtime>(
     _app: AppHandle<R>,
     _window: Window<R>,
-    clipboard: State<'_, Clipboard<R>>,
+    clipboard: State<'_, Clipboard>,
 ) -> Result<Vec<String>, String> {
     clipboard.read_files()
 }
@@ -86,7 +86,7 @@ pub fn read_files<R: Runtime>(
 pub fn read_files_uris<R: Runtime>(
     _app: AppHandle<R>,
     _window: Window<R>,
-    clipboard: State<'_, Clipboard<R>>,
+    clipboard: State<'_, Clipboard>,
 ) -> Result<Vec<String>, String> {
     clipboard.read_files_uris()
 }
@@ -95,7 +95,7 @@ pub fn read_files_uris<R: Runtime>(
 pub fn write_files_uris<R: Runtime>(
     _app: AppHandle<R>,
     _window: Window<R>,
-    clipboard: State<'_, Clipboard<R>>,
+    clipboard: State<'_, Clipboard>,
     files_uris: Vec<String>,
 ) -> Result<(), String> {
     clipboard.write_files_uris(files_uris)
@@ -106,7 +106,7 @@ pub fn write_files_uris<R: Runtime>(
 pub fn write_files<R: Runtime>(
     _app: AppHandle<R>,
     _window: Window<R>,
-    clipboard: State<'_, Clipboard<R>>,
+    clipboard: State<'_, Clipboard>,
     files_paths: Vec<String>,
 ) -> Result<(), String> {
     for file in &files_paths {
@@ -140,7 +140,7 @@ pub fn write_files<R: Runtime>(
 pub fn write_text<R: Runtime>(
     _app: AppHandle<R>,
     _window: Window<R>,
-    clipboard: State<'_, Clipboard<R>>,
+    clipboard: State<'_, Clipboard>,
     text: String,
 ) -> Result<(), String> {
     clipboard.write_text(text)
@@ -150,7 +150,7 @@ pub fn write_text<R: Runtime>(
 pub fn write_html<R: Runtime>(
     _app: AppHandle<R>,
     _window: Window<R>,
-    clipboard: State<'_, Clipboard<R>>,
+    clipboard: State<'_, Clipboard>,
     html: String,
 ) -> Result<(), String> {
     clipboard.write_html(html)
@@ -160,7 +160,7 @@ pub fn write_html<R: Runtime>(
 pub fn write_html_and_text<R: Runtime>(
     _app: AppHandle<R>,
     _window: Window<R>,
-    clipboard: State<'_, Clipboard<R>>,
+    clipboard: State<'_, Clipboard>,
     html: String,
     text: String,
 ) -> Result<(), String> {
@@ -171,7 +171,7 @@ pub fn write_html_and_text<R: Runtime>(
 pub fn write_rtf<R: Runtime>(
     _app: AppHandle<R>,
     _window: Window<R>,
-    clipboard: State<'_, Clipboard<R>>,
+    clipboard: State<'_, Clipboard>,
     rtf: String,
 ) -> Result<(), String> {
     clipboard.write_rtf(rtf)
@@ -182,7 +182,7 @@ pub fn write_rtf<R: Runtime>(
 pub async fn read_image_base64<R: Runtime>(
     _app: AppHandle<R>,
     _window: Window<R>,
-    clipboard: State<'_, Clipboard<R>>,
+    clipboard: State<'_, Clipboard>,
 ) -> Result<String, String> {
     clipboard.read_image_base64()
 }
@@ -191,7 +191,7 @@ pub async fn read_image_base64<R: Runtime>(
 pub async fn read_image_binary<R: Runtime>(
     _app: AppHandle<R>,
     _window: Window<R>,
-    clipboard: State<'_, Clipboard<R>>,
+    clipboard: State<'_, Clipboard>,
 ) -> Result<Vec<u8>, String> {
     clipboard.read_image_binary()
 }
@@ -201,7 +201,7 @@ pub async fn read_image_binary<R: Runtime>(
 pub async fn write_image_base64<R: Runtime>(
     _app: AppHandle<R>,
     _window: Window<R>,
-    clipboard: State<'_, Clipboard<R>>,
+    clipboard: State<'_, Clipboard>,
     base64_image: String,
 ) -> Result<(), String> {
     clipboard.write_image_base64(base64_image)
@@ -211,7 +211,7 @@ pub async fn write_image_base64<R: Runtime>(
 pub async fn write_image_binary<R: Runtime>(
     _app: AppHandle<R>,
     _window: Window<R>,
-    clipboard: State<'_, Clipboard<R>>,
+    clipboard: State<'_, Clipboard>,
     bytes: Vec<u8>,
 ) -> Result<(), String> {
     clipboard.write_image_binary(bytes)
@@ -221,7 +221,7 @@ pub async fn write_image_binary<R: Runtime>(
 pub fn clear<R: Runtime>(
     _app: AppHandle<R>,
     _window: Window<R>,
-    clipboard: State<'_, Clipboard<R>>,
+    clipboard: State<'_, Clipboard>,
 ) -> Result<(), String> {
     clipboard.clear()
 }
@@ -229,7 +229,7 @@ pub fn clear<R: Runtime>(
 #[command]
 pub async fn start_monitor<R: Runtime>(
     app: tauri::AppHandle<R>,
-    state: tauri::State<'_, Clipboard<R>>,
+    state: tauri::State<'_, Clipboard>,
 ) -> Result<(), String> {
     let _ = app.emit("plugin:clipboard://clipboard-monitor/status", true);
     let clipboard = ClipboardMonitor::new(app);
@@ -250,7 +250,7 @@ pub async fn start_monitor<R: Runtime>(
 #[command]
 pub async fn stop_monitor<R: Runtime>(
     app: tauri::AppHandle<R>,
-    state: tauri::State<'_, Clipboard<R>>,
+    state: tauri::State<'_, Clipboard>,
 ) -> Result<(), String> {
     let _ = app.emit("plugin:clipboard://clipboard-monitor/status", false);
     let mut watcher_shutdown_state = state.watcher_shutdown.lock().unwrap();
@@ -264,7 +264,7 @@ pub async fn stop_monitor<R: Runtime>(
 #[command]
 pub fn is_monitor_running<R: Runtime>(
     _app: tauri::AppHandle<R>,
-    state: tauri::State<'_, Clipboard<R>>,
+    state: tauri::State<'_, Clipboard>,
 ) -> bool {
     (*state.watcher_shutdown.lock().unwrap()).is_some()
 }

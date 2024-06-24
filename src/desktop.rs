@@ -8,24 +8,19 @@ use image::EncodableLayout;
 use serde::de::DeserializeOwned;
 use std::sync::{Arc, Mutex};
 use tauri::{plugin::PluginApi, AppHandle, Manager, Runtime};
-pub fn init<R: Runtime, C: DeserializeOwned>(
-    app: &AppHandle<R>,
-    _api: PluginApi<R, C>,
-) -> crate::Result<Clipboard<R>> {
+pub fn init<R: Runtime, C: DeserializeOwned>(_api: PluginApi<R, C>) -> crate::Result<Clipboard> {
     Ok(Clipboard {
-        app: app.clone(),
         clipboard: Arc::new(Mutex::new(ClipboardRsContext::new().unwrap())),
         watcher_shutdown: Arc::default(),
     })
 }
 
 /// Access to the clipboard APIs.
-pub struct Clipboard<R: Runtime> {
-    app: AppHandle<R>,
+pub struct Clipboard {
     pub clipboard: Arc<Mutex<ClipboardRsContext>>,
     pub watcher_shutdown: Arc<Mutex<Option<WatcherShutdown>>>,
 }
-impl<R: Runtime> Clipboard<R> {
+impl Clipboard {
     pub fn has(&self, format: ContentFormat) -> Result<bool, String> {
         Ok(self
             .clipboard
