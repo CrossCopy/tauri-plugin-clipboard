@@ -10,12 +10,14 @@ export const HTML_CHANGED = "plugin:clipboard://html-changed";
 export const RTF_CHANGED = "plugin:clipboard://rtf-changed";
 export const FILES_CHANGED = "plugin:clipboard://files-changed";
 export const IMAGE_CHANGED = "plugin:clipboard://image-changed";
+export const IMAGE_BINARY_CHANGED = "plugin:clipboard://image-changed-binary";
 export const IS_MONITOR_RUNNING_COMMAND = "plugin:clipboard|is_monitor_running";
 export const HAS_TEXT_COMMAND = "plugin:clipboard|has_text";
 export const HAS_IMAGE_COMMAND = "plugin:clipboard|has_image";
 export const HAS_HTML_COMMAND = "plugin:clipboard|has_html";
 export const HAS_RTF_COMMAND = "plugin:clipboard|has_rtf";
 export const HAS_FILES_COMMAND = "plugin:clipboard|has_files";
+export const AVAILABLE_TYPES_COMMAND = "plugin:clipboard|available_types";
 export const WRITE_TEXT_COMMAND = "plugin:clipboard|write_text";
 export const WRITE_HTML_COMMAND = "plugin:clipboard|write_html";
 export const WRITE_HTML_AND_TEXT_COMMAND =
@@ -38,6 +40,9 @@ export const CLIPBOARD_MONITOR_STATUS_UPDATE_EVENT =
 export const MONITOR_UPDATE_EVENT =
   "plugin:clipboard://clipboard-monitor/update";
 export const ClipboardChangedPayloadSchema = z.object({ value: z.string() });
+export const ClipboardBinaryChangedPayloadSchema = z.object({
+  value: z.number().array(),
+});
 export const ClipboardChangedFilesPayloadSchema = z.object({
   value: z.string().array(),
 });
@@ -153,6 +158,14 @@ export function readImageBinary(format: "int_array" | "Uint8Array" | "Blob") {
   });
 }
 
+export function convertIntArrToUint8Array(intArr: number[]): Uint8Array {
+  return new Uint8Array(intArr);
+}
+
+export function convertUint8ArrayToBlob(uintArr: Uint8Array): Blob {
+  return new Blob([uintArr]);
+}
+
 /**
  * Here is the transformation flow,
  * read clipboard image as Array<number> (int_array) -> int_array -> Uint8Array -> Blob -> ObjectURL
@@ -235,53 +248,90 @@ export function startBruteForceImageMonitor(delay: number = 1000) {
   };
 }
 
-type UpdatedTypes = {
+export type UpdatedTypes = {
+  text?: boolean;
+  html?: boolean;
+  rtf?: boolean;
+  image?: boolean;
+  imageBinary?: boolean; // get image in binary format
+  files?: boolean;
+};
+
+export type AvailableTypes = {
   text: boolean;
   html: boolean;
   rtf: boolean;
   image: boolean;
   files: boolean;
 };
+
+export function getAvailableTypes(): Promise<AvailableTypes> {
+  return invoke<AvailableTypes>(AVAILABLE_TYPES_COMMAND);
+}
+
 /**
  * Listen to "plugin:clipboard://clipboard-monitor/update" from Tauri core.
  * The corresponding clipboard type event will be emitted when there is clipboard update.
+ * @param listenTypes types of clipboard data to listen to
  * @returns unlisten function
  */
-export function listenToClipboard(): Promise<UnlistenFn> {
+export function listenToClipboard(
+  listenTypes: UpdatedTypes = {
+    text: true,
+    html: true,
+    rtf: true,
+    image: true,
+    imageBinary: false,
+    files: true,
+  }
+): Promise<UnlistenFn> {
   return listen(MONITOR_UPDATE_EVENT, async (e) => {
     if (e.payload === "clipboard update") {
+      const hasData = await Promise.all([
+        hasFiles(),
+        hasImage(),
+        hasHTML(),
+        hasRTF(),
+        hasText(),
+      ]);
       const flags: UpdatedTypes = {
-        files: await hasFiles(),
-        image: await hasImage(),
-        html: await hasHTML(),
-        rtf: await hasRTF(),
-        text: await hasText(),
+        files: hasData[0],
+        image: hasData[1],
+        imageBinary: hasData[1],
+        html: hasData[2],
+        rtf: hasData[3],
+        text: hasData[4],
       };
       await emit(SOMETHING_CHANGED, flags);
-      if (flags.files) {
+      if (listenTypes.files && flags.files) {
         const files = await readFiles();
         if (files && files.length > 0) {
           await emit(FILES_CHANGED, { value: files });
         }
-        flags.files = true;
+        // flags.files = true;
         return; // ! this return is necessary, copying files also update clipboard text, but we don't want text update to be triggered
       }
-      if (flags.image) {
+      if (listenTypes.image && flags.image) {
         const img = await readImageBase64();
         if (img) await emit(IMAGE_CHANGED, { value: img });
-        flags.image = true;
+        // flags.image = true;
       }
-      if (flags.html) {
+      if (listenTypes.imageBinary && flags.imageBinary) {
+        const img = await readImageBinary("int_array");
+        if (img) await emit(IMAGE_BINARY_CHANGED, { value: img });
+        // flags.imageBinary = true;
+      }
+      if (listenTypes.html && flags.html) {
         await emit(HTML_CHANGED, { value: await readHtml() });
-        flags.html = true;
+        // flags.html = true;
       }
-      if (flags.rtf) {
+      if (listenTypes.rtf && flags.rtf) {
         await emit(RTF_CHANGED, { value: await readRtf() });
-        flags.rtf = true;
+        // flags.rtf = true;
       }
-      if (flags.text) {
+      if (listenTypes.text && flags.text) {
         await emit(TEXT_CHANGED, { value: await readText() });
-        flags.text = true;
+        // flags.text = true;
       }
       // when clear() is called, this error is thrown, let ignore it
       // if (!success) {
@@ -320,49 +370,49 @@ export async function onTextUpdate(
  * @param cb
  * @returns
  */
-export async function onSomethingUpdate(
-  cb: (updatedTypes: UpdatedTypes) => void
-) {
-  return await listen(SOMETHING_CHANGED, (event) => {
+export function onSomethingUpdate(cb: (updatedTypes: UpdatedTypes) => void) {
+  return listen(SOMETHING_CHANGED, (event) => {
     cb(event.payload as UpdatedTypes);
   });
 }
 
-export async function onHTMLUpdate(
-  cb: (text: string) => void
-): Promise<UnlistenFn> {
-  return await listen(HTML_CHANGED, (event) => {
+export function onHTMLUpdate(cb: (text: string) => void): Promise<UnlistenFn> {
+  return listen(HTML_CHANGED, (event) => {
     const text = ClipboardChangedPayloadSchema.parse(event.payload).value;
     cb(text);
   });
 }
 
-export async function onRTFUpdate(
-  cb: (text: string) => void
-): Promise<UnlistenFn> {
-  return await listen(RTF_CHANGED, (event) => {
+export function onRTFUpdate(cb: (text: string) => void): Promise<UnlistenFn> {
+  return listen(RTF_CHANGED, (event) => {
     const text = ClipboardChangedPayloadSchema.parse(event.payload).value;
     cb(text);
   });
 }
 
-export async function onFilesUpdate(
+export function onFilesUpdate(
   cb: (files: string[]) => void
 ): Promise<UnlistenFn> {
-  return await listen(FILES_CHANGED, (event) => {
+  return listen(FILES_CHANGED, (event) => {
     const files = ClipboardChangedFilesPayloadSchema.parse(event.payload).value;
     cb(files);
   });
 }
 
-export async function onImageUpdate(
+export function onImageUpdate(
   cb: (base64ImageStr: string) => void
 ): Promise<UnlistenFn> {
-  return await listen(IMAGE_CHANGED, (event) => {
+  return listen(IMAGE_CHANGED, (event) => {
     const base64ImageStr = ClipboardChangedPayloadSchema.parse(
       event.payload
     ).value;
     cb(base64ImageStr);
+  });
+}
+
+export function onImageBinaryUpdate(cb: (image: number[]) => void) {
+  return listen(IMAGE_BINARY_CHANGED, (event) => {
+    cb(ClipboardBinaryChangedPayloadSchema.parse(event.payload).value);
   });
 }
 
@@ -408,9 +458,18 @@ export async function listenToMonitorStatusUpdate(
   });
 }
 
-export function startListening(): Promise<() => Promise<void>> {
+export function startListening(
+  listenTypes: UpdatedTypes = {
+    text: true,
+    html: true,
+    rtf: true,
+    image: true,
+    imageBinary: false,
+    files: true,
+  }
+): Promise<() => Promise<void>> {
   return startMonitor()
-    .then(() => listenToClipboard())
+    .then(() => listenToClipboard(listenTypes))
     .then((unlistenClipboard) => {
       // return an unlisten function that stop listening to clipboard update and stop the monitor
       return async () => {

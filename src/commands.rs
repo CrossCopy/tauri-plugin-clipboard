@@ -47,6 +47,13 @@ pub fn has_files<R: Runtime>(
 }
 
 #[command]
+pub fn available_types(
+    clipboard: State<'_, Clipboard>,
+) -> Result<crate::desktop::AvailableTypes, String> {
+    clipboard.available_types()
+}
+
+#[command]
 pub fn read_text<R: Runtime>(
     _app: AppHandle<R>,
     _window: Window<R>,
@@ -101,7 +108,6 @@ pub fn write_files_uris<R: Runtime>(
     clipboard.write_files_uris(files_uris)
 }
 
-
 #[command]
 pub fn write_files<R: Runtime>(
     _app: AppHandle<R>,
@@ -133,8 +139,6 @@ pub fn write_files<R: Runtime>(
     }
     write_files_uris(_app, _window, clipboard, files_uris)
 }
-
-
 
 #[command]
 pub fn write_text<R: Runtime>(

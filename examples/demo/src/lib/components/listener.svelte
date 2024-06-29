@@ -4,6 +4,7 @@
 	import {
 		onClipboardUpdate,
 		onImageUpdate,
+		onImageBinaryUpdate,
 		onTextUpdate,
 		onHTMLUpdate,
 		onRTFUpdate,
@@ -62,7 +63,9 @@
 		unlistenRTF = await onRTFUpdate((newRTF) => {
 			rtf = newRTF;
 		});
-		unlistenClipboard = await startListening();
+		unlistenClipboard = await startListening({
+			imageBinary: true
+		});
 
 		onClipboardUpdate(async () => {
 			clear();
@@ -73,10 +76,6 @@
 			has.hasFiles = await hasFiles();
 			console.log('plugin:clipboard://clipboard-monitor/update event received');
 		});
-
-		// setInterval(async () => {
-		// 	console.log("Running:", await isMonitorRunning());
-		// }, 1000);
 	});
 
 	listenToMonitorStatusUpdate((running) => {

@@ -295,6 +295,20 @@
       "type": "string",
       "oneOf": [
         {
+          "description": "allow-available-types -> Enables the available_types command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "allow-available-types"
+          ]
+        },
+        {
+          "description": "deny-available-types -> Denies the available_types command without any pre-configured scope.",
+          "type": "string",
+          "enum": [
+            "deny-available-types"
+          ]
+        },
+        {
           "description": "allow-clear -> Enables the clear command without any pre-configured scope.",
           "type": "string",
           "enum": [

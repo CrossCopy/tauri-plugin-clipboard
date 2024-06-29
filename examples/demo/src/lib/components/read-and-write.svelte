@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import clipboard from 'tauri-plugin-clipboard-api';
 	let text = '';
 	let rtf = '';

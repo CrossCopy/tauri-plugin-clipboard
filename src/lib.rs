@@ -31,6 +31,7 @@ pub fn init<R: Runtime>() -> TauriPlugin<R> {
             commands::has_html,
             commands::has_rtf,
             commands::has_files,
+            commands::available_types,
             commands::read_text,
             commands::read_files,
             commands::read_files_uris,

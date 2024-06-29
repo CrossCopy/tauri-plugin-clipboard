@@ -1,5 +1,7 @@
 | Permission | Description |
 |------|-----|
+|`allow-available-types`|Enables the available_types command without any pre-configured scope.|
+|`deny-available-types`|Denies the available_types command without any pre-configured scope.|
 |`allow-clear`|Enables the clear command without any pre-configured scope.|
 |`deny-clear`|Denies the clear command without any pre-configured scope.|
 |`allow-execute`|Enables the execute command without any pre-configured scope.|

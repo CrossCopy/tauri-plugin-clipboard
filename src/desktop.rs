@@ -5,14 +5,24 @@ use clipboard_rs::{
     WatcherShutdown,
 };
 use image::EncodableLayout;
-use serde::de::DeserializeOwned;
+use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use std::sync::{Arc, Mutex};
-use tauri::{plugin::PluginApi, AppHandle, Manager, Runtime};
+use tauri::{plugin::PluginApi, Manager, Runtime};
+
 pub fn init<R: Runtime, C: DeserializeOwned>(_api: PluginApi<R, C>) -> crate::Result<Clipboard> {
     Ok(Clipboard {
         clipboard: Arc::new(Mutex::new(ClipboardRsContext::new().unwrap())),
         watcher_shutdown: Arc::default(),
     })
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct AvailableTypes {
+    pub text: bool,
+    pub html: bool,
+    pub rtf: bool,
+    pub image: bool,
+    pub files: bool,
 }
 
 /// Access to the clipboard APIs.
@@ -27,6 +37,16 @@ impl Clipboard {
             .lock()
             .map_err(|err| err.to_string())?
             .has(format))
+    }
+
+    pub fn available_types(&self) -> Result<AvailableTypes, String> {
+        Ok(AvailableTypes {
+            text: self.has(ContentFormat::Text)?,
+            html: self.has(ContentFormat::Html)?,
+            rtf: self.has(ContentFormat::Rtf)?,
+            image: self.has(ContentFormat::Image)?,
+            files: self.has(ContentFormat::Files)?,
+        })
     }
 
     pub fn has_text(&self) -> Result<bool, String> {
