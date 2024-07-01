@@ -11,7 +11,7 @@ mod error;
 #[cfg(mobile)]
 mod mobile;
 mod models;
-
+pub mod utils;
 pub use error::{Error, Result};
 
 #[cfg(desktop)]

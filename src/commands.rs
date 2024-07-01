@@ -235,20 +235,7 @@ pub async fn start_monitor<R: Runtime>(
     app: tauri::AppHandle<R>,
     state: tauri::State<'_, Clipboard>,
 ) -> Result<(), String> {
-    let _ = app.emit("plugin:clipboard://clipboard-monitor/status", true);
-    let clipboard = ClipboardMonitor::new(app);
-    let mut watcher: ClipboardWatcherContext<ClipboardMonitor<R>> =
-        ClipboardWatcherContext::new().unwrap();
-    let watcher_shutdown = watcher.add_handler(clipboard).get_shutdown_channel();
-    let mut watcher_shutdown_state = state.watcher_shutdown.lock().unwrap();
-    if (*watcher_shutdown_state).is_some() {
-        return Ok(());
-    }
-    *watcher_shutdown_state = Some(watcher_shutdown);
-    std::thread::spawn(move || {
-        watcher.start_watch();
-    });
-    Ok(())
+    state.start_monitor(app)
 }
 
 #[command]
@@ -256,13 +243,7 @@ pub async fn stop_monitor<R: Runtime>(
     app: tauri::AppHandle<R>,
     state: tauri::State<'_, Clipboard>,
 ) -> Result<(), String> {
-    let _ = app.emit("plugin:clipboard://clipboard-monitor/status", false);
-    let mut watcher_shutdown_state = state.watcher_shutdown.lock().unwrap();
-    if let Some(watcher_shutdown) = (*watcher_shutdown_state).take() {
-        watcher_shutdown.stop();
-    }
-    *watcher_shutdown_state = None;
-    Ok(())
+    state.stop_monitor(app)
 }
 
 #[command]
@@ -270,5 +251,5 @@ pub fn is_monitor_running<R: Runtime>(
     _app: tauri::AppHandle<R>,
     state: tauri::State<'_, Clipboard>,
 ) -> bool {
-    (*state.watcher_shutdown.lock().unwrap()).is_some()
+    state.is_monitor_running()
 }

@@ -1,13 +1,13 @@
 use base64::{engine::general_purpose, Engine as _};
 use clipboard_rs::{
     common::RustImage, Clipboard as ClipboardRS, ClipboardContent,
-    ClipboardContext as ClipboardRsContext, ClipboardHandler, ContentFormat, RustImageData,
-    WatcherShutdown,
+    ClipboardContext as ClipboardRsContext, ClipboardHandler, ClipboardWatcher,
+    ClipboardWatcherContext, ContentFormat, RustImageData, WatcherShutdown,
 };
 use image::EncodableLayout;
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use std::sync::{Arc, Mutex};
-use tauri::{plugin::PluginApi, Manager, Runtime};
+use tauri::{plugin::PluginApi, AppHandle, Manager, Runtime};
 
 pub fn init<R: Runtime, C: DeserializeOwned>(_api: PluginApi<R, C>) -> crate::Result<Clipboard> {
     Ok(Clipboard {
@@ -246,6 +246,37 @@ impl Clipboard {
     pub fn clear(&self) -> Result<(), String> {
         self.clipboard.lock().unwrap().clear().unwrap();
         Ok(())
+    }
+
+    pub fn start_monitor<R: Runtime>(&self, app_handle: AppHandle<R>) -> Result<(), String> {
+        let _ = app_handle.emit("plugin:clipboard://clipboard-monitor/status", true);
+        let clipboard = ClipboardMonitor::new(app_handle);
+        let mut watcher: ClipboardWatcherContext<ClipboardMonitor<R>> =
+            ClipboardWatcherContext::new().unwrap();
+        let watcher_shutdown = watcher.add_handler(clipboard).get_shutdown_channel();
+        let mut watcher_shutdown_state = self.watcher_shutdown.lock().unwrap();
+        if (*watcher_shutdown_state).is_some() {
+            return Ok(());
+        }
+        *watcher_shutdown_state = Some(watcher_shutdown);
+        std::thread::spawn(move || {
+            watcher.start_watch();
+        });
+        Ok(())
+    }
+
+    pub fn stop_monitor<R: Runtime>(&self, app_handle: AppHandle<R>) -> Result<(), String> {
+        let _ = app_handle.emit("plugin:clipboard://clipboard-monitor/status", false);
+        let mut watcher_shutdown_state = self.watcher_shutdown.lock().unwrap();
+        if let Some(watcher_shutdown) = (*watcher_shutdown_state).take() {
+            watcher_shutdown.stop();
+        }
+        *watcher_shutdown_state = None;
+        Ok(())
+    }
+
+    pub fn is_monitor_running(&self) -> bool {
+        (*self.watcher_shutdown.lock().unwrap()).is_some()
     }
 }
 

@@ -63,9 +63,7 @@
 		unlistenRTF = await onRTFUpdate((newRTF) => {
 			rtf = newRTF;
 		});
-		unlistenClipboard = await startListening({
-			imageBinary: true
-		});
+		unlistenClipboard = await startListening();
 
 		onClipboardUpdate(async () => {
 			clear();
