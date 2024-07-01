@@ -1,6 +1,5 @@
-use crate::{desktop::ClipboardMonitor, Clipboard};
-use clipboard_rs::{ClipboardWatcher, ClipboardWatcherContext};
-use tauri::{command, AppHandle, Manager, Runtime, State, Window};
+use crate::Clipboard;
+use tauri::{command, AppHandle, Runtime, State, Window};
 
 #[command]
 pub fn has_text<R: Runtime>(
