@@ -1,4 +1,4 @@
-import { z } from "zod";
+import * as v from "valibot";
 import { invoke } from "@tauri-apps/api/core";
 import { emit, listen, UnlistenFn } from "@tauri-apps/api/event";
 
@@ -39,14 +39,14 @@ export const CLIPBOARD_MONITOR_STATUS_UPDATE_EVENT =
   "plugin:clipboard://clipboard-monitor/status";
 export const MONITOR_UPDATE_EVENT =
   "plugin:clipboard://clipboard-monitor/update";
-export const ClipboardChangedPayloadSchema = z.object({ value: z.string() });
-export const ClipboardBinaryChangedPayloadSchema = z.object({
-  value: z.number().array(),
+export const ClipboardChangedPayloadSchema = v.object({ value: v.string() });
+export const ClipboardBinaryChangedPayloadSchema = v.object({
+  value: v.array(v.number()),
 });
-export const ClipboardChangedFilesPayloadSchema = z.object({
-  value: z.string().array(),
+export const ClipboardChangedFilesPayloadSchema = v.object({
+  value: v.array(v.string()),
 });
-export type ClipboardChangedPayload = z.infer<
+export type ClipboardChangedPayload = v.InferOutput<
   typeof ClipboardChangedPayloadSchema
 >;
 
@@ -356,7 +356,7 @@ export async function onTextUpdate(
   cb: (text: string) => void
 ): Promise<UnlistenFn> {
   return await listen(TEXT_CHANGED, (event) => {
-    const text = ClipboardChangedPayloadSchema.parse(event.payload).value;
+    const text = v.parse(ClipboardChangedPayloadSchema, event.payload).value;
     cb(text);
   });
 }
@@ -378,14 +378,14 @@ export function onSomethingUpdate(cb: (updatedTypes: UpdatedTypes) => void) {
 
 export function onHTMLUpdate(cb: (text: string) => void): Promise<UnlistenFn> {
   return listen(HTML_CHANGED, (event) => {
-    const text = ClipboardChangedPayloadSchema.parse(event.payload).value;
+    const text = v.parse(ClipboardChangedPayloadSchema, event.payload).value;
     cb(text);
   });
 }
 
 export function onRTFUpdate(cb: (text: string) => void): Promise<UnlistenFn> {
   return listen(RTF_CHANGED, (event) => {
-    const text = ClipboardChangedPayloadSchema.parse(event.payload).value;
+    const text = v.parse(ClipboardChangedPayloadSchema, event.payload).value;
     cb(text);
   });
 }
@@ -394,7 +394,10 @@ export function onFilesUpdate(
   cb: (files: string[]) => void
 ): Promise<UnlistenFn> {
   return listen(FILES_CHANGED, (event) => {
-    const files = ClipboardChangedFilesPayloadSchema.parse(event.payload).value;
+    const files = v.parse(
+      ClipboardChangedFilesPayloadSchema,
+      event.payload
+    ).value;
     cb(files);
   });
 }
@@ -403,7 +406,8 @@ export function onImageUpdate(
   cb: (base64ImageStr: string) => void
 ): Promise<UnlistenFn> {
   return listen(IMAGE_CHANGED, (event) => {
-    const base64ImageStr = ClipboardChangedPayloadSchema.parse(
+    const base64ImageStr = v.parse(
+      ClipboardChangedPayloadSchema,
       event.payload
     ).value;
     cb(base64ImageStr);
@@ -412,7 +416,7 @@ export function onImageUpdate(
 
 export function onImageBinaryUpdate(cb: (image: number[]) => void) {
   return listen(IMAGE_BINARY_CHANGED, (event) => {
-    cb(ClipboardBinaryChangedPayloadSchema.parse(event.payload).value);
+    cb(v.parse(ClipboardBinaryChangedPayloadSchema, event.payload).value);
   });
 }
 
@@ -422,7 +426,7 @@ export function onImageBinaryUpdate(cb: (image: number[]) => void) {
  */
 export function isMonitorRunning() {
   return invoke<boolean>(IS_MONITOR_RUNNING_COMMAND).then((res: unknown) =>
-    z.boolean().parse(res)
+    v.parse(v.boolean(), res)
   );
 }
 
@@ -453,7 +457,7 @@ export async function listenToMonitorStatusUpdate(
   cb: (running: boolean) => void
 ): Promise<UnlistenFn> {
   return await listen(CLIPBOARD_MONITOR_STATUS_UPDATE_EVENT, (event) => {
-    const newStatus = z.boolean().parse(event.payload);
+    const newStatus = v.parse(v.boolean(), event.payload);
     cb(newStatus);
   });
 }

@@ -11,9 +11,9 @@ importers:
       '@tauri-apps/api':
         specifier: 2.0.0-beta.11
         version: 2.0.0-beta.11
-      zod:
-        specifier: ^3.23.8
-        version: 3.23.8
+      valibot:
+        specifier: ^0.35.0
+        version: 0.35.0
     devDependencies:
       '@rollup/plugin-typescript':
         specifier: ^11.1.6
@@ -185,8 +185,8 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
-  zod@3.23.8:
-    resolution: {integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==}
+  valibot@0.35.0:
+    resolution: {integrity: sha512-+i2aCRkReTrd5KBN/dW2BrPOvFnU5LXTV2xjZnjnqUIO8YUx6P2+MgRrkwF2FhkexgyKq/NIZdPdknhHf5A/Ww==}
 
 snapshots:
 
@@ -312,4 +312,4 @@ snapshots:
 
   typescript@5.4.5: {}
 
-  zod@3.23.8: {}
+  valibot@0.35.0: {}

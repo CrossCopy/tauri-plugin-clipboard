@@ -1,6 +1,6 @@
 {
   "name": "tauri-plugin-clipboard-api",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "author": "Huakun",
   "description": "",
   "type": "module",
@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "@tauri-apps/api": "2.0.0-beta.11",
-    "zod": "^3.23.8"
+    "valibot": "^0.35.0"
   },
   "devDependencies": {
     "@rollup/plugin-typescript": "^11.1.6",
