@@ -7,7 +7,7 @@ use clipboard_rs::{
 use image::EncodableLayout;
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use std::sync::{Arc, Mutex};
-use tauri::{plugin::PluginApi, AppHandle, Manager, Runtime};
+use tauri::{plugin::PluginApi, AppHandle, Emitter, Runtime};
 
 pub fn init<R: Runtime, C: DeserializeOwned>(_api: PluginApi<R, C>) -> crate::Result<Clipboard> {
     Ok(Clipboard {
