@@ -7,6 +7,7 @@
   "types": "./dist-js/index.d.ts",
   "main": "./dist-js/index.cjs",
   "module": "./dist-js/index.js",
+  "license": "MIT",
   "exports": {
     "types": "./dist-js/index.d.ts",
     "import": "./dist-js/index.js",
@@ -19,8 +20,8 @@
   ],
   "scripts": {
     "build": "rollup -c",
-    "prepublishOnly": "yarn build",
-    "pretest": "yarn build"
+    "prepublishOnly": "pnpm build",
+    "pretest": "pnpm build"
   },
   "dependencies": {
     "@tauri-apps/api": "2.0.0-beta.11",
