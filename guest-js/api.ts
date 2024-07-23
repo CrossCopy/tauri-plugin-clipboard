@@ -1,81 +1,79 @@
-import * as v from "valibot";
-import { invoke } from "@tauri-apps/api/core";
-import { emit, listen, UnlistenFn } from "@tauri-apps/api/event";
+import * as v from "valibot"
+import { invoke } from "@tauri-apps/api/core"
+import { emit, listen, UnlistenFn } from "@tauri-apps/api/event"
 
-export const START_MONITOR_COMMAND = "plugin:clipboard|start_monitor";
-export const STOP_MONITOR_COMMAND = "plugin:clipboard|stop_monitor";
-export const SOMETHING_CHANGED = "plugin:clipboard://something-changed";
-export const TEXT_CHANGED = "plugin:clipboard://text-changed";
-export const HTML_CHANGED = "plugin:clipboard://html-changed";
-export const RTF_CHANGED = "plugin:clipboard://rtf-changed";
-export const FILES_CHANGED = "plugin:clipboard://files-changed";
-export const IMAGE_CHANGED = "plugin:clipboard://image-changed";
-export const IMAGE_BINARY_CHANGED = "plugin:clipboard://image-changed-binary";
-export const IS_MONITOR_RUNNING_COMMAND = "plugin:clipboard|is_monitor_running";
-export const HAS_TEXT_COMMAND = "plugin:clipboard|has_text";
-export const HAS_IMAGE_COMMAND = "plugin:clipboard|has_image";
-export const HAS_HTML_COMMAND = "plugin:clipboard|has_html";
-export const HAS_RTF_COMMAND = "plugin:clipboard|has_rtf";
-export const HAS_FILES_COMMAND = "plugin:clipboard|has_files";
-export const AVAILABLE_TYPES_COMMAND = "plugin:clipboard|available_types";
-export const WRITE_TEXT_COMMAND = "plugin:clipboard|write_text";
-export const WRITE_HTML_COMMAND = "plugin:clipboard|write_html";
-export const WRITE_HTML_AND_TEXT_COMMAND =
-  "plugin:clipboard|write_html_and_text";
-export const WRITE_RTF_COMMAND = "plugin:clipboard|write_rtf";
-export const WRITE_FILES_URIS_COMMAND = "plugin:clipboard|write_files_uris";
-export const WRITE_FILES_COMMAND = "plugin:clipboard|write_files";
-export const CLEAR_COMMAND = "plugin:clipboard|clear";
-export const READ_TEXT_COMMAND = "plugin:clipboard|read_text";
-export const READ_HTML_COMMAND = "plugin:clipboard|read_html";
-export const READ_RTF_COMMAND = "plugin:clipboard|read_rtf";
-export const READ_FILES_COMMAND = "plugin:clipboard|read_files";
-export const READ_FILES_URIS_COMMAND = "plugin:clipboard|read_files_uris";
-export const READ_IMAGE_BINARY_COMMAND = "plugin:clipboard|read_image_binary";
-export const READ_IMAGE_BASE64_COMMAND = "plugin:clipboard|read_image_base64";
-export const WRITE_IMAGE_BINARY_COMMAND = "plugin:clipboard|write_image_binary";
-export const WRITE_IMAGE_BASE64_COMMAND = "plugin:clipboard|write_image_base64";
-export const CLIPBOARD_MONITOR_STATUS_UPDATE_EVENT =
-  "plugin:clipboard://clipboard-monitor/status";
-export const MONITOR_UPDATE_EVENT =
-  "plugin:clipboard://clipboard-monitor/update";
-export const ClipboardChangedPayloadSchema = v.object({ value: v.string() });
+const buildCmd = (cmd: string) => `plugin:clipboard|${cmd}`
+const buildEventUrl = (event: string) => `plugin:clipboard://${event}`
+
+export const START_MONITOR_COMMAND = buildCmd("start_monitor")
+export const STOP_MONITOR_COMMAND = buildCmd("stop_monitor")
+export const SOMETHING_CHANGED = buildEventUrl("something-changed")
+export const TEXT_CHANGED = buildEventUrl("text-changed")
+export const HTML_CHANGED = buildEventUrl("html-changed")
+export const RTF_CHANGED = buildEventUrl("rtf-changed")
+export const FILES_CHANGED = buildEventUrl("files-changed")
+export const IMAGE_CHANGED = buildEventUrl("image-changed")
+export const IMAGE_BINARY_CHANGED = buildEventUrl("image-changed-binary")
+export const IS_MONITOR_RUNNING_COMMAND = buildCmd("is_monitor_running")
+export const HAS_TEXT_COMMAND = buildCmd("has_text")
+export const HAS_IMAGE_COMMAND = buildCmd("has_image")
+export const HAS_HTML_COMMAND = buildCmd("has_html")
+export const HAS_RTF_COMMAND = buildCmd("has_rtf")
+export const HAS_FILES_COMMAND = buildCmd("has_files")
+export const AVAILABLE_TYPES_COMMAND = buildCmd("available_types")
+export const WRITE_TEXT_COMMAND = buildCmd("write_text")
+export const WRITE_HTML_COMMAND = buildCmd("write_html")
+export const WRITE_HTML_AND_TEXT_COMMAND = buildCmd("write_html_and_text")
+export const WRITE_RTF_COMMAND = buildCmd("write_rtf")
+export const WRITE_FILES_URIS_COMMAND = buildCmd("write_files_uris")
+export const WRITE_FILES_COMMAND = buildCmd("write_files")
+export const CLEAR_COMMAND = buildCmd("clear")
+export const READ_TEXT_COMMAND = buildCmd("read_text")
+export const READ_HTML_COMMAND = buildCmd("read_html")
+export const READ_RTF_COMMAND = buildCmd("read_rtf")
+export const READ_FILES_COMMAND = buildCmd("read_files")
+export const READ_FILES_URIS_COMMAND = buildCmd("read_files_uris")
+export const READ_IMAGE_BINARY_COMMAND = buildCmd("read_image_binary")
+export const READ_IMAGE_BASE64_COMMAND = buildCmd("read_image_base64")
+export const WRITE_IMAGE_BINARY_COMMAND = buildCmd("write_image_binary")
+export const WRITE_IMAGE_BASE64_COMMAND = buildCmd("write_image_base64")
+export const CLIPBOARD_MONITOR_STATUS_UPDATE_EVENT = buildEventUrl("clipboard-monitor/status")
+export const MONITOR_UPDATE_EVENT = buildEventUrl("clipboard-monitor/update")
+export const ClipboardChangedPayloadSchema = v.object({ value: v.string() })
 export const ClipboardBinaryChangedPayloadSchema = v.object({
-  value: v.array(v.number()),
-});
+  value: v.array(v.number())
+})
 export const ClipboardChangedFilesPayloadSchema = v.object({
-  value: v.array(v.string()),
-});
-export type ClipboardChangedPayload = v.InferOutput<
-  typeof ClipboardChangedPayloadSchema
->;
+  value: v.array(v.string())
+})
+export type ClipboardChangedPayload = v.InferOutput<typeof ClipboardChangedPayloadSchema>
 
 export function hasText() {
-  return invoke<boolean>(HAS_TEXT_COMMAND);
+  return invoke<boolean>(HAS_TEXT_COMMAND)
 }
 
 export function hasHTML() {
-  return invoke<boolean>(HAS_HTML_COMMAND);
+  return invoke<boolean>(HAS_HTML_COMMAND)
 }
 
 export function hasRTF() {
-  return invoke<boolean>(HAS_RTF_COMMAND);
+  return invoke<boolean>(HAS_RTF_COMMAND)
 }
 
 export function hasImage() {
-  return invoke<boolean>(HAS_IMAGE_COMMAND);
+  return invoke<boolean>(HAS_IMAGE_COMMAND)
 }
 
 export function hasFiles() {
-  return invoke<boolean>(HAS_FILES_COMMAND);
+  return invoke<boolean>(HAS_FILES_COMMAND)
 }
 
 export function writeText(text: string) {
-  return invoke<void>(WRITE_TEXT_COMMAND, { text });
+  return invoke<void>(WRITE_TEXT_COMMAND, { text })
 }
 
 export function writeHtml(html: string) {
-  return invoke<void>(WRITE_HTML_COMMAND, { html });
+  return invoke<void>(WRITE_HTML_COMMAND, { html })
 }
 
 /**
@@ -84,43 +82,43 @@ export function writeHtml(html: string) {
  * This API writes both html and text, so readText will return the text.
  */
 export function writeHtmlAndText(html: string, text: string) {
-  return invoke<void>(WRITE_HTML_AND_TEXT_COMMAND, { html, text });
+  return invoke<void>(WRITE_HTML_AND_TEXT_COMMAND, { html, text })
 }
 
 export function writeRtf(rtf: string) {
-  return invoke<void>(WRITE_RTF_COMMAND, { rtf });
+  return invoke<void>(WRITE_RTF_COMMAND, { rtf })
 }
 
 export function writeFilesURIs(filesUris: string[]) {
-  return invoke<void>(WRITE_FILES_URIS_COMMAND, { filesUris });
+  return invoke<void>(WRITE_FILES_URIS_COMMAND, { filesUris })
 }
 
 export function writeFiles(filesPaths: string[]) {
-  return invoke<void>(WRITE_FILES_COMMAND, { filesPaths });
+  return invoke<void>(WRITE_FILES_COMMAND, { filesPaths })
 }
 
 export function clear() {
-  return invoke<void>(CLEAR_COMMAND);
+  return invoke<void>(CLEAR_COMMAND)
 }
 
 export function readText() {
-  return invoke<string>(READ_TEXT_COMMAND);
+  return invoke<string>(READ_TEXT_COMMAND)
 }
 
 export function readHtml() {
-  return invoke<string>(READ_HTML_COMMAND);
+  return invoke<string>(READ_HTML_COMMAND)
 }
 
 export function readRtf() {
-  return invoke<string>(READ_RTF_COMMAND);
+  return invoke<string>(READ_RTF_COMMAND)
 }
 
 export function readFiles() {
-  return invoke<string[]>(READ_FILES_COMMAND);
+  return invoke<string[]>(READ_FILES_COMMAND)
 }
 
 export function readFilesURIs() {
-  return invoke<string[]>(READ_FILES_URIS_COMMAND);
+  return invoke<string[]>(READ_FILES_URIS_COMMAND)
 }
 
 /**
@@ -128,7 +126,7 @@ export function readFilesURIs() {
  * @returns image in base64 string
  */
 export function readImageBase64() {
-  return invoke<string>(READ_IMAGE_BASE64_COMMAND);
+  return invoke<string>(READ_IMAGE_BASE64_COMMAND)
 }
 
 // export const readImageBase64 = readImage;
@@ -141,29 +139,27 @@ export function readImageBase64() {
  */
 export function readImageBinary(format: "int_array" | "Uint8Array" | "Blob") {
   return (
-    invoke<number[] | Uint8Array | Blob>(READ_IMAGE_BINARY_COMMAND) as Promise<
-      number[]
-    >
+    invoke<number[] | Uint8Array | Blob>(READ_IMAGE_BINARY_COMMAND) as Promise<number[]>
   ).then((img_arr: number[]) => {
     switch (format) {
       case "int_array":
-        return img_arr;
+        return img_arr
       case "Uint8Array":
-        return new Uint8Array(img_arr);
+        return new Uint8Array(img_arr)
       case "Blob":
-        return new Blob([new Uint8Array(img_arr)]);
+        return new Blob([new Uint8Array(img_arr)])
       default:
-        return img_arr;
+        return img_arr
     }
-  });
+  })
 }
 
 export function convertIntArrToUint8Array(intArr: number[]): Uint8Array {
-  return new Uint8Array(intArr);
+  return new Uint8Array(intArr)
 }
 
 export function convertUint8ArrayToBlob(uintArr: Uint8Array): Blob {
-  return new Blob([uintArr]);
+  return new Blob([uintArr])
 }
 
 /**
@@ -174,8 +170,8 @@ export function convertUint8ArrayToBlob(uintArr: Uint8Array): Blob {
  */
 export function readImageObjectURL(): Promise<string> {
   return readImageBinary("Blob").then((blob) => {
-    return URL.createObjectURL(blob as Blob);
-  });
+    return URL.createObjectURL(blob as Blob)
+  })
 }
 
 /**
@@ -184,11 +180,11 @@ export function readImageObjectURL(): Promise<string> {
  * @returns Promise<void>
  */
 export function writeImageBase64(base64: string) {
-  return invoke<void>(WRITE_IMAGE_BASE64_COMMAND, { base64Image: base64 });
+  return invoke<void>(WRITE_IMAGE_BASE64_COMMAND, { base64Image: base64 })
 }
 
 export function writeImageBinary(bytes: number[]) {
-  return invoke<void>(WRITE_IMAGE_BINARY_COMMAND, { bytes: bytes });
+  return invoke<void>(WRITE_IMAGE_BINARY_COMMAND, { bytes: bytes })
 }
 
 /**
@@ -202,21 +198,21 @@ export function writeImageBinary(bytes: number[]) {
  * @returns a stop running function that can be called when component unmounts
  */
 export function startBruteForceTextMonitor(delay: number = 500) {
-  let prevText: string = "";
-  let active: boolean = true; // whether the listener should be running
+  let prevText: string = ""
+  let active: boolean = true // whether the listener should be running
   setTimeout(async function x() {
     try {
-      const text = await readText();
+      const text = await readText()
       if (prevText !== text) {
-        await emit(TEXT_CHANGED, { value: text });
+        await emit(TEXT_CHANGED, { value: text })
       }
-      prevText = text;
+      prevText = text
     } catch (error) {}
-    if (active) setTimeout(x, delay);
-  }, delay);
+    if (active) setTimeout(x, delay)
+  }, delay)
   return function () {
-    active = false;
-  };
+    active = false
+  }
 }
 
 /**
@@ -229,44 +225,44 @@ export function startBruteForceTextMonitor(delay: number = 500) {
  * @returns stop running function that can be called to stop the monitor
  */
 export function startBruteForceImageMonitor(delay: number = 1000) {
-  let prevImg: string = "";
-  let active: boolean = true; // whether the listener should be running
+  let prevImg: string = ""
+  let active: boolean = true // whether the listener should be running
   setTimeout(async function x() {
     try {
-      const img = await readImageBase64();
+      const img = await readImageBase64()
       if (prevImg !== img) {
-        await emit(IMAGE_CHANGED, { value: img });
+        await emit(IMAGE_CHANGED, { value: img })
       }
-      prevImg = img;
+      prevImg = img
     } catch (error) {
       // ! when there is no image in clipboard, there may be error thrown, we ignore the error
     }
-    if (active) setTimeout(x, delay);
-  }, delay);
+    if (active) setTimeout(x, delay)
+  }, delay)
   return function () {
-    active = false;
-  };
+    active = false
+  }
 }
 
 export type UpdatedTypes = {
-  text?: boolean;
-  html?: boolean;
-  rtf?: boolean;
-  image?: boolean;
-  imageBinary?: boolean; // get image in binary format
-  files?: boolean;
-};
+  text?: boolean
+  html?: boolean
+  rtf?: boolean
+  image?: boolean
+  imageBinary?: boolean // get image in binary format
+  files?: boolean
+}
 
 export type AvailableTypes = {
-  text: boolean;
-  html: boolean;
-  rtf: boolean;
-  image: boolean;
-  files: boolean;
-};
+  text: boolean
+  html: boolean
+  rtf: boolean
+  image: boolean
+  files: boolean
+}
 
 export function getAvailableTypes(): Promise<AvailableTypes> {
-  return invoke<AvailableTypes>(AVAILABLE_TYPES_COMMAND);
+  return invoke<AvailableTypes>(AVAILABLE_TYPES_COMMAND)
 }
 
 /**
@@ -282,55 +278,49 @@ export function listenToClipboard(
     rtf: true,
     image: true,
     imageBinary: false,
-    files: true,
+    files: true
   }
 ): Promise<UnlistenFn> {
   return listen(MONITOR_UPDATE_EVENT, async (e) => {
     if (e.payload === "clipboard update") {
-      const hasData = await Promise.all([
-        hasFiles(),
-        hasImage(),
-        hasHTML(),
-        hasRTF(),
-        hasText(),
-      ]);
+      const hasData = await Promise.all([hasFiles(), hasImage(), hasHTML(), hasRTF(), hasText()])
       const flags: UpdatedTypes = {
         files: hasData[0],
         image: hasData[1],
         imageBinary: hasData[1],
         html: hasData[2],
         rtf: hasData[3],
-        text: hasData[4],
-      };
-      await emit(SOMETHING_CHANGED, flags);
+        text: hasData[4]
+      }
+      await emit(SOMETHING_CHANGED, flags)
       if (listenTypes.files && flags.files) {
-        const files = await readFiles();
+        const files = await readFiles()
         if (files && files.length > 0) {
-          await emit(FILES_CHANGED, { value: files });
+          await emit(FILES_CHANGED, { value: files })
         }
         // flags.files = true;
-        return; // ! this return is necessary, copying files also update clipboard text, but we don't want text update to be triggered
+        return // ! this return is necessary, copying files also update clipboard text, but we don't want text update to be triggered
       }
       if (listenTypes.image && flags.image) {
-        const img = await readImageBase64();
-        if (img) await emit(IMAGE_CHANGED, { value: img });
+        const img = await readImageBase64()
+        if (img) await emit(IMAGE_CHANGED, { value: img })
         // flags.image = true;
       }
       if (listenTypes.imageBinary && flags.imageBinary) {
-        const img = await readImageBinary("int_array");
-        if (img) await emit(IMAGE_BINARY_CHANGED, { value: img });
+        const img = await readImageBinary("int_array")
+        if (img) await emit(IMAGE_BINARY_CHANGED, { value: img })
         // flags.imageBinary = true;
       }
       if (listenTypes.html && flags.html) {
-        await emit(HTML_CHANGED, { value: await readHtml() });
+        await emit(HTML_CHANGED, { value: await readHtml() })
         // flags.html = true;
       }
       if (listenTypes.rtf && flags.rtf) {
-        await emit(RTF_CHANGED, { value: await readRtf() });
+        await emit(RTF_CHANGED, { value: await readRtf() })
         // flags.rtf = true;
       }
       if (listenTypes.text && flags.text) {
-        await emit(TEXT_CHANGED, { value: await readText() });
+        await emit(TEXT_CHANGED, { value: await readText() })
         // flags.text = true;
       }
       // when clear() is called, this error is thrown, let ignore it
@@ -338,7 +328,7 @@ export function listenToClipboard(
       //   throw new Error("Unexpected Error: No proper clipboard type");
       // }
     }
-  });
+  })
 }
 
 /**
@@ -349,16 +339,14 @@ export function listenToClipboard(
  * @returns unlisten function
  */
 export function onClipboardUpdate(cb: () => void) {
-  return listen(MONITOR_UPDATE_EVENT, cb);
+  return listen(MONITOR_UPDATE_EVENT, cb)
 }
 
-export async function onTextUpdate(
-  cb: (text: string) => void
-): Promise<UnlistenFn> {
+export async function onTextUpdate(cb: (text: string) => void): Promise<UnlistenFn> {
   return await listen(TEXT_CHANGED, (event) => {
-    const text = v.parse(ClipboardChangedPayloadSchema, event.payload).value;
-    cb(text);
-  });
+    const text = v.parse(ClipboardChangedPayloadSchema, event.payload).value
+    cb(text)
+  })
 }
 
 /**
@@ -372,52 +360,42 @@ export async function onTextUpdate(
  */
 export function onSomethingUpdate(cb: (updatedTypes: UpdatedTypes) => void) {
   return listen(SOMETHING_CHANGED, (event) => {
-    cb(event.payload as UpdatedTypes);
-  });
+    cb(event.payload as UpdatedTypes)
+  })
 }
 
 export function onHTMLUpdate(cb: (text: string) => void): Promise<UnlistenFn> {
   return listen(HTML_CHANGED, (event) => {
-    const text = v.parse(ClipboardChangedPayloadSchema, event.payload).value;
-    cb(text);
-  });
+    const text = v.parse(ClipboardChangedPayloadSchema, event.payload).value
+    cb(text)
+  })
 }
 
 export function onRTFUpdate(cb: (text: string) => void): Promise<UnlistenFn> {
   return listen(RTF_CHANGED, (event) => {
-    const text = v.parse(ClipboardChangedPayloadSchema, event.payload).value;
-    cb(text);
-  });
+    const text = v.parse(ClipboardChangedPayloadSchema, event.payload).value
+    cb(text)
+  })
 }
 
-export function onFilesUpdate(
-  cb: (files: string[]) => void
-): Promise<UnlistenFn> {
+export function onFilesUpdate(cb: (files: string[]) => void): Promise<UnlistenFn> {
   return listen(FILES_CHANGED, (event) => {
-    const files = v.parse(
-      ClipboardChangedFilesPayloadSchema,
-      event.payload
-    ).value;
-    cb(files);
-  });
+    const files = v.parse(ClipboardChangedFilesPayloadSchema, event.payload).value
+    cb(files)
+  })
 }
 
-export function onImageUpdate(
-  cb: (base64ImageStr: string) => void
-): Promise<UnlistenFn> {
+export function onImageUpdate(cb: (base64ImageStr: string) => void): Promise<UnlistenFn> {
   return listen(IMAGE_CHANGED, (event) => {
-    const base64ImageStr = v.parse(
-      ClipboardChangedPayloadSchema,
-      event.payload
-    ).value;
-    cb(base64ImageStr);
-  });
+    const base64ImageStr = v.parse(ClipboardChangedPayloadSchema, event.payload).value
+    cb(base64ImageStr)
+  })
 }
 
 export function onImageBinaryUpdate(cb: (image: number[]) => void) {
   return listen(IMAGE_BINARY_CHANGED, (event) => {
-    cb(v.parse(ClipboardBinaryChangedPayloadSchema, event.payload).value);
-  });
+    cb(v.parse(ClipboardBinaryChangedPayloadSchema, event.payload).value)
+  })
 }
 
 /**
@@ -427,7 +405,7 @@ export function onImageBinaryUpdate(cb: (image: number[]) => void) {
 export function isMonitorRunning() {
   return invoke<boolean>(IS_MONITOR_RUNNING_COMMAND).then((res: unknown) =>
     v.parse(v.boolean(), res)
-  );
+  )
 }
 
 /**
@@ -439,14 +417,14 @@ export function isMonitorRunning() {
  * Still have to listen to these events.
  */
 export function startMonitor() {
-  return invoke<void>(START_MONITOR_COMMAND);
+  return invoke<void>(START_MONITOR_COMMAND)
 }
 
 /**
  * Stop clipboard monitor thread.
  */
 export function stopMonitor() {
-  return invoke<void>(STOP_MONITOR_COMMAND);
+  return invoke<void>(STOP_MONITOR_COMMAND)
 }
 /**
  * Listen to monitor status update. Instead of calling isMonitorRunning to get status of monitor,
@@ -457,9 +435,9 @@ export async function listenToMonitorStatusUpdate(
   cb: (running: boolean) => void
 ): Promise<UnlistenFn> {
   return await listen(CLIPBOARD_MONITOR_STATUS_UPDATE_EVENT, (event) => {
-    const newStatus = v.parse(v.boolean(), event.payload);
-    cb(newStatus);
-  });
+    const newStatus = v.parse(v.boolean(), event.payload)
+    cb(newStatus)
+  })
 }
 
 export function startListening(
@@ -469,7 +447,7 @@ export function startListening(
     rtf: true,
     image: true,
     imageBinary: false,
-    files: true,
+    files: true
   }
 ): Promise<() => Promise<void>> {
   return startMonitor()
@@ -477,8 +455,8 @@ export function startListening(
     .then((unlistenClipboard) => {
       // return an unlisten function that stop listening to clipboard update and stop the monitor
       return async () => {
-        unlistenClipboard();
-        await stopMonitor();
-      };
-    });
+        unlistenClipboard()
+        await stopMonitor()
+      }
+    })
 }
