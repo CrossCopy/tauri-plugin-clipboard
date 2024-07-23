@@ -18,7 +18,10 @@ export default {
       format: "cjs"
     }
   ],
-  plugins: [typescript(), terser()],
+  plugins: [
+    typescript()
+    // terser()
+  ],
   external: [
     /^@tauri-apps\/api/,
     ...Object.keys(pkg.dependencies || {}),
