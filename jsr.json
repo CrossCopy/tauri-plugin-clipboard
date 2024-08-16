@@ -1,0 +1,5 @@
+{
+  "name": "@crosscopy/tauri-plugin-clipboard-api",
+  "version": "2.1.6",
+  "exports": "./guest-js/index.ts"
+}
