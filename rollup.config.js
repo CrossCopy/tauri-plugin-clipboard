@@ -11,11 +11,13 @@ export default {
   output: [
     {
       file: pkg.exports.import,
-      format: "esm"
+      format: "esm",
+      exports: "named"
     },
     {
       file: pkg.exports.require,
-      format: "cjs"
+      format: "cjs",
+      exports: "named"
     }
   ],
   plugins: [
