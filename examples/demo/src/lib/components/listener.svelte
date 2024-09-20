@@ -65,15 +65,17 @@
 		});
 		unlistenClipboard = await startListening();
 
-		onClipboardUpdate(async () => {
+		onClipboardUpdate(async (avail) => {
 			clear();
-			has.hasHTML = await hasHTML();
-			has.hasImage = await hasImage();
-			has.hasText = await hasText();
-			has.hasRTF = await hasRTF();
-			has.hasFiles = await hasFiles();
-			console.log('plugin:clipboard://clipboard-monitor/update event received');
+			console.log('plugin:clipboard://clipboard-monitor/update event received', avail);
+			has.hasHTML = avail.payload.html;
+			has.hasImage = avail.payload.image;
+			has.hasText = avail.payload.text;
+			has.hasRTF = avail.payload.rtf;
+			has.hasFiles = avail.payload.files;
+			console.log('has value', avail.payload);
 		});
+		
 	});
 
 	listenToMonitorStatusUpdate((running) => {
