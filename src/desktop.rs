@@ -9,6 +9,20 @@ use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use std::sync::{Arc, Mutex};
 use tauri::{plugin::PluginApi, AppHandle, Emitter, Runtime};
 
+#[cfg(target_os = "linux")]
+pub fn init<R: Runtime, C: DeserializeOwned>(_api: PluginApi<R, C>) -> crate::Result<Clipboard> {
+    use clipboard_rs::ClipboardContextX11Options;
+
+    Ok(Clipboard {
+        clipboard: Arc::new(Mutex::new(
+            ClipboardRsContext::new_with_options(ClipboardContextX11Options { read_timeout: None })
+                .unwrap(),
+        )),
+        watcher_shutdown: Arc::default(),
+    })
+}
+
+#[cfg(not(target_os = "linux"))]
 pub fn init<R: Runtime, C: DeserializeOwned>(_api: PluginApi<R, C>) -> crate::Result<Clipboard> {
     Ok(Clipboard {
         clipboard: Arc::new(Mutex::new(ClipboardRsContext::new().unwrap())),
