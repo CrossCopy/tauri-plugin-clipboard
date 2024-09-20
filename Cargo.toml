@@ -16,7 +16,7 @@ serde = "1.0"
 thiserror = "1.0"
 base64 = "0.22.1"
 image = "0.25.1"
-clipboard-rs = "0.2.0"
+clipboard-rs = "0.2.1"
 
 [build-dependencies]
-tauri-plugin = { version = "2.0.0-beta.15", features = ["build"] }
+tauri-plugin = { version = "2.0.0-beta", features = ["build"] }
