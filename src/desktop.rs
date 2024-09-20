@@ -30,7 +30,7 @@ pub fn init<R: Runtime, C: DeserializeOwned>(_api: PluginApi<R, C>) -> crate::Re
     })
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct AvailableTypes {
     pub text: bool,
     pub html: bool,
@@ -44,6 +44,7 @@ pub struct Clipboard {
     pub clipboard: Arc<Mutex<ClipboardRsContext>>,
     pub watcher_shutdown: Arc<Mutex<Option<WatcherShutdown>>>,
 }
+
 impl Clipboard {
     pub fn has(&self, format: ContentFormat) -> Result<bool, String> {
         Ok(self
@@ -54,12 +55,14 @@ impl Clipboard {
     }
 
     pub fn available_types(&self) -> Result<AvailableTypes, String> {
+        let locked = self.clipboard.lock().map_err(|err| err.to_string())?;
+
         Ok(AvailableTypes {
-            text: self.has(ContentFormat::Text)?,
-            html: self.has(ContentFormat::Html)?,
-            rtf: self.has(ContentFormat::Rtf)?,
-            image: self.has(ContentFormat::Image)?,
-            files: self.has(ContentFormat::Files)?,
+            text: locked.has(ContentFormat::Text),
+            html: locked.has(ContentFormat::Html),
+            rtf: locked.has(ContentFormat::Rtf),
+            image: locked.has(ContentFormat::Image),
+            files: locked.has(ContentFormat::Files),
         })
     }
 
@@ -264,7 +267,7 @@ impl Clipboard {
 
     pub fn start_monitor<R: Runtime>(&self, app_handle: AppHandle<R>) -> Result<(), String> {
         let _ = app_handle.emit("plugin:clipboard://clipboard-monitor/status", true);
-        let clipboard = ClipboardMonitor::new(app_handle);
+        let clipboard = ClipboardMonitor::new(app_handle, self.clipboard.clone());
         let mut watcher: ClipboardWatcherContext<ClipboardMonitor<R>> =
             ClipboardWatcherContext::new().unwrap();
         let watcher_shutdown = watcher.add_handler(clipboard).get_shutdown_channel();
@@ -299,14 +302,21 @@ where
     R: Runtime,
 {
     app_handle: tauri::AppHandle<R>,
+    clipboard_ctx: Arc<Mutex<ClipboardRsContext>>,
 }
 
 impl<R> ClipboardMonitor<R>
 where
     R: Runtime,
 {
-    pub fn new(app_handle: tauri::AppHandle<R>) -> Self {
-        Self { app_handle }
+    pub fn new(
+        app_handle: tauri::AppHandle<R>,
+        clipboard_ctx: Arc<Mutex<ClipboardRsContext>>,
+    ) -> Self {
+        Self {
+            app_handle,
+            clipboard_ctx,
+        }
     }
 }
 
@@ -315,9 +325,22 @@ where
     R: Runtime,
 {
     fn on_clipboard_change(&mut self) {
-        let _ = self.app_handle.emit(
-            "plugin:clipboard://clipboard-monitor/update",
-            "clipboard update",
-        );
+        match self.clipboard_ctx.lock() {
+            Ok(locked) => {
+                let _ = self.app_handle.emit(
+                    "plugin:clipboard://clipboard-monitor/update",
+                    AvailableTypes {
+                        text: locked.has(ContentFormat::Text),
+                        html: locked.has(ContentFormat::Html),
+                        rtf: locked.has(ContentFormat::Rtf),
+                        image: locked.has(ContentFormat::Image),
+                        files: locked.has(ContentFormat::Files),
+                    },
+                );
+            }
+            Err(err) => {
+                println!("Error accessing clipboard: {}", err);
+            }
+        }
     }
 }
