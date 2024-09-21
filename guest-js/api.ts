@@ -48,6 +48,14 @@ export const ClipboardChangedFilesPayloadSchema = v.object({
 })
 export type ClipboardChangedPayload = v.InferOutput<typeof ClipboardChangedPayloadSchema>
 
+export interface ClipboardState {
+  text: boolean,
+  html: boolean,
+  rtf: boolean,
+  image: boolean,
+  files: boolean,
+}
+
 export function hasText() {
   return invoke<boolean>(HAS_TEXT_COMMAND)
 }
@@ -333,13 +341,13 @@ export function listenToClipboard(
 
 /**
  * This listen to clipboard monitor update event, and trigger the callback function.
- * However from this event we don't know whether it's text or image, no real data is returned.
- * Use with listenToClipboard function.
  * @param cb callback
  * @returns unlisten function
  */
-export function onClipboardUpdate(cb: () => void) {
-  return listen(MONITOR_UPDATE_EVENT, cb)
+export async function onClipboardUpdate(cb: (state: ClipboardState) => void) {
+  return await listen<ClipboardState>(MONITOR_UPDATE_EVENT, (event) => {
+    cb(event.payload)
+  })
 }
 
 export async function onTextUpdate(cb: (text: string) => void): Promise<UnlistenFn> {
