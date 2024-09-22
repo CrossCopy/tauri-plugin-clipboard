@@ -68,12 +68,12 @@
 
 		unlistenAvail = await onClipboardUpdate(async (values) => {
 			clear();
-			has.hasHTML = values.payload.html;
-			has.hasImage = values.payload.image;
-			has.hasText = values.payload.text;
-			has.hasRTF = values.payload.rtf
-			has.hasFiles = values.payload.files;
-			console.log('plugin:clipboard://clipboard-monitor/update event received', values.payload);
+			console.log('plugin:clipboard://clipboard-monitor/update event received', values);
+			has.hasHTML = values.html;
+			has.hasImage = values.image;
+			has.hasText = values.text;
+			has.hasRTF = values.rtf
+			has.hasFiles = values.files;
 		});
 	});
 

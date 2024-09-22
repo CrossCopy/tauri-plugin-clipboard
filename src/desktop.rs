@@ -327,16 +327,37 @@ where
     fn on_clipboard_change(&mut self) {
         match self.clipboard_ctx.lock() {
             Ok(locked) => {
-                let _ = self.app_handle.emit(
-                    "plugin:clipboard://clipboard-monitor/update",
-                    AvailableTypes {
-                        text: locked.has(ContentFormat::Text),
-                        html: locked.has(ContentFormat::Html),
-                        rtf: locked.has(ContentFormat::Rtf),
-                        image: locked.has(ContentFormat::Image),
-                        files: locked.has(ContentFormat::Files),
-                    },
-                );
+                if let Ok(formats) = locked.available_formats() {
+                    let mut text = false;
+                    let mut html = false;
+                    let mut rtf = false;
+                    let mut image = false;
+                    let mut files = false;
+
+                    for format in formats {
+                        if format == "UTF8_STRING" {
+                            text = true;
+                        } else if format == "text/html" {
+                            html = true;
+                        } else if format == "text/rtf" {
+                            rtf = true;
+                        } else if format == "image/png" {
+                            image = true;
+                        } else if format == "text/uri-list" {
+                            files = true;
+                        }
+                    }
+                    let _ = self.app_handle.emit(
+                        "plugin:clipboard://clipboard-monitor/update",
+                        AvailableTypes {
+                            text,
+                            html,
+                            rtf,
+                            image,
+                            files,
+                        },
+                    );
+                }
             }
             Err(err) => {
                 println!("Error accessing clipboard: {}", err);
