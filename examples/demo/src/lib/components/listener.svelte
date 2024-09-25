@@ -29,6 +29,7 @@
 	let unlistenImageUpdate: UnlistenFn;
 	let unlistenHtmlUpdate: UnlistenFn;
 	let unlistenRTF: UnlistenFn;
+	let unlistenAvail: UnlistenFn;
 	let unlistenClipboard: () => Promise<void>;
 	let unlistenFiles: UnlistenFn;
 	const has = {
@@ -65,14 +66,14 @@
 		});
 		unlistenClipboard = await startListening();
 
-		onClipboardUpdate(async () => {
+		unlistenAvail = await onClipboardUpdate(async (values) => {
 			clear();
-			has.hasHTML = await hasHTML();
-			has.hasImage = await hasImage();
-			has.hasText = await hasText();
-			has.hasRTF = await hasRTF();
-			has.hasFiles = await hasFiles();
-			console.log('plugin:clipboard://clipboard-monitor/update event received');
+			console.log('plugin:clipboard://clipboard-monitor/update event received', values);
+			has.hasHTML = values.html;
+			has.hasImage = values.image;
+			has.hasText = values.text;
+			has.hasRTF = values.rtf
+			has.hasFiles = values.files;
 		});
 	});
 
@@ -86,6 +87,7 @@
 		if (unlistenHtmlUpdate) unlistenHtmlUpdate();
 		if (unlistenFiles) unlistenFiles();
 		if (unlistenClipboard) unlistenClipboard();
+		if (unlistenAvail) unlistenAvail();
 	});
 </script>
 

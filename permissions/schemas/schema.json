@@ -295,403 +295,289 @@
       "type": "string",
       "oneOf": [
         {
-          "description": "allow-available-types -> Enables the available_types command without any pre-configured scope.",
+          "description": "Enables the available_types command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "allow-available-types"
-          ]
+          "const": "allow-available-types"
         },
         {
-          "description": "deny-available-types -> Denies the available_types command without any pre-configured scope.",
+          "description": "Denies the available_types command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "deny-available-types"
-          ]
+          "const": "deny-available-types"
         },
         {
-          "description": "allow-clear -> Enables the clear command without any pre-configured scope.",
+          "description": "Enables the clear command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "allow-clear"
-          ]
+          "const": "allow-clear"
         },
         {
-          "description": "deny-clear -> Denies the clear command without any pre-configured scope.",
+          "description": "Denies the clear command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "deny-clear"
-          ]
+          "const": "deny-clear"
         },
         {
-          "description": "allow-execute -> Enables the execute command without any pre-configured scope.",
+          "description": "Enables the execute command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "allow-execute"
-          ]
+          "const": "allow-execute"
         },
         {
-          "description": "deny-execute -> Denies the execute command without any pre-configured scope.",
+          "description": "Denies the execute command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "deny-execute"
-          ]
+          "const": "deny-execute"
         },
         {
-          "description": "allow-has-files -> Enables the has_files command without any pre-configured scope.",
+          "description": "Enables the has_files command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "allow-has-files"
-          ]
+          "const": "allow-has-files"
         },
         {
-          "description": "deny-has-files -> Denies the has_files command without any pre-configured scope.",
+          "description": "Denies the has_files command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "deny-has-files"
-          ]
+          "const": "deny-has-files"
         },
         {
-          "description": "allow-has-html -> Enables the has_html command without any pre-configured scope.",
+          "description": "Enables the has_html command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "allow-has-html"
-          ]
+          "const": "allow-has-html"
         },
         {
-          "description": "deny-has-html -> Denies the has_html command without any pre-configured scope.",
+          "description": "Denies the has_html command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "deny-has-html"
-          ]
+          "const": "deny-has-html"
         },
         {
-          "description": "allow-has-image -> Enables the has_image command without any pre-configured scope.",
+          "description": "Enables the has_image command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "allow-has-image"
-          ]
+          "const": "allow-has-image"
         },
         {
-          "description": "deny-has-image -> Denies the has_image command without any pre-configured scope.",
+          "description": "Denies the has_image command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "deny-has-image"
-          ]
+          "const": "deny-has-image"
         },
         {
-          "description": "allow-has-rtf -> Enables the has_rtf command without any pre-configured scope.",
+          "description": "Enables the has_rtf command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "allow-has-rtf"
-          ]
+          "const": "allow-has-rtf"
         },
         {
-          "description": "deny-has-rtf -> Denies the has_rtf command without any pre-configured scope.",
+          "description": "Denies the has_rtf command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "deny-has-rtf"
-          ]
+          "const": "deny-has-rtf"
         },
         {
-          "description": "allow-has-text -> Enables the has_text command without any pre-configured scope.",
+          "description": "Enables the has_text command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "allow-has-text"
-          ]
+          "const": "allow-has-text"
         },
         {
-          "description": "deny-has-text -> Denies the has_text command without any pre-configured scope.",
+          "description": "Denies the has_text command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "deny-has-text"
-          ]
+          "const": "deny-has-text"
         },
         {
-          "description": "allow-is-monitor-running -> Enables the is_monitor_running command without any pre-configured scope.",
+          "description": "Enables the is_monitor_running command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "allow-is-monitor-running"
-          ]
+          "const": "allow-is-monitor-running"
         },
         {
-          "description": "deny-is-monitor-running -> Denies the is_monitor_running command without any pre-configured scope.",
+          "description": "Denies the is_monitor_running command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "deny-is-monitor-running"
-          ]
+          "const": "deny-is-monitor-running"
         },
         {
-          "description": "allow-ping -> Enables the ping command without any pre-configured scope.",
+          "description": "Enables the ping command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "allow-ping"
-          ]
+          "const": "allow-ping"
         },
         {
-          "description": "deny-ping -> Denies the ping command without any pre-configured scope.",
+          "description": "Denies the ping command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "deny-ping"
-          ]
+          "const": "deny-ping"
         },
         {
-          "description": "allow-read-files -> Enables the read_files command without any pre-configured scope.",
+          "description": "Enables the read_files command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "allow-read-files"
-          ]
+          "const": "allow-read-files"
         },
         {
-          "description": "deny-read-files -> Denies the read_files command without any pre-configured scope.",
+          "description": "Denies the read_files command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "deny-read-files"
-          ]
+          "const": "deny-read-files"
         },
         {
-          "description": "allow-read-files-uris -> Enables the read_files_uris command without any pre-configured scope.",
+          "description": "Enables the read_files_uris command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "allow-read-files-uris"
-          ]
+          "const": "allow-read-files-uris"
         },
         {
-          "description": "deny-read-files-uris -> Denies the read_files_uris command without any pre-configured scope.",
+          "description": "Denies the read_files_uris command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "deny-read-files-uris"
-          ]
+          "const": "deny-read-files-uris"
         },
         {
-          "description": "allow-read-html -> Enables the read_html command without any pre-configured scope.",
+          "description": "Enables the read_html command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "allow-read-html"
-          ]
+          "const": "allow-read-html"
         },
         {
-          "description": "deny-read-html -> Denies the read_html command without any pre-configured scope.",
+          "description": "Denies the read_html command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "deny-read-html"
-          ]
+          "const": "deny-read-html"
         },
         {
-          "description": "allow-read-image-base64 -> Enables the read_image_base64 command without any pre-configured scope.",
+          "description": "Enables the read_image_base64 command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "allow-read-image-base64"
-          ]
+          "const": "allow-read-image-base64"
         },
         {
-          "description": "deny-read-image-base64 -> Denies the read_image_base64 command without any pre-configured scope.",
+          "description": "Denies the read_image_base64 command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "deny-read-image-base64"
-          ]
+          "const": "deny-read-image-base64"
         },
         {
-          "description": "allow-read-image-binary -> Enables the read_image_binary command without any pre-configured scope.",
+          "description": "Enables the read_image_binary command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "allow-read-image-binary"
-          ]
+          "const": "allow-read-image-binary"
         },
         {
-          "description": "deny-read-image-binary -> Denies the read_image_binary command without any pre-configured scope.",
+          "description": "Denies the read_image_binary command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "deny-read-image-binary"
-          ]
+          "const": "deny-read-image-binary"
         },
         {
-          "description": "allow-read-rtf -> Enables the read_rtf command without any pre-configured scope.",
+          "description": "Enables the read_rtf command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "allow-read-rtf"
-          ]
+          "const": "allow-read-rtf"
         },
         {
-          "description": "deny-read-rtf -> Denies the read_rtf command without any pre-configured scope.",
+          "description": "Denies the read_rtf command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "deny-read-rtf"
-          ]
+          "const": "deny-read-rtf"
         },
         {
-          "description": "allow-read-text -> Enables the read_text command without any pre-configured scope.",
+          "description": "Enables the read_text command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "allow-read-text"
-          ]
+          "const": "allow-read-text"
         },
         {
-          "description": "deny-read-text -> Denies the read_text command without any pre-configured scope.",
+          "description": "Denies the read_text command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "deny-read-text"
-          ]
+          "const": "deny-read-text"
         },
         {
-          "description": "allow-start-monitor -> Enables the start_monitor command without any pre-configured scope.",
+          "description": "Enables the start_monitor command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "allow-start-monitor"
-          ]
+          "const": "allow-start-monitor"
         },
         {
-          "description": "deny-start-monitor -> Denies the start_monitor command without any pre-configured scope.",
+          "description": "Denies the start_monitor command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "deny-start-monitor"
-          ]
+          "const": "deny-start-monitor"
         },
         {
-          "description": "allow-stop-monitor -> Enables the stop_monitor command without any pre-configured scope.",
+          "description": "Enables the stop_monitor command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "allow-stop-monitor"
-          ]
+          "const": "allow-stop-monitor"
         },
         {
-          "description": "deny-stop-monitor -> Denies the stop_monitor command without any pre-configured scope.",
+          "description": "Denies the stop_monitor command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "deny-stop-monitor"
-          ]
+          "const": "deny-stop-monitor"
         },
         {
-          "description": "allow-write-files -> Enables the write_files command without any pre-configured scope.",
+          "description": "Enables the write_files command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "allow-write-files"
-          ]
+          "const": "allow-write-files"
         },
         {
-          "description": "deny-write-files -> Denies the write_files command without any pre-configured scope.",
+          "description": "Denies the write_files command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "deny-write-files"
-          ]
+          "const": "deny-write-files"
         },
         {
-          "description": "allow-write-files-uris -> Enables the write_files_uris command without any pre-configured scope.",
+          "description": "Enables the write_files_uris command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "allow-write-files-uris"
-          ]
+          "const": "allow-write-files-uris"
         },
         {
-          "description": "deny-write-files-uris -> Denies the write_files_uris command without any pre-configured scope.",
+          "description": "Denies the write_files_uris command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "deny-write-files-uris"
-          ]
+          "const": "deny-write-files-uris"
         },
         {
-          "description": "allow-write-html -> Enables the write_html command without any pre-configured scope.",
+          "description": "Enables the write_html command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "allow-write-html"
-          ]
+          "const": "allow-write-html"
         },
         {
-          "description": "deny-write-html -> Denies the write_html command without any pre-configured scope.",
+          "description": "Denies the write_html command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "deny-write-html"
-          ]
+          "const": "deny-write-html"
         },
         {
-          "description": "allow-write-html-and-text -> Enables the write_html_and_text command without any pre-configured scope.",
+          "description": "Enables the write_html_and_text command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "allow-write-html-and-text"
-          ]
+          "const": "allow-write-html-and-text"
         },
         {
-          "description": "deny-write-html-and-text -> Denies the write_html_and_text command without any pre-configured scope.",
+          "description": "Denies the write_html_and_text command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "deny-write-html-and-text"
-          ]
+          "const": "deny-write-html-and-text"
         },
         {
-          "description": "allow-write-image-base64 -> Enables the write_image_base64 command without any pre-configured scope.",
+          "description": "Enables the write_image_base64 command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "allow-write-image-base64"
-          ]
+          "const": "allow-write-image-base64"
         },
         {
-          "description": "deny-write-image-base64 -> Denies the write_image_base64 command without any pre-configured scope.",
+          "description": "Denies the write_image_base64 command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "deny-write-image-base64"
-          ]
+          "const": "deny-write-image-base64"
         },
         {
-          "description": "allow-write-image-binary -> Enables the write_image_binary command without any pre-configured scope.",
+          "description": "Enables the write_image_binary command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "allow-write-image-binary"
-          ]
+          "const": "allow-write-image-binary"
         },
         {
-          "description": "deny-write-image-binary -> Denies the write_image_binary command without any pre-configured scope.",
+          "description": "Denies the write_image_binary command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "deny-write-image-binary"
-          ]
+          "const": "deny-write-image-binary"
         },
         {
-          "description": "allow-write-rtf -> Enables the write_rtf command without any pre-configured scope.",
+          "description": "Enables the write_rtf command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "allow-write-rtf"
-          ]
+          "const": "allow-write-rtf"
         },
         {
-          "description": "deny-write-rtf -> Denies the write_rtf command without any pre-configured scope.",
+          "description": "Denies the write_rtf command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "deny-write-rtf"
-          ]
+          "const": "deny-write-rtf"
         },
         {
-          "description": "allow-write-text -> Enables the write_text command without any pre-configured scope.",
+          "description": "Enables the write_text command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "allow-write-text"
-          ]
+          "const": "allow-write-text"
         },
         {
-          "description": "deny-write-text -> Denies the write_text command without any pre-configured scope.",
+          "description": "Denies the write_text command without any pre-configured scope.",
           "type": "string",
-          "enum": [
-            "deny-write-text"
-          ]
+          "const": "deny-write-text"
         },
         {
-          "description": "monitor-all -> This enables all monitor related commands",
+          "description": "This enables all monitor related commands",
           "type": "string",
-          "enum": [
-            "monitor-all"
-          ]
+          "const": "monitor-all"
         },
         {
-          "description": "read-all -> This enables all read related commands to clipboard",
+          "description": "This enables all read related commands to clipboard",
           "type": "string",
-          "enum": [
-            "read-all"
-          ]
+          "const": "read-all"
         },
         {
-          "description": "write-all -> This enables all write related commands to clipboard",
+          "description": "This enables all write related commands to clipboard",
           "type": "string",
-          "enum": [
-            "write-all"
-          ]
+          "const": "write-all"
         }
       ]
     }
