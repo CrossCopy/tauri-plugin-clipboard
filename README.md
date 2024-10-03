@@ -28,12 +28,15 @@ Crate: https://crates.io/crates/tauri-plugin-clipboard
 
 NPM Package: https://www.npmjs.com/package/tauri-plugin-clipboard-api
 
-#### For Tauri V1
+#### Installation
+
+Now latest version defaults to Tauri V2. If you are using Tauri V1, you can install this plugin with version `1.x.x`.
 
 ```bash
 cargo add tauri-plugin-clipboard # in src-tauri folder
 npm i tauri-plugin-clipboard-api
 ```
+
 
 <details>
 <summary>More Installation Options</summary>
@@ -51,8 +54,8 @@ tauri-plugin-clipboard = { git = "https://github.com/CrossCopy/tauri-plugin-clip
 You can also add a tag to github url.
 
 ```toml
-# for tag v0.6.5, this may not be the latest version, check the tag on github
-tauri-plugin-clipboard = { git = "https://github.com/CrossCopy/tauri-plugin-clipboard", tag = "v0.6.6" }
+# for tag v2.1.9, this may not be the latest version, check the tag on github
+tauri-plugin-clipboard = { git = "https://github.com/CrossCopy/tauri-plugin-clipboard", tag = "v2.1.9" }
 ```
 
 NPM Package: https://www.npmjs.com/package/tauri-plugin-clipboard-api
@@ -66,14 +69,10 @@ npm i tauri-plugin-clipboard-api
 npm i https://github.com/CrossCopy/tauri-plugin-clipboard
 
 # or this for tag, e.g. v0.6.5 (this may not be the latest version, check the tag on github)
-npm i https://github.com/CrossCopy/tauri-plugin-clipboard#v0.6.6
+npm i https://github.com/CrossCopy/tauri-plugin-clipboard#v2.1.9
 ```
 
 </details>
-
-#### For Tauri V2
-
-Since Tauri V2 is still in beta. This plugin will still default to Tauri V2. If you are using this with Tauri v2, you can use branch `v2`.
 
 ```toml
 # In Cargo.toml
