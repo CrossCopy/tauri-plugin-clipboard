@@ -1,22 +1,20 @@
 {
-  "$schema": "../gen/schemas/desktop-schema.json",
-  "identifier": "default",
-  "description": "enables the default permissions",
-  "windows": [
-    "main"
-  ],
-  "permissions": [
-    "path:default",
-    "event:default",
-    "window:default",
-    "webview:default",
-    "app:default",
-    "resources:default",
-    "image:default",
-    "menu:default",
-    "tray:default",
-    "clipboard:read-all",
-    "clipboard:write-all",
-    "clipboard:monitor-all"
-  ]
+	"$schema": "../gen/schemas/desktop-schema.json",
+	"identifier": "default",
+	"description": "enables the default permissions",
+	"windows": ["main"],
+	"permissions": [
+		"core:path:default",
+		"core:event:default",
+		"core:window:default",
+		"core:webview:default",
+		"core:app:default",
+		"core:resources:default",
+		"core:image:default",
+		"core:menu:default",
+		"core:tray:default",
+		"clipboard:read-all",
+		"clipboard:write-all",
+		"clipboard:monitor-all"
+	]
 }

@@ -20,7 +20,7 @@
     "@sveltejs/kit": "^1.20.4",
     "@tailwindcss/forms": "0.5.7",
     "@tailwindcss/typography": "^0.5.10",
-    "@tauri-apps/cli": "2.0.0-beta.17",
+    "@tauri-apps/cli": "2.0.1",
     "@types/node": "20.9.0",
     "autoprefixer": "10.4.16",
     "postcss": "8.4.31",
@@ -37,7 +37,7 @@
   "type": "module",
   "dependencies": {
     "@floating-ui/dom": "1.5.3",
-    "@tauri-apps/api": "2.0.0-beta.11",
+    "@tauri-apps/api": "2.0.1",
     "tauri-plugin-clipboard-api": "link:../../"
   }
 }
