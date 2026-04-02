@@ -10,8 +10,10 @@ use std::sync::{Arc, Mutex};
 use tauri::{plugin::PluginApi, AppHandle, Emitter, Runtime};
 
 pub fn init<R: Runtime, C: DeserializeOwned>(_api: PluginApi<R, C>) -> crate::Result<Clipboard> {
+    let ctx = ClipboardRsContext::new()
+        .map_err(|e| crate::Error::Io(std::io::Error::new(std::io::ErrorKind::Other, e.to_string())))?;
     Ok(Clipboard {
-        clipboard: Arc::new(Mutex::new(ClipboardRsContext::new().unwrap())),
+        clipboard: Arc::new(Mutex::new(ctx)),
         watcher_shutdown: Arc::default(),
     })
 }
