@@ -20,7 +20,7 @@ serde = "1.0"
 thiserror = "1.0"
 base64 = "0.22.1"
 image = "0.25.1"
-clipboard-rs = { git = "https://github.com/0-don/clipboard-rs", branch = "wayland-support", features = ["wayland"] }
+clipboard-rs = { version = "0.3.4", features = ["wayland"] }
 
 [build-dependencies]
 tauri-plugin = { version = "2.0.1", features = ["build"] }
